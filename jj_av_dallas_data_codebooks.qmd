@@ -1,0 +1,543 @@
+---
+title: "JJ AV Dallas County Data File Codebooks"
+format: html
+---
+
+**Data Sample:** Supervision records of DCJD juveniles on either Court-Ordered Probation/Permanent Probation/Deferred Prosecution at any point from 10/1/2017 through 9/30/2022
+
+
+**For all missing data plots**, here are the % missingness categories: "Good" <= 5% missing, "OK" <= 40% missing, "Bad" <= 80% missing, and "Remove" = 100% missing
+
+<br>
+
+This syntax pulls in all data files provided by Dallas County stored as a series of Excel file tabs -- creates high-level codebooks for each using the DataExplorer package (https://boxuancui.github.io/DataExplorer/index.html). File names reflect the names provided by Dallas County.
+
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer")
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set chunk output specifications
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dev = "ragg_png",
+  cache = FALSE)
+
+### set theme
+theme_set(theme_minimal())
+```
+
+```{r include=FALSE}
+### pull in dallas data from raw data folder
+
+### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
+sharepoint_jj_av_dallas_raw_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw")
+
+### using purrr::map, import list of tabs from excel worksheet
+dallas_raw_tab_list <- purrr::map(purrr::set_names(excel_sheets(file.path(sharepoint_jj_av_dallas_raw_data,
+                                                              "Dallas County (10.1.2017 - 9.30.2022).xlsx"))),
+                      read_excel, 
+                      path = file.path(sharepoint_jj_av_dallas_raw_data,"Dallas County (10.1.2017 - 9.30.2022).xlsx")) %>% 
+  purrr::map(janitor::clean_names)
+
+### clean names of all imported tabs before converting to dataframes
+names(dallas_raw_tab_list) <- janitor::make_clean_names(names(dallas_raw_tab_list))
+
+### then convert list of tabs to distinct dataframes with names from tabs
+purrr::map(names(dallas_raw_tab_list),
+           ~assign(.x, 
+                   dallas_raw_tab_list[[.x]], 
+        envir = .GlobalEnv)) 
+```
+
+```{r include=FALSE}
+# Custom function
+plot_missing_2 <-
+function (data, group = list(Good = 0.05, Okay = 0.4, Poor = 0.8, 
+  Remove =  1), geom_label_args = list(), title = NULL, ggtheme = theme_gray(), 
+theme_config = list(legend.position = c("bottom"))) 
+{
+  pct_missing <- Missingness <- NULL
+  missing_value <- data.table(profile_missing(data))
+  group <- group[sort.list(unlist(group))]
+  invisible(lapply(seq_along(group), function(i) {
+    if (i == 1) {
+      missing_value[pct_missing <= group[[i]], `:=`(Missingness,
+         names(group)[i])]
+    } else {
+  missing_value[pct_missing > group[[i - 1]] & pct_missing <= 
+     group[[i]], `:=`(Missingness, names(group)[i])]
+    }
+}))
+  output <- ggplot(missing_value, aes_string(x = "feature", 
+    y = "num_missing", fill = "Missingness")) + geom_bar(stat = "identity") + 
+   scale_fill_manual("Missingness", values = c("Good"="green2","Okay"="gold","Poor"="darkorange","Remove"="firebrick2")) + coord_flip() + xlab("Features") + 
+   ylab("Missing Rows")
+  geom_label_args_list <- list(mapping = aes(label = paste0(round(100 * 
+    pct_missing, 2), "%")))
+  output <- output + do.call("geom_label", c(geom_label_args_list, 
+     geom_label_args))
+  class(output) <- c("single", class(output))
+  plotDataExplorer(plot_obj = output, title = title, ggtheme = ggtheme, 
+   theme_config = theme_config)
+}
+```
+
+
+<br>
+
+## Child File (base youth-level sample demographic file)
+
+**Dallas County Description:** Demographic records of all of the juveniles listed on the Supervision sheet
+
+<br>
+
+### Child, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(child) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br>
+
+### Child, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="child") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Child, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing()
+plot_missing_2(child)
+```
+
+<br><br>
+
+## Supervision File 
+
+**Dallas County Description:** Supervision records of DCJD juveniles on either Court-Ordered Probation/Permanent Probation/Deferred Prosecution at any point from 10/1/2017 through 9/30/2022
+
+<br>
+
+### Supervision, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(supervision) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") 
+```
+
+<br>
+
+### Supervision, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="supervision") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Supervision, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing()
+plot_missing_2(supervision)
+```
+
+<br><br>
+
+## Supervision Extension File 
+
+**Dallas County Description:** Records of every listed supervision extension belonging to supervision records in the Supervision sheet
+
+<br>
+
+### Supervision Extension, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(supervision_extension) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") 
+```
+
+<br>
+
+### Supervision Extension, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="supervision_extension") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Supervision Extension, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing()
+plot_missing_2(supervision_extension)
+```
+
+<br><br>
+
+## Supervision Level File 
+
+**Dallas County Description:** Records of every listed supervision phase level belonging to supervision records in the Supervision sheet
+
+<br>
+
+### Supervision Level, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(supervision_level) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") 
+```
+
+<br>
+
+### Supervision Level, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="supervision_level") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Supervision Level, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing_2()
+plot_missing_2(supervision_level)
+```
+
+<br><br>
+
+## Assessment File 
+
+**Dallas County Description:** PACT Assessment records of all of the juveniles listed on the Supervision sheet who also have a PACT history
+
+<br>
+
+### Assessment, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(assessment) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") 
+```
+
+<br>
+
+### Assessment, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="assessment") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Assessment, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing_2()
+plot_missing_2(assessment)
+```
+
+<br><br>
+
+## Offenses File 
+
+**Dallas County Description:** Entire offense history (as of 12/23/2022) of all of the juveniles listed on the Supervision sheet
+
+<br>
+
+### Offenses, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(offenses) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") 
+```
+
+<br>
+
+### Offenses, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="offenses") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Offenses, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing_2()
+plot_missing_2(offenses)
+```
+
+<br><br>
+
+## Violations File 
+
+**Dallas County Description:** Entire violation offense history (as of 12/23/2022) of all of the juveniles listed on the Supervision sheet
+
+<br>
+
+### Violations, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(violations) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") 
+```
+
+<br>
+
+### Violations, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="violations") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Violations, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing_2()
+plot_missing_2(violations)
+```
+
+<br><br>
+
+## Detentions File 
+
+**Dallas County Description:** Entire detention history (as of 12/23/2022) of all of the juveniles listed on the Supervision sheet
+
+<br>
+
+### Detentions, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(detentions) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") 
+```
+
+<br>
+
+### Detentions, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="detentions") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Detentions, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing_2()
+plot_missing_2(detentions)
+```
+
+<br><br>
+
+## Placements File 
+
+**Dallas County Description:** Entire placement history (as of 12/23/2022) of all of the juveniles listed on the Supervision sheet
+
+<br>
+
+### Placements, Data Overview
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function introduce()
+table <- DataExplorer::introduce(placements) %>% 
+  pivot_longer(rows:memory_usage, names_to = "Measure", values_to = "Count")
+
+kable(table, format.args = list(big.mark = ","), align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") 
+```
+
+<br>
+
+### Placements, Fields Included
+```{r out.width="50%",echo=FALSE,warning=FALSE,message=FALSE}
+### join pertinent variable labels from 'columns' dataframe (the data dictionary that dallas county provided)
+### using snakecase to clean values in columns
+column_labels <- columns %>% 
+  mutate(sheet = snakecase::to_any_case(sheet),
+         `Variable Name in Analysis` = snakecase::to_any_case(column)) %>% 
+  filter(sheet=="placements") %>% 
+  dplyr::rename(Variable=column,
+                Description=description) %>% 
+  dplyr::select(Variable,
+                `Variable Name in Analysis`,
+                Description)
+  
+### create table with kable
+kable(column_labels, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                row_label_position = "l")
+```
+
+<br>
+
+### Placements, Missing Data
+```{r out.width="120%",echo=FALSE,warning=FALSE,message=FALSE}
+### run the `DataExplorer` function plot_missing_2()
+plot_missing_2(placements)
+```
+
+<br><br>
+

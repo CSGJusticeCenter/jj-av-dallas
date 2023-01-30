@@ -1,0 +1,31 @@
+project:
+  type: website
+
+website:
+  title: "AV Dallas County Probation Conditions Databook"
+  description: "Breaking the Rules: Rethinking Condition Setting and Enforcement in Juvenile Probation in Dallas County"
+  favicon: img/favicon.png
+  navbar:
+   right:
+      - text: "Project and Analysis Plan"
+        href: index.html
+      - text: "Questions and Updates"
+        href: jj_av_dallas_questions_updates.html
+      - text: "Sample Descriptives"
+        href: jj_av_dallas_preliminary_descriptives.html
+      - text: "Codebooks"
+        href: jj_av_dallas_data_codebooks.html
+      - text: "Data Diagram"
+        href: jj_av_dallas_data_diagram_viz.html
+      - icon: fab fa-github
+        href: https://github.com/CSGJusticeCenter/jj-av-dallas
+
+format:
+  html:
+    theme: flatly
+    css: styles.css
+    toc: true
+    toc-location: left
+
+execute:
+  freeze: auto

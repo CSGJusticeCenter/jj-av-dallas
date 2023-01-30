@@ -1,0 +1,99 @@
+---
+title: "Dallas County Data Diagram"
+format: html
+---
+
+This syntax pulls in all data files provided by Dallas County stored as a series of Excel file tabs -- and preliminarily maps their relationships with the datamodelr package (https://github.com/bergant/datamodelr)
+
+File names reflect the names provided by Dallas County. Find more information on files and variables in `Codebook` tab.
+
+
+**TO DO:**
+
+- Double check that referral numbers can be used to link across all files where present (e.g., `detention_referral_number` in `detentions` table == `referral_number` from `supervision table`)**
+
+- Figure out business rule for joining assessment data to child-/offense-/detention-level data
+
+- Think through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral 
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr")
+```
+
+```{r include=FALSE}
+### pull in dallas data from raw data folder
+
+### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
+sharepoint_jj_av_dallas_raw_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw")
+
+### using purrr::map, import list of tabs from excel worksheet
+dallas_raw_tab_list <- purrr::map(purrr::set_names(excel_sheets(file.path(sharepoint_jj_av_dallas_raw_data,
+                                                              "Dallas County (10.1.2017 - 9.30.2022).xlsx"))),
+                      read_excel, 
+                      path = file.path(sharepoint_jj_av_dallas_raw_data,
+                                       "Dallas County (10.1.2017 - 9.30.2022).xlsx")) %>% 
+  purrr::map(janitor::clean_names)
+
+### clean names of all imported tabs before converting to dataframes
+names(dallas_raw_tab_list) <- janitor::make_clean_names(names(dallas_raw_tab_list))
+
+### then convert list of tabs to distinct dataframes with names from tabs
+purrr::map(names(dallas_raw_tab_list),
+           ~assign(.x, 
+                   dallas_raw_tab_list[[.x]], 
+        envir = .GlobalEnv)) 
+```
+
+
+```{r echo=FALSE,warning=FALSE,message=FALSE}
+### create data map using datamodelr package; first, we have to name each table in the list we're creating, second we establish which columns are primary keys for each table via dm_set_key, and lastly we indicate how tables should be joined together -- which produces arrows between two tables via dm_add_references (this data map will need to be confirmed with our data contacts)
+dallas_data_diagram <- list(child = child, 
+                      supervision = supervision,
+                      supervision_extension = supervision_extension, 
+                      supervision_level = supervision_level,
+                      assessment = assessment, 
+                      offenses = offenses,
+                      violations = violations, 
+                      detentions=detentions, 
+                      placements = placements) %>% ### list dataframes to map
+    dm_from_data_frames() %>%
+    dm_set_key("child", c("unique_id")) %>% ### set primary keys in each dataframe 
+    dm_set_key("supervision", c("unique_id","referral_number")) %>%
+    dm_set_key("supervision_extension", c("unique_id","referral_number")) %>%
+    dm_set_key("supervision_level", c("unique_id","referral_number")) %>%     
+    dm_set_key("assessment", c("unique_id","date_completed")) %>%
+    dm_set_key("offenses", c("unique_id","referral_number","offense_id")) %>%
+    dm_set_key("violations", c("unique_id","violation_referral_number")) %>%
+    dm_set_key("detentions", c("unique_id","detention_referral_number","detention_admission_date")) %>% 
+    dm_set_key("placements", c("unique_id","placement_referral_number","placement_begin_date")) %>% 
+    dm_add_references(
+        offenses$unique_id == child$unique_id, 
+        supervision$unique_id == offenses$unique_id,
+        supervision$referral_number == offenses$referral_number,
+        detentions$unique_id == offenses$unique_id,
+        detentions$detention_referral_number == offenses$referral_number,
+        assessment$unique_id == offenses$unique_id,
+        assessment$date_completed == offenses$offense_date,
+        placements$unique_id == offenses$unique_id,
+        placements$placement_referral_number == offenses$referral_number,
+        supervision$unique_id == offenses$unique_id,
+        supervision$referral_number == offenses$referral_number,
+        supervision_extension$unique_id == supervision$unique_id,
+        supervision_extension$referral_number == supervision$referral_number,
+        supervision_level$unique_id == supervision$unique_id,
+        supervision_level$referral_number == supervision$referral_number,
+        violations$unique_id == supervision$unique_id,
+        violations$violation_referral_number == supervision$referral_number) %>% 
+    dm_create_graph(rankdir = "BT", columnArrows = FALSE, col_attr = c("column")) ### draw arrow to establish linkage relationship
+
+### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
+sharepoint_jj_av_dallas_code_img <- file.path("C:\\Users\\abyrum\\OneDrive - The Council of State Governments\\Code\\jj-av-dallas\\img")
+
+### export data map as png file -- had to play around with height and width to render an image that kept legibility as user zooms in
+dm_export_graph(dallas_data_diagram, 
+                file_name = file.path(sharepoint_jj_av_dallas_code_img,"jj_av_dallas_data_diagram.png"), 
+                width = 1100, 
+                height = 1400)
+```

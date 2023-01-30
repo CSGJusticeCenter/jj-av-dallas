@@ -1,0 +1,14 @@
+{
+  "hash": "daab73255127b4a2fb3b2d88dadc50d1",
+  "result": {
+    "markdown": "---\ntitle: \"jj_av_dallas_exploration_import_clean\"\nauthor: \"Andrew Byrum\"\nformat: html\n---\n\n\n**The purpose of this RMD is to import, join, and clean all data files provided from Dallas County -- provided to us as 1 excel file with 9 tabs of relational data as 2 tabs of data documentation**\n\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

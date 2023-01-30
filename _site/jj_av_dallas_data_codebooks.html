@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.2.269">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>AV Dallas County Probation Conditions Databook - JJ AV Dallas County Data File Codebooks</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1.6em;
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./img/favicon.png" rel="icon" type="image/png">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">AV Dallas County Probation Conditions Databook</span>
+    </a>
+  </div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html">
+ <span class="menu-text">Project and Analysis Plan</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./jj_av_dallas_questions_updates.html">
+ <span class="menu-text">Questions and Updates</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./jj_av_dallas_preliminary_descriptives.html">
+ <span class="menu-text">Sample Descriptives</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./jj_av_dallas_data_codebooks.html" aria-current="page">
+ <span class="menu-text">Codebooks</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./jj_av_dallas_data_diagram_viz.html">
+ <span class="menu-text">Data Diagram</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/CSGJusticeCenter/jj-av-dallas"><i class="bi bi-fab fa-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+              <div id="quarto-search" class="" title="Search"></div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+    <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#child-file-base-youth-level-sample-demographic-file" id="toc-child-file-base-youth-level-sample-demographic-file" class="nav-link active" data-scroll-target="#child-file-base-youth-level-sample-demographic-file">Child File (base youth-level sample demographic file)</a>
+  <ul class="collapse">
+  <li><a href="#child-data-overview" id="toc-child-data-overview" class="nav-link" data-scroll-target="#child-data-overview">Child, Data Overview</a></li>
+  <li><a href="#child-fields-included" id="toc-child-fields-included" class="nav-link" data-scroll-target="#child-fields-included">Child, Fields Included</a></li>
+  <li><a href="#child-missing-data" id="toc-child-missing-data" class="nav-link" data-scroll-target="#child-missing-data">Child, Missing Data</a></li>
+  </ul></li>
+  <li><a href="#supervision-file" id="toc-supervision-file" class="nav-link" data-scroll-target="#supervision-file">Supervision File</a>
+  <ul class="collapse">
+  <li><a href="#supervision-data-overview" id="toc-supervision-data-overview" class="nav-link" data-scroll-target="#supervision-data-overview">Supervision, Data Overview</a></li>
+  <li><a href="#supervision-fields-included" id="toc-supervision-fields-included" class="nav-link" data-scroll-target="#supervision-fields-included">Supervision, Fields Included</a></li>
+  <li><a href="#supervision-missing-data" id="toc-supervision-missing-data" class="nav-link" data-scroll-target="#supervision-missing-data">Supervision, Missing Data</a></li>
+  </ul></li>
+  <li><a href="#supervision-extension-file" id="toc-supervision-extension-file" class="nav-link" data-scroll-target="#supervision-extension-file">Supervision Extension File</a>
+  <ul class="collapse">
+  <li><a href="#supervision-extension-data-overview" id="toc-supervision-extension-data-overview" class="nav-link" data-scroll-target="#supervision-extension-data-overview">Supervision Extension, Data Overview</a></li>
+  <li><a href="#supervision-extension-fields-included" id="toc-supervision-extension-fields-included" class="nav-link" data-scroll-target="#supervision-extension-fields-included">Supervision Extension, Fields Included</a></li>
+  <li><a href="#supervision-extension-missing-data" id="toc-supervision-extension-missing-data" class="nav-link" data-scroll-target="#supervision-extension-missing-data">Supervision Extension, Missing Data</a></li>
+  </ul></li>
+  <li><a href="#supervision-level-file" id="toc-supervision-level-file" class="nav-link" data-scroll-target="#supervision-level-file">Supervision Level File</a>
+  <ul class="collapse">
+  <li><a href="#supervision-level-data-overview" id="toc-supervision-level-data-overview" class="nav-link" data-scroll-target="#supervision-level-data-overview">Supervision Level, Data Overview</a></li>
+  <li><a href="#supervision-level-fields-included" id="toc-supervision-level-fields-included" class="nav-link" data-scroll-target="#supervision-level-fields-included">Supervision Level, Fields Included</a></li>
+  <li><a href="#supervision-level-missing-data" id="toc-supervision-level-missing-data" class="nav-link" data-scroll-target="#supervision-level-missing-data">Supervision Level, Missing Data</a></li>
+  </ul></li>
+  <li><a href="#assessment-file" id="toc-assessment-file" class="nav-link" data-scroll-target="#assessment-file">Assessment File</a>
+  <ul class="collapse">
+  <li><a href="#assessment-data-overview" id="toc-assessment-data-overview" class="nav-link" data-scroll-target="#assessment-data-overview">Assessment, Data Overview</a></li>
+  <li><a href="#assessment-fields-included" id="toc-assessment-fields-included" class="nav-link" data-scroll-target="#assessment-fields-included">Assessment, Fields Included</a></li>
+  <li><a href="#assessment-missing-data" id="toc-assessment-missing-data" class="nav-link" data-scroll-target="#assessment-missing-data">Assessment, Missing Data</a></li>
+  </ul></li>
+  <li><a href="#offenses-file" id="toc-offenses-file" class="nav-link" data-scroll-target="#offenses-file">Offenses File</a>
+  <ul class="collapse">
+  <li><a href="#offenses-data-overview" id="toc-offenses-data-overview" class="nav-link" data-scroll-target="#offenses-data-overview">Offenses, Data Overview</a></li>
+  <li><a href="#offenses-fields-included" id="toc-offenses-fields-included" class="nav-link" data-scroll-target="#offenses-fields-included">Offenses, Fields Included</a></li>
+  <li><a href="#offenses-missing-data" id="toc-offenses-missing-data" class="nav-link" data-scroll-target="#offenses-missing-data">Offenses, Missing Data</a></li>
+  </ul></li>
+  <li><a href="#violations-file" id="toc-violations-file" class="nav-link" data-scroll-target="#violations-file">Violations File</a>
+  <ul class="collapse">
+  <li><a href="#violations-data-overview" id="toc-violations-data-overview" class="nav-link" data-scroll-target="#violations-data-overview">Violations, Data Overview</a></li>
+  <li><a href="#violations-fields-included" id="toc-violations-fields-included" class="nav-link" data-scroll-target="#violations-fields-included">Violations, Fields Included</a></li>
+  <li><a href="#violations-missing-data" id="toc-violations-missing-data" class="nav-link" data-scroll-target="#violations-missing-data">Violations, Missing Data</a></li>
+  </ul></li>
+  <li><a href="#detentions-file" id="toc-detentions-file" class="nav-link" data-scroll-target="#detentions-file">Detentions File</a>
+  <ul class="collapse">
+  <li><a href="#detentions-data-overview" id="toc-detentions-data-overview" class="nav-link" data-scroll-target="#detentions-data-overview">Detentions, Data Overview</a></li>
+  <li><a href="#detentions-fields-included" id="toc-detentions-fields-included" class="nav-link" data-scroll-target="#detentions-fields-included">Detentions, Fields Included</a></li>
+  <li><a href="#detentions-missing-data" id="toc-detentions-missing-data" class="nav-link" data-scroll-target="#detentions-missing-data">Detentions, Missing Data</a></li>
+  </ul></li>
+  <li><a href="#placements-file" id="toc-placements-file" class="nav-link" data-scroll-target="#placements-file">Placements File</a>
+  <ul class="collapse">
+  <li><a href="#placements-data-overview" id="toc-placements-data-overview" class="nav-link" data-scroll-target="#placements-data-overview">Placements, Data Overview</a></li>
+  <li><a href="#placements-fields-included" id="toc-placements-fields-included" class="nav-link" data-scroll-target="#placements-fields-included">Placements, Fields Included</a></li>
+  <li><a href="#placements-missing-data" id="toc-placements-missing-data" class="nav-link" data-scroll-target="#placements-missing-data">Placements, Missing Data</a></li>
+  </ul></li>
+  </ul>
+</nav>
+</nav>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">JJ AV Dallas County Data File Codebooks</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<p><strong>Data Sample:</strong> Supervision records of DCJD juveniles on either Court-Ordered Probation/Permanent Probation/Deferred Prosecution at any point from 10/1/2017 through 9/30/2022</p>
+<p><strong>For all missing data plots</strong>, here are the % missingness categories: “Good” &lt;= 5% missing, “OK” &lt;= 40% missing, “Bad” &lt;= 80% missing, and “Remove” = 100% missing</p>
+<p><br></p>
+<p>This syntax pulls in all data files provided by Dallas County stored as a series of Excel file tabs – creates high-level codebooks for each using the DataExplorer package (https://boxuancui.github.io/DataExplorer/index.html). File names reflect the names provided by Dallas County.</p>
+<p><br></p>
+<section id="child-file-base-youth-level-sample-demographic-file" class="level2">
+<h2 class="anchored" data-anchor-id="child-file-base-youth-level-sample-demographic-file">Child File (base youth-level sample demographic file)</h2>
+<p><strong>Dallas County Description:</strong> Demographic records of all of the juveniles listed on the Supervision sheet</p>
+<p><br></p>
+<section id="child-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="child-data-overview">Child, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 7,661 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 3,332 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 4,332 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 61,288 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 985,568 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="child-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="child-fields-included">Child, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> BirthDate </td>
+   <td style="text-align:center;"> birth_date </td>
+   <td style="text-align:center;"> Birth date of the listed juvenile </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Gender </td>
+   <td style="text-align:center;"> gender </td>
+   <td style="text-align:center;"> Gender of record for the listed juvenile </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Race </td>
+   <td style="text-align:center;"> race </td>
+   <td style="text-align:center;"> Race of record for the listed juvenile </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Ethnicity </td>
+   <td style="text-align:center;"> ethnicity </td>
+   <td style="text-align:center;"> Ethnicity of record for the listed juvenile </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> MentalHealthNeeds </td>
+   <td style="text-align:center;"> mental_health_needs </td>
+   <td style="text-align:center;"> Mental health needs status of the listed juvenile </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> MentalHealthNeedsIndicator </td>
+   <td style="text-align:center;"> mental_health_needs_indicator </td>
+   <td style="text-align:center;"> Listed mental health needs indicator for </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SubstanceUseNeed </td>
+   <td style="text-align:center;"> substance_use_need </td>
+   <td style="text-align:center;"> Whether the juvenile has ever been identified on an offense referral as needing substance abuse services </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="child-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="child-missing-data">Child, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="supervision-file" class="level2">
+<h2 class="anchored" data-anchor-id="supervision-file">Supervision File</h2>
+<p><strong>Dallas County Description:</strong> Supervision records of DCJD juveniles on either Court-Ordered Probation/Permanent Probation/Deferred Prosecution at any point from 10/1/2017 through 9/30/2022</p>
+<p><br></p>
+<section id="supervision-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-data-overview">Supervision, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 8,761 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 1,594 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 7,964 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 61,327 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 1,537,320 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="supervision-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-fields-included">Supervision, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ReferralNumber </td>
+   <td style="text-align:center;"> referral_number </td>
+   <td style="text-align:center;"> Identifying number of the referral attached to the listed supervision record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Disposition </td>
+   <td style="text-align:center;"> disposition </td>
+   <td style="text-align:center;"> Primary disposition of the referral attached to the listed supervision record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionType </td>
+   <td style="text-align:center;"> supervision_type </td>
+   <td style="text-align:center;"> Supervision type of the listed supervision record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionBeginDate </td>
+   <td style="text-align:center;"> supervision_begin_date </td>
+   <td style="text-align:center;"> Date the listed supervision began </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionEndDate </td>
+   <td style="text-align:center;"> supervision_end_date </td>
+   <td style="text-align:center;"> Date the listed supervision ended (if any) </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Outcome </td>
+   <td style="text-align:center;"> outcome </td>
+   <td style="text-align:center;"> Outcome of the listed supervision record (if any) </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="supervision-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-missing-data">Supervision, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="supervision-extension-file" class="level2">
+<h2 class="anchored" data-anchor-id="supervision-extension-file">Supervision Extension File</h2>
+<p><strong>Dallas County Description:</strong> Records of every listed supervision extension belonging to supervision records in the Supervision sheet</p>
+<p><br></p>
+<section id="supervision-extension-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-extension-data-overview">Supervision Extension, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 1,814 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 7 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 196 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 1,618 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 12,698 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 268,600 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="supervision-extension-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-extension-fields-included">Supervision Extension, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ReferralNumber </td>
+   <td style="text-align:center;"> referral_number </td>
+   <td style="text-align:center;"> Identifying number of the referral attached to the listed supervision record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionType </td>
+   <td style="text-align:center;"> supervision_type </td>
+   <td style="text-align:center;"> Supervision type of the listed supervision record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionBeginDate </td>
+   <td style="text-align:center;"> supervision_begin_date </td>
+   <td style="text-align:center;"> Date the listed supervision began </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionEndDate </td>
+   <td style="text-align:center;"> supervision_end_date </td>
+   <td style="text-align:center;"> Date the listed supervision ended (if any) </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ExtensionBeginDate </td>
+   <td style="text-align:center;"> extension_begin_date </td>
+   <td style="text-align:center;"> Date the listed supervision extension began </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ExtensionEndDate </td>
+   <td style="text-align:center;"> extension_end_date </td>
+   <td style="text-align:center;"> Date the listed supervision extension ended (or is estimated to end) </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="supervision-extension-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-extension-missing-data">Supervision Extension, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="supervision-level-file" class="level2">
+<h2 class="anchored" data-anchor-id="supervision-level-file">Supervision Level File</h2>
+<p><strong>Dallas County Description:</strong> Records of every listed supervision phase level belonging to supervision records in the Supervision sheet</p>
+<p><br></p>
+<section id="supervision-level-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-level-data-overview">Supervision Level, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 20,982 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 2,761 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 19,018 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 167,856 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 2,388,648 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="supervision-level-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-level-fields-included">Supervision Level, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ReferralNumber </td>
+   <td style="text-align:center;"> referral_number </td>
+   <td style="text-align:center;"> Identifying number of the referral attached to the listed supervision record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionType </td>
+   <td style="text-align:center;"> supervision_type </td>
+   <td style="text-align:center;"> Supervision type of the listed supervision record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionBeginDate </td>
+   <td style="text-align:center;"> supervision_begin_date </td>
+   <td style="text-align:center;"> Date the listed supervision began </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> SupervisionEndDate </td>
+   <td style="text-align:center;"> supervision_end_date </td>
+   <td style="text-align:center;"> Date the listed supervision ended (if any) </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Phase </td>
+   <td style="text-align:center;"> phase </td>
+   <td style="text-align:center;"> Supervision phase level during the listed supervision record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> PhaseBeginDate </td>
+   <td style="text-align:center;"> phase_begin_date </td>
+   <td style="text-align:center;"> Date the listed phase level began </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> PhaseEndDate </td>
+   <td style="text-align:center;"> phase_end_date </td>
+   <td style="text-align:center;"> Date the listed phase level ended (if any) </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="supervision-level-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="supervision-level-missing-data">Supervision Level, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="assessment-file" class="level2">
+<h2 class="anchored" data-anchor-id="assessment-file">Assessment File</h2>
+<p><strong>Dallas County Description:</strong> PACT Assessment records of all of the juveniles listed on the Supervision sheet who also have a PACT history</p>
+<p><br></p>
+<section id="assessment-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="assessment-data-overview">Assessment, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 15,391 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 20,304 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 3,358 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 138,519 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 1,403,856 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="assessment-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="assessment-fields-included">Assessment, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> DateCompleted </td>
+   <td style="text-align:center;"> date_completed </td>
+   <td style="text-align:center;"> Date the PACT assessment was completed </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Assessment </td>
+   <td style="text-align:center;"> assessment </td>
+   <td style="text-align:center;"> PACT </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> AssessmentType </td>
+   <td style="text-align:center;"> assessment_type </td>
+   <td style="text-align:center;"> Indicates whether the PACT was a Pre-Screen or Full-Screen </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Risk Level </td>
+   <td style="text-align:center;"> risk_level </td>
+   <td style="text-align:center;"> Calculated risk level at the time of the completed PACT assessment </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Needs Level </td>
+   <td style="text-align:center;"> needs_level </td>
+   <td style="text-align:center;"> Calculated needs level at the time of the completed PACT assessment </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> CurrentMental </td>
+   <td style="text-align:center;"> current_mental </td>
+   <td style="text-align:center;"> Response for DOMAIN_9B__CURRENT_MENTAL_HEALTH__1_CURRENT_MENTAL_HEALTH_PROBLEM_STATUS of the PACT assessment </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> CurrentAlcohol </td>
+   <td style="text-align:center;"> current_alcohol </td>
+   <td style="text-align:center;"> Response for DOMAIN_8B__CURRENT_ALCOHOL_AND_DRUGS__2_CURRENT_ALCOHOL_USE of the PACT assessment </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> CurrentDrug </td>
+   <td style="text-align:center;"> current_drug </td>
+   <td style="text-align:center;"> Response for DOMAIN_8B__CURRENT_ALCOHOL_AND_DRUGS__3_CURRENT_DRUG_USE of the PACT assessment </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="assessment-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="assessment-missing-data">Assessment, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="offenses-file" class="level2">
+<h2 class="anchored" data-anchor-id="offenses-file">Offenses File</h2>
+<p><strong>Dallas County Description:</strong> Entire offense history (as of 12/23/2022) of all of the juveniles listed on the Supervision sheet</p>
+<p><br></p>
+<section id="offenses-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="offenses-data-overview">Offenses, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 28,567 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 16 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 16 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 3,337 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 25,230 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 457,072 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 8,384,696 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="offenses-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="offenses-fields-included">Offenses, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseId </td>
+   <td style="text-align:center;"> offense_id </td>
+   <td style="text-align:center;"> TechShare.Juvenile assigned GUID for the listed offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ReferralNumber </td>
+   <td style="text-align:center;"> referral_number </td>
+   <td style="text-align:center;"> Identifying number of the referral to which the listed offense is attached </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseDate </td>
+   <td style="text-align:center;"> offense_date </td>
+   <td style="text-align:center;"> Offense date of the listed offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ReferralDate </td>
+   <td style="text-align:center;"> referral_date </td>
+   <td style="text-align:center;"> Date of the referral to which the listed offense is attached </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ReferralType </td>
+   <td style="text-align:center;"> referral_type </td>
+   <td style="text-align:center;"> Referral type of the referral to which the listed offense is attached </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> CitationNumber </td>
+   <td style="text-align:center;"> citation_number </td>
+   <td style="text-align:center;"> Citation number within DPS Statute of the listed offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseLevel </td>
+   <td style="text-align:center;"> offense_level </td>
+   <td style="text-align:center;"> Offense level of the listed offense (Felony, Misdemeanor, Contempt, Violation of Court Order, CINS, Other) </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseType </td>
+   <td style="text-align:center;"> offense_type </td>
+   <td style="text-align:center;"> Offense type of the listed offense (Homicide, Sexual Assault, Robbery, Theft, Assaultive, Drug Offenses, etc.) </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseDescription </td>
+   <td style="text-align:center;"> offense_description </td>
+   <td style="text-align:center;"> Offense description of the listed offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Disposition </td>
+   <td style="text-align:center;"> disposition </td>
+   <td style="text-align:center;"> Referral disposition of the listed offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> DispositionDate </td>
+   <td style="text-align:center;"> disposition_date </td>
+   <td style="text-align:center;"> Date of the referral disposition of the listed offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> RiskLevel </td>
+   <td style="text-align:center;"> risk_level </td>
+   <td style="text-align:center;"> Listed risk level at the time of referral disposition </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> NeedsLevel </td>
+   <td style="text-align:center;"> needs_level </td>
+   <td style="text-align:center;"> Listed needs level at the time of referral disposition </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> IOI </td>
+   <td style="text-align:center;"> ioi </td>
+   <td style="text-align:center;"> Intake Offense Indicator level of the listed offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> DOI </td>
+   <td style="text-align:center;"> doi </td>
+   <td style="text-align:center;"> Disposition Offense Indicator level of the listed offense </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="offenses-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="offenses-missing-data">Offenses, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="violations-file" class="level2">
+<h2 class="anchored" data-anchor-id="violations-file">Violations File</h2>
+<p><strong>Dallas County Description:</strong> Entire violation offense history (as of 12/23/2022) of all of the juveniles listed on the Supervision sheet</p>
+<p><br></p>
+<section id="violations-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="violations-data-overview">Violations, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 7,197 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 4,204 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 5,325 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 71,970 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 916,864 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="violations-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="violations-fields-included">Violations, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ViolationReferralNumber </td>
+   <td style="text-align:center;"> violation_referral_number </td>
+   <td style="text-align:center;"> Identifying number of the referral to which the listed VOP offense is attached (if any) </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Violation </td>
+   <td style="text-align:center;"> violation </td>
+   <td style="text-align:center;"> Listed violation reason of the listed VOP offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ViolationDate </td>
+   <td style="text-align:center;"> violation_date </td>
+   <td style="text-align:center;"> Listed violation date of the listed violation </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> FiledDate </td>
+   <td style="text-align:center;"> filed_date </td>
+   <td style="text-align:center;"> Date the listed violation was filed (if any) </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ProsecutorAction </td>
+   <td style="text-align:center;"> prosecutor_action </td>
+   <td style="text-align:center;"> Prosecutor action (if any) for the listed VOP offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> ProsecutorActionDate </td>
+   <td style="text-align:center;"> prosecutor_action_date </td>
+   <td style="text-align:center;"> Date of the prosecutor action (if any) for the listed VOP offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseDescription </td>
+   <td style="text-align:center;"> offense_description </td>
+   <td style="text-align:center;"> Offense description of the listed VOP offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> DispositionDate </td>
+   <td style="text-align:center;"> disposition_date </td>
+   <td style="text-align:center;"> Disposition date (if any) of the listed VOP offense </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Disposition </td>
+   <td style="text-align:center;"> disposition </td>
+   <td style="text-align:center;"> Primary disposition (if any) of the listed VOP offense </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="violations-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="violations-missing-data">Violations, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="detentions-file" class="level2">
+<h2 class="anchored" data-anchor-id="detentions-file">Detentions File</h2>
+<p><strong>Dallas County Description:</strong> Entire detention history (as of 12/23/2022) of all of the juveniles listed on the Supervision sheet</p>
+<p><br></p>
+<section id="detentions-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="detentions-data-overview">Detentions, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 11,947 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 9 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 2,374 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 9,609 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 107,523 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 1,939,312 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="detentions-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="detentions-fields-included">Detentions, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> DetentionReferralNumber </td>
+   <td style="text-align:center;"> detention_referral_number </td>
+   <td style="text-align:center;"> Identifying number of the referral to which the listed detention record is attached </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> DetentionAdmissionDate </td>
+   <td style="text-align:center;"> detention_admission_date </td>
+   <td style="text-align:center;"> Admission date for the listed detention record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> DetentionReleasedDate </td>
+   <td style="text-align:center;"> detention_released_date </td>
+   <td style="text-align:center;"> Released date (if any) for the listed detention record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> CitationNumber </td>
+   <td style="text-align:center;"> citation_number </td>
+   <td style="text-align:center;"> Citation number within DPS Statute of the primary offense attached to the listed detention record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseLevel </td>
+   <td style="text-align:center;"> offense_level </td>
+   <td style="text-align:center;"> Offense level of the primary offense attached to the listed detention record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseType </td>
+   <td style="text-align:center;"> offense_type </td>
+   <td style="text-align:center;"> Offense type of the primary offense attached to the listed detention record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseDescription </td>
+   <td style="text-align:center;"> offense_description </td>
+   <td style="text-align:center;"> Offense description of the primary offense attached to the listed detention record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Degree </td>
+   <td style="text-align:center;"> degree </td>
+   <td style="text-align:center;"> Offense degree of the primary offense attached to the listed detention record </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="detentions-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="detentions-missing-data">Detentions, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="placements-file" class="level2">
+<h2 class="anchored" data-anchor-id="placements-file">Placements File</h2>
+<p><strong>Dallas County Description:</strong> Entire placement history (as of 12/23/2022) of all of the juveniles listed on the Supervision sheet</p>
+<p><br></p>
+<section id="placements-data-overview" class="level3">
+<h3 class="anchored" data-anchor-id="placements-data-overview">Placements, Data Overview</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Measure </th>
+   <th style="text-align:center;"> Count </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> rows </td>
+   <td style="text-align:center;"> 6,577 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> columns </td>
+   <td style="text-align:center;"> 11 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> discrete_columns </td>
+   <td style="text-align:center;"> 11 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> continuous_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> all_missing_columns </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_missing_values </td>
+   <td style="text-align:center;"> 1,776 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> complete_rows </td>
+   <td style="text-align:center;"> 5,006 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> total_observations </td>
+   <td style="text-align:center;"> 72,347 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> memory_usage </td>
+   <td style="text-align:center;"> 1,151,992 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="placements-fields-included" class="level3">
+<h3 class="anchored" data-anchor-id="placements-fields-included">Placements, Fields Included</h3>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Variable </th>
+   <th style="text-align:center;"> Variable Name in Analysis </th>
+   <th style="text-align:center;"> Description </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> UniqueID </td>
+   <td style="text-align:center;"> unique_id </td>
+   <td style="text-align:center;"> Juvenile's unique identifying number </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> PlacementReferralNumber </td>
+   <td style="text-align:center;"> placement_referral_number </td>
+   <td style="text-align:center;"> Identifying number of the referral to which the listed placement record is attached </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> PlacementBeginDate </td>
+   <td style="text-align:center;"> placement_begin_date </td>
+   <td style="text-align:center;"> Admission date for the listed placement record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> PlacementEndDate </td>
+   <td style="text-align:center;"> placement_end_date </td>
+   <td style="text-align:center;"> Released date (if any) for the listed placement record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> PlacementType </td>
+   <td style="text-align:center;"> placement_type </td>
+   <td style="text-align:center;"> Placement type of the facility belonging to the listed placement record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> PlacementOutcome </td>
+   <td style="text-align:center;"> placement_outcome </td>
+   <td style="text-align:center;"> Placement outcome (if any) of the listed placement record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> CitationNumber </td>
+   <td style="text-align:center;"> citation_number </td>
+   <td style="text-align:center;"> Citation number within DPS Statute of the primary offense attached to the listed placement record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseLevel </td>
+   <td style="text-align:center;"> offense_level </td>
+   <td style="text-align:center;"> Offense level of the primary offense attached to the listed placement record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseType </td>
+   <td style="text-align:center;"> offense_type </td>
+   <td style="text-align:center;"> Offense type of the primary offense attached to the listed placement record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> OffenseDescription </td>
+   <td style="text-align:center;"> offense_description </td>
+   <td style="text-align:center;"> Offense description of the primary offense attached to the listed placement record </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Degree </td>
+   <td style="text-align:center;"> degree </td>
+   <td style="text-align:center;"> Offense degree of the primary offense attached to the listed placement record </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="placements-missing-data" class="level3">
+<h3 class="anchored" data-anchor-id="placements-missing-data">Placements, Missing Data</h3>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="jj_av_dallas_data_codebooks_files/figure-html/unnamed-chunk-31-1.png" class="img-fluid" style="width:120.0%"></p>
+</div>
+</div>
+<p><br><br></p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    target: function(trigger) {
+      return trigger.previousElementSibling;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

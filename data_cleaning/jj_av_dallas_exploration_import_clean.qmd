@@ -1,0 +1,38 @@
+---
+title: "jj_av_dallas_exploration_import_clean"
+author: "Andrew Byrum"
+format: html
+---
+
+**The purpose of this RMD is to import, join, and clean all data files provided from Dallas County -- provided to us as 1 excel file with 9 tabs of relational data as 2 tabs of data documentation**
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","tidylog","csgjcr")
+```
+
+```{r include=FALSE}
+### pull in dallas data from raw data folder
+
+### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
+sharepoint_jj_av_dallas_raw_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw")
+
+### using purrr::map, import list of tabs from excel worksheet
+dallas_raw_tab_list <- purrr::map(purrr::set_names(excel_sheets(file.path(sharepoint_jj_av_dallas_raw_data,
+                                                              "Dallas County (10.1.2017 - 9.30.2022).xlsx"))),
+                      read_excel, 
+                      path = file.path(sharepoint_jj_av_dallas_raw_data,"Dallas County (10.1.2017 - 9.30.2022).xlsx")) %>% 
+  purrr::map(janitor::clean_names)
+
+### clean names of all imported tabs before converting to dataframes
+names(dallas_raw_tab_list) <- janitor::make_clean_names(names(dallas_raw_tab_list))
+
+### then convert list of tabs to distinct dataframes with names from tabs
+purrr::map(names(dallas_raw_tab_list),
+           ~assign(.x, 
+                   dallas_raw_tab_list[[.x]], 
+        envir = .GlobalEnv)) 
+```
+
+

@@ -1,0 +1,14 @@
+{
+  "hash": "b84c420a2947cc291e4e43f84e7e594a",
+  "result": {
+    "markdown": "---\ntitle: \"Sample Descriptive Statistics\"\nformat: html\n---\n\n\nIn this file, we'll import all of the Dallas County files provided and create preliminary cross-tabulations and merges to explore basic counts, trends, and double check primary keys and joins across the data files. \n\nSee `Codebooks` and `Data Diagram` tabs for more information on each individual data file. \n\n\n\n\n\n\n\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

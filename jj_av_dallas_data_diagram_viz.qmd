@@ -1,0 +1,38 @@
+---
+title: "Dallas County Data Diagram"
+format: html
+---
+
+This syntax pulls in all data files provided by Dallas County stored as a series of Excel file tabs -- and preliminarily maps their relationships with the datamodelr package (https://github.com/bergant/datamodelr)
+
+File names reflect the names provided by Dallas County. Find more information on files and variables in `Codebook` tab.
+
+
+**TO DO:**
+
+- Double check that referral numbers can be used to link across all files where present (e.g., `detention_referral_number` in `detentions` table == `referral_number` from `supervision table`)**
+
+- Figure out business rule for joining assessment data to child-/offense-/detention-level data
+
+- Think through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral 
+
+<br>
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","rmarkdown", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ragg","distill")
+```
+
+```{r include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dev = "ragg_png",
+  cache = FALSE
+  )
+```
+
+```{r out.width="130%",echo=FALSE,message=FALSE,warning=FALSE}
+knitr::include_graphics("img/jj_av_dallas_data_diagram.png")
+```
+
