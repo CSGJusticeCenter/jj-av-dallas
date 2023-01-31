@@ -156,9 +156,7 @@ kable(df_referrals_youth_per_year_table,
 
 <br><br>
 
-## Unique Youth and Referrals by Race/Ethnicity 
-
-### Join of `Child` and `Offenses`
+## Join 1. Join of `Child` and `Offenses`
 
 ```{r warning=FALSE}
 ### left join of child file to offenses file in order to see if there is much missingness
@@ -171,7 +169,7 @@ offenses_child_demo_join <-
 
 <br>
 
-### Table 2: Unique Youth and Referrals by Race/Ethnicity
+## Table 2: Unique Youth and Referrals by Race/Ethnicity
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### unique youth and referrals per year
@@ -214,7 +212,7 @@ kable(df_referrals_youth_race_table,
 
 <br>
 
-### Table 3: Average Offenses per Referral over Time
+## Table 3: Average Offenses per Referral over Time
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### unique offenses per referral by year of referral
