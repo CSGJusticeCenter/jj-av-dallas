@@ -10,7 +10,7 @@ See `Codebooks` and `Data Diagram` tabs for more information on each individual 
 ```{r include=FALSE}
 ### call libraries
 library(easypackages)
-libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer")
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog")
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
@@ -46,3 +46,222 @@ purrr::map(names(dallas_raw_tab_list),
                    dallas_raw_tab_list[[.x]], 
         envir = .GlobalEnv)) 
 ```
+
+```{r include=FALSE}
+#############################################
+### clean and de-dup child dataframe
+### this is our base demo file for the sample
+#############################################
+child_clean <- child %>% 
+  distinct(unique_id,
+           .keep_all=TRUE) %>% ### no records dropped
+  ### clean race/ethnicity and gender
+  mutate(race_clean = case_when(
+    race=="Asian or Pacific Islander" & ethnicity!="Hispanic" ~ 1,
+    race=="Black" & ethnicity!="Hispanic" ~ 2,
+    ethnicity=="Hispanic" ~ 3,
+    race=="White" & ethnicity!="Hispanic" ~ 4,
+    race %in% c("Unknown","American Indian or Alaskan Native") & ethnicity!="Hispanic" ~ 5,
+    TRUE ~ as.numeric(NA)),
+    race_clean = factor(race_clean,
+         levels = c(1,2,3,4,5),
+         labels = c("Asian", "Black", "Hispanic", "White", "Other"))) %>% 
+  mutate(gender_clean = case_when(
+    gender=="Female" ~ 1,
+    gender=="Male" ~ 2,
+    TRUE ~ as.numeric(NA)),
+    gender_clean = factor(gender_clean,
+         levels = c(1,2),
+         labels = c("Female", "Male"))) ### use factor function to assign labels to values
+
+########################################
+### clean and de-dup offenses dataframe
+########################################
+offenses_clean <- offenses %>% 
+  distinct(unique_id,
+           referral_number,
+           offense_id,
+           .keep_all=TRUE) %>% ### no records dropped
+  ### clean dates and create years for potential grouping in future trend analysis
+  mutate(offense_date = ymd(as_date(offense_date)),
+         referral_date = ymd(as_date(referral_date)),
+         disposition_date = ymd(as_date(disposition_date)),
+         offense_year = year(offense_date),
+         referral_year = year(referral_date),
+         disposition_year = year(disposition_date)) %>% 
+  ### create unique referral ID and unique offense ID for possible filtering or counting
+  mutate(unique_referral_id = paste0(unique_id,
+                                     referral_number),
+         unique_offense_id = paste0(unique_id,
+                                    referral_number,
+                                    offense_id)) %>% 
+  ### calculate number of offenses per referral by grouping by unique_referral_id
+  group_by(unique_referral_id) %>% 
+  mutate(unique_offenses_per_referral_count = n_distinct(unique_offense_id,
+                                                         na.rm = TRUE)) %>% 
+  ungroup()
+```
+
+<br>
+
+# Sample Descriptives
+
+**Data Sample:** Supervision records of DCJD juveniles on either Court-Ordered Probation/Permanent Probation/Deferred Prosecution at any point from 10/1/2017 through 9/30/2022
+
+
+
+## Table 1. Unique Youth and Referrals by Year (Year of Referral)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique referrals for entire sample
+unique_referrals_sample_denom <- n_distinct(offenses_clean$unique_id,
+                                            offenses_clean$referral_number)
+
+### create denominator -- unique youth for entire sample
+unique_youth_sample_denom <- n_distinct(offenses_clean$unique_id)
+
+### unique youth and referrals per year
+df_referrals_youth_per_year <- offenses_clean %>% 
+  dplyr::group_by(referral_year) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Year of Referral` = referral_year) %>% 
+  mutate(`Year of Referral` = as.character(`Year of Referral`))
+
+### overall
+df_referrals_youth_overall <- offenses_clean %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Year of Referral` = "Overall")
+
+### combine tables for kable
+df_referrals_youth_per_year_table <- rbind(df_referrals_youth_per_year,df_referrals_youth_overall)
+
+### print table via kableextra
+kable(df_referrals_youth_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(14, bold = TRUE)
+```
+
+<br><br>
+
+## Unique Youth and Referrals by Race/Ethnicity 
+
+### Join of `Child` and `Offenses`
+
+```{r warning=FALSE}
+### left join of child file to offenses file in order to see if there is much missingness
+### i.e. are there offenses without demo records? 
+offenses_child_demo_join <- 
+  left_join(offenses_clean,
+            child_clean,
+            by = "unique_id") ### join looks good; all records join
+```
+
+<br>
+
+### Table 2: Unique Youth and Referrals by Race/Ethnicity
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per year
+df_referrals_youth_race <- offenses_child_demo_join %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Youth, Percent of Sample (%)` = scales::percent(`Unique Youth (N)`/unique_youth_sample_denom,
+                                                                       accuracy = .1),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean) %>% 
+  mutate(`Race/Ethnicity` = as.character(`Race/Ethnicity`))
+
+### overall
+df_referrals_youth_overall_race <- offenses_child_demo_join %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Youth, Percent of Sample (%)` = scales::percent(`Unique Youth (N)`/unique_youth_sample_denom,
+                                                                       accuracy = .1),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_referrals_youth_race_table <- rbind(df_referrals_youth_race,df_referrals_youth_overall_race)
+
+### print table via kableextra
+kable(df_referrals_youth_race_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br>
+
+### Table 3: Average Offenses per Referral over Time
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique offenses per referral by year of referral
+### since we are taking mean and median, we need to de-dup by referral 
+### 'unique_offenses_per_referral_count' was calculated at referral-level
+df_offenses_per_referral_by_year <- offenses_clean %>% 
+  distinct(unique_referral_id,
+           .keep_all = TRUE) %>% 
+  dplyr::group_by(referral_year) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Mean Offenses per Referral` = format(round(mean(unique_offenses_per_referral_count,
+                                                    na.rm=TRUE), 
+                                                 digits = 2),
+                                                 nsmall = 2),
+            `Median Offenses per Referral` = median(unique_offenses_per_referral_count)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Year of Referral` = referral_year) %>% 
+  mutate(`Year of Referral` = as.character(`Year of Referral`))
+
+### overall
+df_offenses_per_referral_overall <- offenses_clean %>% 
+  distinct(unique_referral_id,
+           .keep_all = TRUE) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Mean Offenses per Referral` = format(round(mean(unique_offenses_per_referral_count,
+                                                    na.rm=TRUE),
+                                                 digits = 2),
+                                                 nsmall = 2),
+            `Median Offenses per Referral` = median(unique_offenses_per_referral_count)) %>% 
+  mutate(`Year of Referral` = "Overall")
+
+### combine tables for kable
+df_offenses_per_referral_by_year_table <- rbind(df_offenses_per_referral_by_year,df_offenses_per_referral_overall)
+
+### print table via kableextra
+kable(df_offenses_per_referral_by_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(14, bold = TRUE)
+```
+
+<br>
+
