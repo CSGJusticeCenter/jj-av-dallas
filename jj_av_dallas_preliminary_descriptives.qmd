@@ -101,6 +101,23 @@ offenses_clean <- offenses %>%
   mutate(unique_offenses_per_referral_count = n_distinct(unique_offense_id,
                                                          na.rm = TRUE)) %>% 
   ungroup()
+
+########################################
+### clean and de-dup supervision dataframe
+########################################
+supervision_clean <- supervision %>% 
+  distinct(unique_id,
+           referral_number,
+           supervision_begin_date,
+           .keep_all=TRUE) %>% ### 1 record dropped (note: 170 recods have duplicated IDs but different begin dates)
+  ### clean dates and create years for potential grouping in future trend analysis
+  mutate(supervision_begin_date = ymd(as_date(supervision_begin_date)),
+         supervision_end_date = ymd(as_date(supervision_end_date)),
+         supervision_begin_year = year(supervision_begin_date),
+         supervision_end_year = year(supervision_end_date)) %>% 
+  ### create unique referral ID possible filtering, joining, or counting
+  mutate(unique_referral_id = paste0(unique_id,
+                                     referral_number)) 
 ```
 
 <br>
@@ -155,11 +172,10 @@ kable(df_referrals_youth_per_year_table,
   row_spec(14, bold = TRUE)
 ```
 
-<br><br>
 
+```{r include=FALSE,message=FALSE,warning=FALSE}
 ## Join 1. Join of `Child` and `Offenses`
 
-```{r warning=FALSE}
 ### left join of child file to offenses file in order to see if there is much missingness
 ### i.e. are there offenses without demo records? 
 offenses_child_demo_join <- 
@@ -267,7 +283,7 @@ kable(df_offenses_per_referral_by_year_table,
 ## Table 4: Disposition Options
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
-### unique offenses per disposition for entire file
+### disposition options
 df_offenses_dispositions <- offenses_clean %>% 
   dplyr::group_by(disposition) %>% 
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
@@ -288,3 +304,125 @@ kable(df_offenses_dispositions,
 
 <br>
 
+## Table 5: Supervision Type
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### overall supervision type
+df_supervision_type_table <- supervision_clean %>% 
+  dplyr::group_by(supervision_type) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Supervision Type` = supervision_type) 
+
+### print table via kableextra
+kable(df_supervision_type_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+
+<br>
+
+## Table 6: Supervision Outcomes
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### supervision outcomes
+df_supervision_outcome_table <- supervision_clean %>% 
+  dplyr::group_by(outcome) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Supervision Outcome` = outcome) 
+
+### print table via kableextra
+kable(df_supervision_outcome_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br>
+
+## Table 7: Overall Violation Type 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### overall violation type
+df_overall_violation_type_table <- violations %>% 
+  dplyr::group_by(offense_description) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_id,violation_referral_number)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Violation Type` = offense_description) 
+
+### print table via kableextra
+kable(df_overall_violation_type_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+
+<br>
+
+## Table 8: Technical Violation Type 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### technical violation information
+df_technical_violation_type_table <- violations %>% 
+  filter(offense_description%in%c("VIOL OF COURT ORDER  - TECHNICAL","VIOL OF COURT ORDER (DET SENT PROB) -TECHNICAL")) %>%
+  dplyr::group_by(violation) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_id,violation_referral_number)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Technical Violation Type` = violation) 
+
+### print table via kableextra
+kable(df_technical_violation_type_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br>
+
+## Table 9: Placement Type 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### placement types
+df_placement_type_table <- placements %>% 
+  dplyr::group_by(placement_type) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_id,placement_referral_number)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Placement Type` = placement_type) 
+
+### print table via kableextra
+kable(df_placement_type_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br>

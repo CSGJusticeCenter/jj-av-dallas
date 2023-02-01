@@ -20,69 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -192,10 +129,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#sample-descriptives" id="toc-sample-descriptives" class="nav-link active" data-scroll-target="#sample-descriptives">Sample Descriptives</a>
   <ul class="collapse">
   <li><a href="#table-1.-unique-youth-and-referrals-by-year-year-of-referral" id="toc-table-1.-unique-youth-and-referrals-by-year-year-of-referral" class="nav-link" data-scroll-target="#table-1.-unique-youth-and-referrals-by-year-year-of-referral">Table 1. Unique Youth and Referrals by Year (Year of Referral)</a></li>
-  <li><a href="#join-1.-join-of-child-and-offenses" id="toc-join-1.-join-of-child-and-offenses" class="nav-link" data-scroll-target="#join-1.-join-of-child-and-offenses">Join 1. Join of <code>Child</code> and <code>Offenses</code></a></li>
   <li><a href="#table-2-unique-youth-and-referrals-by-raceethnicity" id="toc-table-2-unique-youth-and-referrals-by-raceethnicity" class="nav-link" data-scroll-target="#table-2-unique-youth-and-referrals-by-raceethnicity">Table 2: Unique Youth and Referrals by Race/Ethnicity</a></li>
   <li><a href="#table-3-average-offenses-per-referral-over-time" id="toc-table-3-average-offenses-per-referral-over-time" class="nav-link" data-scroll-target="#table-3-average-offenses-per-referral-over-time">Table 3: Average Offenses per Referral over Time</a></li>
   <li><a href="#table-4-disposition-options" id="toc-table-4-disposition-options" class="nav-link" data-scroll-target="#table-4-disposition-options">Table 4: Disposition Options</a></li>
+  <li><a href="#table-5-supervision-type" id="toc-table-5-supervision-type" class="nav-link" data-scroll-target="#table-5-supervision-type">Table 5: Supervision Type</a></li>
+  <li><a href="#table-6-supervision-outcomes" id="toc-table-6-supervision-outcomes" class="nav-link" data-scroll-target="#table-6-supervision-outcomes">Table 6: Supervision Outcomes</a></li>
+  <li><a href="#table-7-overall-violation-type" id="toc-table-7-overall-violation-type" class="nav-link" data-scroll-target="#table-7-overall-violation-type">Table 7: Overall Violation Type</a></li>
+  <li><a href="#table-8-technical-violation-type" id="toc-table-8-technical-violation-type" class="nav-link" data-scroll-target="#table-8-technical-violation-type">Table 8: Technical Violation Type</a></li>
+  <li><a href="#table-9-placement-type" id="toc-table-9-placement-type" class="nav-link" data-scroll-target="#table-9-placement-type">Table 9: Placement Type</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -331,36 +272,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </tbody>
 </table>
 
-</div>
-</div>
-<p><br><br></p>
-</section>
-<section id="join-1.-join-of-child-and-offenses" class="level2">
-<h2 class="anchored" data-anchor-id="join-1.-join-of-child-and-offenses">Join 1. Join of <code>Child</code> and <code>Offenses</code></h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">### left join of child file to offenses file in order to see if there is much missingness</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="do">### i.e. are there offenses without demo records? </span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>offenses_child_demo_join <span class="ot">&lt;-</span> </span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(offenses_clean,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>            child_clean,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="st">"unique_id"</span>) <span class="do">### join looks good; all records join</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>left_join: added 9 columns (birth_date, gender, race, ethnicity, mental_health_needs, …)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>           &gt; rows only in x        0</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>           &gt; rows only in y  (     0)</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>           &gt; matched rows     28,567</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>           &gt;                 ========</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>           &gt; rows total       28,567</code></pre>
 </div>
 </div>
 <p><br></p>
@@ -874,6 +785,311 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
    <td style="text-align:center;"> TRANSFER OF DISPOSITION BY COURT </td>
    <td style="text-align:center;"> 9 </td>
    <td style="text-align:center;"> 9 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="table-5-supervision-type" class="level2">
+<h2 class="anchored" data-anchor-id="table-5-supervision-type">Table 5: Supervision Type</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Supervision Type </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> Court Ordered Probation </td>
+   <td style="text-align:center;"> 5,064 </td>
+   <td style="text-align:center;"> 5,613 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Deferred Prosecution </td>
+   <td style="text-align:center;"> 2,887 </td>
+   <td style="text-align:center;"> 2,944 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Permanent Probation </td>
+   <td style="text-align:center;"> 126 </td>
+   <td style="text-align:center;"> 127 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="table-6-supervision-outcomes" class="level2">
+<h2 class="anchored" data-anchor-id="table-6-supervision-outcomes">Table 6: Supervision Outcomes</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Supervision Outcome </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> Absent without Permission </td>
+   <td style="text-align:center;"> 14 </td>
+   <td style="text-align:center;"> 14 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Committed to TJJD </td>
+   <td style="text-align:center;"> 160 </td>
+   <td style="text-align:center;"> 163 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Completed </td>
+   <td style="text-align:center;"> 6,067 </td>
+   <td style="text-align:center;"> 6,489 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Deceased </td>
+   <td style="text-align:center;"> 18 </td>
+   <td style="text-align:center;"> 18 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Failure to Comply </td>
+   <td style="text-align:center;"> 844 </td>
+   <td style="text-align:center;"> 883 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Transferred Out of Jurisdiction </td>
+   <td style="text-align:center;"> 307 </td>
+   <td style="text-align:center;"> 310 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Transferred to Adult System </td>
+   <td style="text-align:center;"> 56 </td>
+   <td style="text-align:center;"> 56 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> NA </td>
+   <td style="text-align:center;"> 789 </td>
+   <td style="text-align:center;"> 797 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="table-7-overall-violation-type" class="level2">
+<h2 class="anchored" data-anchor-id="table-7-overall-violation-type">Table 7: Overall Violation Type</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Violation Type </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> ADMINISTRATIVE HOLD </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> MODIFY DISPOSITION - NO VIOLATION </td>
+   <td style="text-align:center;"> 41 </td>
+   <td style="text-align:center;"> 42 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> REOPEN DISPOSITION </td>
+   <td style="text-align:center;"> 31 </td>
+   <td style="text-align:center;"> 31 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> VIOL OF COURT ORDER  - NEW OFFENSE </td>
+   <td style="text-align:center;"> 547 </td>
+   <td style="text-align:center;"> 657 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> VIOL OF COURT ORDER  - TECHNICAL </td>
+   <td style="text-align:center;"> 1,595 </td>
+   <td style="text-align:center;"> 2,587 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> VIOL OF COURT ORDER (DET SENT PROB) -NEW OFF </td>
+   <td style="text-align:center;"> 10 </td>
+   <td style="text-align:center;"> 10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> VIOL OF COURT ORDER (DET SENT PROB) -TECHNICAL </td>
+   <td style="text-align:center;"> 18 </td>
+   <td style="text-align:center;"> 19 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> VIOLATIONS OF CONDITIONS OF RELEASE (VCR) </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 2 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="table-8-technical-violation-type" class="level2">
+<h2 class="anchored" data-anchor-id="table-8-technical-violation-type">Table 8: Technical Violation Type</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Technical Violation Type </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> 100a  Violation Probation - General </td>
+   <td style="text-align:center;"> 698 </td>
+   <td style="text-align:center;"> 862 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 103e  Possession Violatile Chemicals (484.002) Class B </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100b  Absenting Self From Court Order Placement (2,6) </td>
+   <td style="text-align:center;"> 19 </td>
+   <td style="text-align:center;"> 19 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2) </td>
+   <td style="text-align:center;"> 362 </td>
+   <td style="text-align:center;"> 482 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100d  Viol Prob - Runaway From Home/Placement </td>
+   <td style="text-align:center;"> 325 </td>
+   <td style="text-align:center;"> 378 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100e  Viol Prob - Failure to Report to Probation Officer (2) </td>
+   <td style="text-align:center;"> 186 </td>
+   <td style="text-align:center;"> 199 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100f  Viol Prob - Curfew Violation (3) </td>
+   <td style="text-align:center;"> 701 </td>
+   <td style="text-align:center;"> 867 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5) </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 8 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100h  Viol Prob - Truancy - Not attending each Class each Day (4) </td>
+   <td style="text-align:center;"> 111 </td>
+   <td style="text-align:center;"> 119 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100i - Viol Prob - Violating School Rules </td>
+   <td style="text-align:center;"> 78 </td>
+   <td style="text-align:center;"> 85 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100j  Viol Prob - Violating Placement Rules (3) </td>
+   <td style="text-align:center;"> 78 </td>
+   <td style="text-align:center;"> 90 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100k  Viol Prob - Failure to Pay Probation Fees (9) </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5100l Viol Prob - Failure to Participate in Order Program (11) </td>
+   <td style="text-align:center;"> 334 </td>
+   <td style="text-align:center;"> 383 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5103b  Truancy 10 days </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 1 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 5103c  Truancy 3 Days </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> No Violation/Modification Needed </td>
+   <td style="text-align:center;"> 13 </td>
+   <td style="text-align:center;"> 13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> xxx - Converted Data </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 2 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br></p>
+</section>
+<section id="table-9-placement-type" class="level2">
+<h2 class="anchored" data-anchor-id="table-9-placement-type">Table 9: Placement Type</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Placement Type </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> Emergency Shelter </td>
+   <td style="text-align:center;"> 1,893 </td>
+   <td style="text-align:center;"> 3,204 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Parental Placement </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 2 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Residential Treatment </td>
+   <td style="text-align:center;"> 1,196 </td>
+   <td style="text-align:center;"> 1,404 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Secure Correctional </td>
+   <td style="text-align:center;"> 1,238 </td>
+   <td style="text-align:center;"> 1,517 </td>
   </tr>
 </tbody>
 </table>
