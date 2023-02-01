@@ -1,0 +1,225 @@
+---
+title: "Building the Analytic Files"
+format: html
+---
+
+In this syntax, we'll import all of the Dallas County files provided and create two analytic files based on the templates in the second and third tabs here: https://csgorg.sharepoint.com/:x:/s/Team-JC-Research-JJ_AV/EZ-RDTetlZVCoiQxlasiboEBhsT7WNlx5v0qR7sDBji1-A?e=eggzRJ
+
+See `Codebooks` and `Data Diagram` tabs for more information on each individual data file. 
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog")
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set chunk output specifications
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dev = "ragg_png",
+  cache = FALSE)
+
+### set theme
+theme_set(theme_minimal())
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### pull in dallas data from raw data folder
+
+### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
+sharepoint_jj_av_dallas_raw_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw")
+
+### using purrr::map, import list of tabs from excel worksheet
+dallas_raw_tab_list <- purrr::map(purrr::set_names(excel_sheets(file.path(sharepoint_jj_av_dallas_raw_data,
+                                                              "Dallas County (10.1.2017 - 9.30.2022).xlsx"))),
+                      read_excel, 
+                      path = file.path(sharepoint_jj_av_dallas_raw_data,"Dallas County (10.1.2017 - 9.30.2022).xlsx")) %>% 
+  purrr::map(janitor::clean_names)
+
+### clean names of all imported tabs before converting to dataframes
+names(dallas_raw_tab_list) <- janitor::make_clean_names(names(dallas_raw_tab_list))
+
+### then convert list of tabs to distinct dataframes with names from tabs
+purrr::map(names(dallas_raw_tab_list),
+           ~assign(.x, 
+                   dallas_raw_tab_list[[.x]], 
+        envir = .GlobalEnv)) 
+```
+
+```{r warning=FALSE}
+#############################################
+### clean and de-dup child dataframe
+### this is our base demo file for the sample
+#############################################
+child_clean <- child %>% 
+  distinct(unique_id,
+           .keep_all=TRUE) %>% ### no records dropped
+  ### clean race/ethnicity and gender
+  mutate(race_clean = case_when(
+    race=="Asian or Pacific Islander" & ethnicity!="Hispanic" ~ 1,
+    race=="Black" & ethnicity!="Hispanic" ~ 2,
+    ethnicity=="Hispanic" ~ 3,
+    race=="White" & ethnicity!="Hispanic" ~ 4,
+    race %in% c("Unknown","American Indian or Alaskan Native") & ethnicity!="Hispanic" ~ 5,
+    TRUE ~ as.numeric(NA)),
+    race_clean = factor(race_clean,
+         levels = c(1,2,3,4,5),
+         labels = c("Asian", "Black", "Hispanic", "White", "Other"))) %>% 
+  mutate(gender_clean = case_when(
+    gender=="Female" ~ 1,
+    gender=="Male" ~ 2,
+    TRUE ~ as.numeric(NA)),
+    gender_clean = factor(gender_clean,
+         levels = c(1,2),
+         labels = c("Female", "Male"))) ### use factor function to assign labels to values
+
+########################################
+### clean and de-dup supervision dataframe
+########################################
+supervision_clean <- supervision %>% 
+  distinct(unique_id,
+           referral_number,
+           supervision_begin_date,
+           .keep_all=TRUE) %>% ### 1 record dropped (note: 170 recods have duplicated IDs but different begin dates)
+  ### clean dates and create years for potential grouping in future trend analysis
+  mutate(supervision_begin_date = ymd(as_date(supervision_begin_date)),
+         supervision_end_date = ymd(as_date(supervision_end_date)),
+         supervision_begin_year = year(supervision_begin_date),
+         supervision_end_year = year(supervision_end_date)) %>% 
+  ### create unique referral ID possible filtering, joining, or counting
+  mutate(unique_referral_id = paste0(unique_id,
+                                     referral_number)) 
+
+########################################
+### clean and de-dup offenses dataframe
+########################################
+offenses_clean <- offenses %>% 
+  distinct(unique_id,
+           referral_number,
+           offense_id,
+           .keep_all=TRUE) %>% ### no records dropped
+  ### clean dates and create years for potential grouping in future trend analysis
+  mutate(offense_date = ymd(as_date(offense_date)),
+         referral_date = ymd(as_date(referral_date)),
+         disposition_date = ymd(as_date(excel_numeric_to_date(as.numeric(as.character(disposition_date)), 
+                                                  date_system = "modern"))),
+         offense_year = year(offense_date),
+         referral_year = year(referral_date),
+         disposition_year = year(disposition_date)) %>% 
+  ### create unique referral ID and unique offense ID for possible filtering or counting
+  mutate(unique_referral_id = paste0(unique_id,
+                                     referral_number),
+         unique_offense_id = paste0(unique_id,
+                                    referral_number,
+                                    offense_id)) %>% 
+  ### calculate number of offenses per referral by grouping by unique_referral_id
+  group_by(unique_referral_id) %>% 
+  mutate(unique_offenses_per_referral_count = n_distinct(unique_offense_id,
+                                                         na.rm = TRUE)) %>% 
+  ungroup()
+```
+
+<br>
+
+# Supervision File  
+
+**Data Elements:** 
+
+* Unique ID
+
+* Complaint Number
+
+* Charge Disposed to Supervision
+
+* Supervision Type
+
+* Supervision Risk Level
+
+* Mental Health Need
+
+* Substance Use Need
+
+* Prior Referrals
+
+* Supervision Start Date
+
+* Supervision End Date
+
+* TV
+
+* Number of TV During Supervision
+
+* Number of TV 2017
+
+* Number of TV 2018
+
+* Number of TV 2019
+
+* Number of TV 2020
+
+* Number of TV 2021
+
+* Number of New Referrals
+
+* New Referral
+
+* Supervision Outcome
+
+* Supervision Length of Stay
+
+* LOS 2017
+
+* LOS 2018
+
+* LOS 2019
+
+* LOS 2020
+
+* LOS 2021
+
+* Probation Extended Due to TV
+
+* Sent to Residential Placement Due to TV
+
+* Committed Due to TV
+
+* Age at Start of Supervision
+
+* Sex
+
+* Race / Ethnicity
+
+<br><br>
+
+## Join 1. Join of `Child` and `Supervision`
+
+Create file that is unique by referral
+
+```{r warning=FALSE}
+### left join of child file to supervision file in order to see if there is much missingness
+### i.e. are there supervision records without demo records? 
+supervision_child_demo_join <- 
+  left_join(supervision_clean,
+            child_clean,
+            by = "unique_id") ### join looks good; all records join
+
+### keep 
+```
+
+<br><br>
+
+## Join 2. Join of `supervision_child_demo_join` and `Offenses`
+
+
+```{r eval=FALSE,warning=FALSE}
+### left join of child file to offenses file in order to see if there is much missingness
+### i.e. are there offenses without demo records? 
+offenses_child_demo_join <- 
+  left_join(offenses_clean,
+            child_clean,
+            by = "unique_id") ### join looks good; all records join
+```
+
+<br><br>
+

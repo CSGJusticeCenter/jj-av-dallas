@@ -85,7 +85,8 @@ offenses_clean <- offenses %>%
   ### clean dates and create years for potential grouping in future trend analysis
   mutate(offense_date = ymd(as_date(offense_date)),
          referral_date = ymd(as_date(referral_date)),
-         disposition_date = ymd(as_date(disposition_date)),
+         disposition_date = ymd(as_date(excel_numeric_to_date(as.numeric(as.character(disposition_date)), 
+                                                  date_system = "modern"))),         
          offense_year = year(offense_date),
          referral_year = year(referral_date),
          disposition_year = year(disposition_date)) %>% 
@@ -259,6 +260,30 @@ kable(df_offenses_per_referral_by_year_table,
                                        "responsive"), 
                  row_label_position = "l") %>% 
   row_spec(14, bold = TRUE)
+```
+
+<br>
+
+## Table 4: Disposition Options
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique offenses per disposition for entire file
+df_offenses_dispositions <- offenses_clean %>% 
+  dplyr::group_by(disposition) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Disposition` = disposition) 
+
+### print table via kableextra
+kable(df_offenses_dispositions, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
 ```
 
 <br>

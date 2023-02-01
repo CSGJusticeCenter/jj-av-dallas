@@ -9,6 +9,8 @@ website:
    right:
       - text: "Project and Analysis Plan"
         href: index.html
+      - text: "Analytic Files"
+        href: jj_av_dallas_create_analytic_files.html
       - text: "Questions and Updates"
         href: jj_av_dallas_questions_updates.html
       - text: "Sample Descriptives"
