@@ -102,7 +102,7 @@
     "href": "jj_av_dallas_questions_updates.html",
     "title": "JJ AV Dallas County Data Questions/Updates",
     "section": "",
-    "text": "Dallas County Data Questions and Responses:\nTBD"
+    "text": "Dallas County Data Questions and Responses:\nTBD\n\nCurrent Internal Questions & Next Steps:\n\nDouble check that referral numbers can be used to link across all files where present (e.g., detention_referral_number in detentions table == referral_number from supervision table)**\nFigure out business rule for joining assessment data to child-/offense-/detention-level data. Or should we just use Dallas-provided risk and needs data linked to offenses?\nThink through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral. Likely need to join violations to supervision records based on dates (i.e., violation date falls between supervision start and end, etc)\nIs there overlap of supervision periods for youth?"
   },
   {
     "objectID": "jj_av_dallas_preliminary_descriptives.html",
@@ -116,7 +116,7 @@
     "href": "jj_av_dallas_data_diagram_viz.html",
     "title": "Dallas County Data Diagram",
     "section": "",
-    "text": "This syntax pulls in all data files provided by Dallas County stored as a series of Excel file tabs – and preliminarily maps their relationships with the datamodelr package (https://github.com/bergant/datamodelr)\nFile names reflect the names provided by Dallas County. Find more information on files and variables in Codebook tab.\nTO DO:\n\nDouble check that referral numbers can be used to link across all files where present (e.g., detention_referral_number in detentions table == referral_number from supervision table)**\nFigure out business rule for joining assessment data to child-/offense-/detention-level data\nThink through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral"
+    "text": "This syntax pulls in all data files provided by Dallas County stored as a series of Excel file tabs – and preliminarily maps their relationships with the datamodelr package (https://github.com/bergant/datamodelr)\nFile names reflect the names provided by Dallas County. Find more information on files and variables in Codebook tab."
   },
   {
     "objectID": "jj_av_dallas_preliminary_descriptives.html#table-1.-unique-youth-and-referrals-by-year-year-of-referral",

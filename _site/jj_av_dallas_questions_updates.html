@@ -85,6 +85,10 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Project and Analysis Plan</span></a>
   </li>  
   <li class="nav-item">
+    <a class="nav-link" href="./jj_av_dallas_create_analytic_files.html">
+ <span class="menu-text">Analytic Files</span></a>
+  </li>  
+  <li class="nav-item">
     <a class="nav-link active" href="./jj_av_dallas_questions_updates.html" aria-current="page">
  <span class="menu-text">Questions and Updates</span></a>
   </li>  
@@ -142,6 +146,15 @@ ul.task-list li input[type="checkbox"] {
 
 <p><strong>Dallas County Data Questions and Responses:</strong></p>
 <p>TBD</p>
+<p><br></p>
+<p><strong>Current Internal Questions &amp; Next Steps:</strong></p>
+<ul>
+<li><p>Double check that referral numbers can be used to link across all files where present (e.g., <code>detention_referral_number</code> in <code>detentions</code> table == <code>referral_number</code> from <code>supervision table</code>)**</p></li>
+<li><p>Figure out business rule for joining assessment data to child-/offense-/detention-level data. Or should we just use Dallas-provided risk and needs data linked to offenses?</p></li>
+<li><p>Think through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral. Likely need to join violations to supervision records based on dates (i.e., violation date falls between supervision start and end, etc)</p></li>
+<li><p>Is there overlap of supervision periods for youth?</p></li>
+</ul>
+<p><br></p>
 
 
 

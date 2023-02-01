@@ -7,3 +7,17 @@ format: html
 **Dallas County Data Questions and Responses:**
 
 TBD
+
+<br>
+
+**Current Internal Questions & Next Steps:**
+
+- Double check that referral numbers can be used to link across all files where present (e.g., `detention_referral_number` in `detentions` table == `referral_number` from `supervision table`)**
+
+- Figure out business rule for joining assessment data to child-/offense-/detention-level data. Or should we just use Dallas-provided risk and needs data linked to offenses?
+
+- Think through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral. Likely need to join violations to supervision records based on dates (i.e., violation date falls between supervision start and end, etc)
+
+- Is there overlap of supervision periods for youth? 
+
+<br>

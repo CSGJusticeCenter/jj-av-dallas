@@ -7,15 +7,6 @@ This syntax pulls in all data files provided by Dallas County stored as a series
 
 File names reflect the names provided by Dallas County. Find more information on files and variables in `Codebook` tab.
 
-
-**TO DO:**
-
-- Double check that referral numbers can be used to link across all files where present (e.g., `detention_referral_number` in `detentions` table == `referral_number` from `supervision table`)**
-
-- Figure out business rule for joining assessment data to child-/offense-/detention-level data
-
-- Think through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral 
-
 <br>
 
 ```{r include=FALSE}
