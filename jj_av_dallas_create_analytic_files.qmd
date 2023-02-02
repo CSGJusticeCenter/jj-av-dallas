@@ -56,6 +56,7 @@ child_clean <- child %>%
   distinct(unique_id,
            .keep_all=TRUE) %>% ### no records dropped
   ### clean race/ethnicity and gender
+  ### use factor function to assign labels to values
   mutate(race_clean = case_when(
     race=="Asian or Pacific Islander" & ethnicity!="Hispanic" ~ 1,
     race=="Black" & ethnicity!="Hispanic" ~ 2,
@@ -72,7 +73,9 @@ child_clean <- child %>%
     TRUE ~ as.numeric(NA)),
     gender_clean = factor(gender_clean,
          levels = c(1,2),
-         labels = c("Female", "Male"))) ### use factor function to assign labels to values
+         labels = c("Female", "Male"))) %>% 
+  ### clean dates
+  mutate(birth_date = ymd(as_date(birth_date))) 
 
 ########################################
 ### clean and de-dup supervision dataframe
@@ -116,8 +119,65 @@ offenses_clean <- offenses %>%
   ### calculate number of offenses per referral by grouping by unique_referral_id
   group_by(unique_referral_id) %>% 
   mutate(unique_offenses_per_referral_count = n_distinct(unique_offense_id,
+                                                         na.rm = TRUE),
+         unique_felony_offenses_per_referral_count = n_distinct(unique_offense_id[offense_level=="Felony"],
+                                                         na.rm = TRUE),
+         unique_misdemeanor_offenses_per_referral_count = n_distinct(unique_offense_id[offense_level=="Misdemeanor"],
+                                                         na.rm = TRUE),
+         unique_cins_offenses_per_referral_count = n_distinct(unique_offense_id[offense_level=="CINS"],
                                                          na.rm = TRUE)) %>% 
-  ungroup()
+  ungroup() %>% 
+  ### create factor variable for offense severity based on hierarchy outlined in table 11 on descriptives page
+  ### need to confirm order with team
+  mutate(offense_level_type_severity = 
+           case_when(
+             offense_level=="Felony" & offense_type%in%c("Homicide",
+                                                         "Sexual Assault", 
+                                                         "Assaultive",
+                                                         "Weapons Offenses", 
+                                                         "Robbery",
+                                                         "Other Violent") ~ 1,
+             offense_level=="Felony" & offense_type%in%c("Burglary", 
+                                                         "Theft", 
+                                                         "Other Property") ~ 2,
+             offense_level=="Felony" & offense_type%in%c("Drug Offenses") ~ 3,             
+             offense_level=="Felony" & offense_type%in%c("Other Felony") ~ 4,
+             
+             
+             offense_level=="Misdemeanor" & offense_type%in%c("Assaultive",
+                                                              "Weapons Offenses") ~ 5,
+             offense_level=="Misdemeanor" & offense_type%in%c("Theft",
+                                                              "Other Property") ~ 6,
+             offense_level=="Misdemeanor" & offense_type%in%c("Drug Offenses") ~ 7,             
+             offense_level=="Misdemeanor" & offense_type%in%c("Other Misdemeanor") ~ 8,
+             offense_level=="CINS" ~ 9,
+             offense_level=="Violation of Court Order" ~ 10, 
+             offense_level=="Contempt" ~ 11, 
+             offense_level=="Other" ~ 12, 
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_level_type_severity = factor(offense_level_type_severity,
+         levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
+         labels = c("Felony, Violent",
+                    "Felony, Property",
+                    "Felony, Drug",
+                    "Felony, Other",
+                    "Misdemeanor, Violent",
+                    "Misdemeanor, Property",
+                    "Misdemeanor, Drug",
+                    "Misdemeanor, Other",
+                    "CINS",
+                    "VOP",
+                    "Contempt",
+                    "Other"))) 
+
+### now create a de-duplicated dataframe with most serious offense kept per referral
+offenses_clean_de_dup <- offenses_clean %>% 
+  arrange(unique_referral_id,
+          offense_level_type_severity) %>% 
+  distinct(unique_referral_id,
+           .keep_all = TRUE)
+  
 ```
 
 <br>
@@ -199,26 +259,48 @@ Create file that is unique by referral
 ```{r warning=FALSE}
 ### left join of child file to supervision file in order to see if there is much missingness
 ### i.e. are there supervision records without demo records? 
-supervision_child_demo_join <- 
+supervision_child_join_1 <- 
   left_join(supervision_clean,
             child_clean,
-            by = "unique_id") ### join looks good; all records join
+            by = "unique_id") %>% ### join looks good; all records join
+  ### calculate age at start of supervision
+  ### divide by 365 to convert days to years (there is no year option for difftime)
+  mutate(age_at_start_of_supervision = as.numeric(difftime(supervision_begin_date,
+                                                                    birth_date,
+                                                                    units="days"))/365)
 
-### keep 
 ```
 
 <br><br>
 
-## Join 2. Join of `supervision_child_demo_join` and `offenses_clean`
+## Join 2. Join of `supervision_child_join_1` and `offenses_clean_de_dup`
 
+Only joins offense records that led to supervision. Later, should I also join just by unique_id to capture offense records which occurred during supervision?
 
 ```{r eval=FALSE,warning=FALSE}
-### left join of child file to offenses file in order to see if there is much missingness
+### create offense file specific to this join -- only capturing offenses with dispositions of supervision 
+offenses_clean_de_dup_initial_join <- offenses_clean_de_dup %>% 
+  dplyr::select(unique_id,
+                referral_number,
+                offense_date,
+                referral_date,
+                referral_type,
+                offense_level_type_severity,
+                offense_level,
+                offense_type,
+                offense_description,
+                disposition_offense_file = disposition,
+                disposition_date:disposition_year,
+                unique_offense_id,
+                unique_offenses_per_referral_count:unique_cins_offenses_per_referral_count)
+
+### left join of supervision_child_join_1 file to offenses_clean_de_dup file in order to see if there is much missingness
 ### i.e. are there offenses without demo records? 
-offenses_child_demo_join <- 
-  left_join(offenses_clean,
-            child_clean,
-            by = "unique_id") ### join looks good; all records join
+supervision_child_join_offenses_2 <- 
+  left_join(supervision_child_join_1,
+            offenses_clean_de_dup_initial_join,
+            by = c("unique_id",
+                   "referral_number")) ### only offense records with supervision dispositions will join (the supervisions file is our base cohort)
 ```
 
 <br><br>

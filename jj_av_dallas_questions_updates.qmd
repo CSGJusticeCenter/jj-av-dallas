@@ -20,4 +20,8 @@ TBD
 
 - Is there overlap of supervision periods for youth? 
 
+- For "Mental health needs status of the listed juvenile" in "Child" file -- does that capture needs status at time of data pull/most recent assessment only? Or does it indicate if youth has ever had documented mental health needs?
+
+- Do missing supervision outcomes and supervision end dates indicate youth was under supervision at time of data pull?
+
 <br>

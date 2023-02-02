@@ -355,6 +355,8 @@ kable(df_supervision_type_table,
 
 ## Table 7: Supervision Outcomes
 
+Note: It seems like supervision outcomes of "NA" indicate supervision active at time of data pull. Will confirm with Dallas County. 
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### supervision outcomes
 df_supervision_outcome_table <- supervision_clean %>% 
@@ -454,14 +456,17 @@ kable(df_placement_type_table,
 ## Table 11: Offense Level and Type
 
 
-Proposed hierarchy (most to least serious) for keeping most serious disposed offense per referral:
+*Proposed hierarchy (most to least serious) for keeping most serious disposed offense per referral:*
+
+
+*Are these correct? Do we want to rank within violent, property? How do we want to rank CINS?*
 
 
 **1. Felony:**
 
-* Person (Homicide, Sexual Assault, Assaultive, Weapons Offenses, Robbery, Other Violent)
+* Violent (Homicide, Sexual Assault, Assaultive, Weapons Offenses, Robbery, Other Violent)
 
-* Non-Person Property (Burglary, Theft, Other Property)
+* Property (Burglary, Theft, Other Property)
 
 * Non-Person Drug (Drug Offenses)
 
@@ -470,11 +475,11 @@ Proposed hierarchy (most to least serious) for keeping most serious disposed off
 
 **2. Misdemeanor:**
 
-* Person (Assaultive, Weapons Offenses)
+* Violent (Assaultive, Weapons Offenses)
 
-* Non-Person Property (Theft, Other Property)
+* Property (Theft, Other Property)
 
-* Non-Person Drug (Drug Offenses)
+* Drug (Drug Offenses)
 
 * Other Misdemeanor (Other Misdemeanor)
 
@@ -486,6 +491,8 @@ Proposed hierarchy (most to least serious) for keeping most serious disposed off
 * Disorderly Conduct
 
 * Drugs
+
+* Liquor Laws
 
 * Other CINS
 
