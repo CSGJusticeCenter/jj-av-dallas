@@ -192,7 +192,7 @@ offenses_clean <- offenses %>%
 
 <br><br>
 
-## Join 1. Join of `Child` and `Supervision`
+## Join 1. Join of `supervision_clean` and `child_clean`
 
 Create file that is unique by referral
 
@@ -209,7 +209,7 @@ supervision_child_demo_join <-
 
 <br><br>
 
-## Join 2. Join of `supervision_child_demo_join` and `Offenses`
+## Join 2. Join of `supervision_child_demo_join` and `offenses_clean`
 
 
 ```{r eval=FALSE,warning=FALSE}

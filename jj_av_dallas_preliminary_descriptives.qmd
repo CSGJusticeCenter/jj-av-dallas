@@ -280,7 +280,31 @@ kable(df_offenses_per_referral_by_year_table,
 
 <br>
 
-## Table 4: Disposition Options
+## Table 4: Referral Type Options
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### disposition options
+df_offenses_referral_type <- offenses_clean %>% 
+  dplyr::group_by(referral_type) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Referral Type` = referral_type) 
+
+### print table via kableextra
+kable(df_offenses_referral_type, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br>
+
+## Table 5: Disposition Options
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### disposition options
@@ -304,7 +328,7 @@ kable(df_offenses_dispositions,
 
 <br>
 
-## Table 5: Supervision Type
+## Table 6: Supervision Type
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### overall supervision type
@@ -329,7 +353,7 @@ kable(df_supervision_type_table,
 
 <br>
 
-## Table 6: Supervision Outcomes
+## Table 7: Supervision Outcomes
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### supervision outcomes
@@ -353,7 +377,7 @@ kable(df_supervision_outcome_table,
 
 <br>
 
-## Table 7: Overall Violation Type 
+## Table 8: Overall Violation Type 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### overall violation type
@@ -378,7 +402,7 @@ kable(df_overall_violation_type_table,
 
 <br>
 
-## Table 8: Technical Violation Type 
+## Table 9: Technical Violation Type 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### technical violation information
@@ -403,7 +427,7 @@ kable(df_technical_violation_type_table,
 
 <br>
 
-## Table 9: Placement Type 
+## Table 10: Placement Type 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### placement types
@@ -423,6 +447,76 @@ kable(df_placement_type_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") 
+```
+
+<br>
+
+## Table 11: Offense Level and Type
+
+
+Proposed hierarchy (most to least serious) for keeping most serious disposed offense per referral:
+
+
+**1. Felony:**
+
+* Person (Homicide, Sexual Assault, Assaultive, Weapons Offenses, Robbery, Other Violent)
+
+* Non-Person Property (Burglary, Theft, Other Property)
+
+* Non-Person Drug (Drug Offenses)
+
+* Other Felony (Other Felony)
+
+
+**2. Misdemeanor:**
+
+* Person (Assaultive, Weapons Offenses)
+
+* Non-Person Property (Theft, Other Property)
+
+* Non-Person Drug (Drug Offenses)
+
+* Other Misdemeanor (Other Misdemeanor)
+
+
+**3. CINS (Conduct indicating a need for supervision)/status??:**
+
+* Alternative Education Expulsion
+
+* Disorderly Conduct
+
+* Drugs
+
+* Other CINS
+
+* Runaway
+
+* Property (was theft)
+
+* Truancy
+
+* Sex Offenses
+
+
+**4. Violation of Court Order:**
+
+* VOP 
+
+
+**5. Contempt:**
+
+* Contempt 
+
+
+**6. Other:**
+
+* Other Administrative 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### offense types
+table(offenses$offense_level,
+      offenses$offense_type,
+      useNA = 'always')
 ```
 
 <br>
