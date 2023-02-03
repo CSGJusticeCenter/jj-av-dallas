@@ -24,4 +24,6 @@ TBD
 
 - Do missing supervision outcomes and supervision end dates indicate youth was under supervision at time of data pull?
 
+- Can we use `supervision_level` for placement information?
+
 <br>

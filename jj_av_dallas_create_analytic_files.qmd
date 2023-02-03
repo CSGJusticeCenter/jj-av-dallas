@@ -77,14 +77,14 @@ child_clean <- child %>%
   ### clean dates
   mutate(birth_date = ymd(as_date(birth_date))) 
 
-########################################
+#############################################
 ### clean and de-dup supervision dataframe
-########################################
+#############################################
 supervision_clean <- supervision %>% 
   distinct(unique_id,
            referral_number,
            supervision_begin_date,
-           .keep_all=TRUE) %>% ### 1 record dropped (note: 170 recods have duplicated IDs but different begin dates)
+           .keep_all=TRUE) %>% ### 1 record dropped (note: 170 records have duplicated IDs but different begin dates)
   ### clean dates and create years for potential grouping in future trend analysis
   mutate(supervision_begin_date = ymd(as_date(supervision_begin_date)),
          supervision_end_date = ymd(as_date(supervision_end_date)),
@@ -94,9 +94,54 @@ supervision_clean <- supervision %>%
   mutate(unique_referral_id = paste0(unique_id,
                                      referral_number)) 
 
-########################################
+#############################################
+### clean and de-dup supervision_extension dataframe
+#############################################
+
+### by unique_id and referral_number -- take first and last extension date 
+### and count number of unique extension records per unique_id and referral_number
+supervision_extension_clean <- supervision_extension %>% 
+  distinct(unique_id,
+           referral_number,
+           extension_begin_date,
+           extension_end_date,
+           .keep_all=TRUE) %>% ### 0 records dropped 
+  ### clean dates and create years for potential grouping in future trend analysis
+  mutate(supervision_begin_date = ymd(as_date(supervision_begin_date)),
+         supervision_end_date = ymd(as_date(supervision_end_date)),
+         extension_begin_date = ymd(as_date(extension_begin_date)),
+         extension_end_date = ymd(as_date(extension_end_date))) %>% 
+  group_by(unique_id,referral_number) %>% 
+  mutate(unique_extensions_per_referral_count = n_distinct(unique_id,
+                                                           referral_number,
+                                                           extension_begin_date,
+                                                           extension_end_date),
+         min_extension_begin_date =  min(extension_begin_date,
+                                         na.rm = TRUE),
+         max_extension_end_date =  max(extension_end_date,
+                                         na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  distinct(unique_id,
+           referral_number,
+           .keep_all=TRUE)
+
+#############################################
+### clean and de-dup supervision_level dataframe
+#############################################
+
+### by unique_id, referral_number, phase_begin_date, phase_end_date
+supervision_level_clean <- supervision_level %>% 
+  distinct(unique_id,
+           referral_number,
+           phase,
+           phase_begin_date,
+           phase_end_date,
+           .keep_all=TRUE) ### 1 record dropped 
+ 
+
+#############################################
 ### clean and de-dup offenses dataframe
-########################################
+#############################################
 offenses_clean <- offenses %>% 
   distinct(unique_id,
            referral_number,
@@ -273,7 +318,45 @@ supervision_child_join_1 <-
 
 <br><br>
 
-## Join 2. Join of `supervision_child_join_1` and `offenses_clean_de_dup`
+## Join 2. Join of `supervision_child_join_1` and `supervision_extension_clean`
+
+Create file that is unique by referral
+
+```{r warning=FALSE}
+### left join of child file to supervision file in order to see if there is much missingness
+### i.e. are there supervision records without demo records? 
+supervision_child_join_1 <- 
+  left_join(supervision_child_join_1,
+            supervision_extension_clean,
+            by = c("unique_id",
+                   "referral_number"))  ### join looks good; all records join
+
+```
+
+<br><br>
+
+## Join 3. Join of `supervision_clean` and `child_clean`
+
+Create file that is unique by referral
+
+```{r warning=FALSE}
+### left join of child file to supervision file in order to see if there is much missingness
+### i.e. are there supervision records without demo records? 
+supervision_child_join_1 <- 
+  left_join(supervision_clean,
+            child_clean,
+            by = "unique_id") %>% ### join looks good; all records join
+  ### calculate age at start of supervision
+  ### divide by 365 to convert days to years (there is no year option for difftime)
+  mutate(age_at_start_of_supervision = as.numeric(difftime(supervision_begin_date,
+                                                                    birth_date,
+                                                                    units="days"))/365)
+
+```
+
+<br><br>
+
+## Join 4. Join of `supervision_child_join_1` and `offenses_clean_de_dup`
 
 Only joins offense records that led to supervision. Later, should I also join just by unique_id to capture offense records which occurred during supervision?
 
@@ -300,7 +383,12 @@ supervision_child_join_offenses_2 <-
   left_join(supervision_child_join_1,
             offenses_clean_de_dup_initial_join,
             by = c("unique_id",
-                   "referral_number")) ### only offense records with supervision dispositions will join (the supervisions file is our base cohort)
+                   "referral_number")) %>%  ### only offense records with supervision dispositions will join (the supervisions file is our base cohort)
+   ### calculate age at time of referrals
+  ### divide by 365 to convert days to years (there is no year option for difftime)
+  mutate(age_at_referral = as.numeric(difftime(referral_date,
+                                                                    birth_date,
+                                                                    units="days"))/365)
 ```
 
 <br><br>
