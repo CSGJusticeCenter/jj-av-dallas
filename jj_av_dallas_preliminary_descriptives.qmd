@@ -118,6 +118,19 @@ supervision_clean <- supervision %>%
   ### create unique referral ID possible filtering, joining, or counting
   mutate(unique_referral_id = paste0(unique_id,
                                      referral_number)) 
+
+#############################################
+### clean and de-dup supervision_level dataframe
+#############################################
+
+### by unique_id, referral_number, phase_begin_date, phase_end_date
+supervision_level_clean <- supervision_level %>% 
+  distinct(unique_id,
+           referral_number,
+           phase,
+           phase_begin_date,
+           phase_end_date,
+           .keep_all=TRUE) ### 1 record dropped 
 ```
 
 <br>
@@ -353,7 +366,32 @@ kable(df_supervision_type_table,
 
 <br>
 
-## Table 7: Supervision Outcomes
+## Table 7: Supervision Level
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### overall supervision type
+df_supervision_level_table <- supervision_level_clean %>% 
+  dplyr::group_by(phase) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_id,
+                                                referral_number)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Supervision Level` = phase) 
+
+### print table via kableextra
+kable(df_supervision_level_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br>
+
+## Table 8: Supervision Outcomes
 
 Note: It seems like supervision outcomes of "NA" indicate supervision active at time of data pull. Will confirm with Dallas County. 
 
@@ -379,7 +417,7 @@ kable(df_supervision_outcome_table,
 
 <br>
 
-## Table 8: Overall Violation Type 
+## Table 9: Overall Violation Type 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### overall violation type
@@ -404,7 +442,7 @@ kable(df_overall_violation_type_table,
 
 <br>
 
-## Table 9: Technical Violation Type 
+## Table 10: Technical Violation Type 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### technical violation information
@@ -429,7 +467,7 @@ kable(df_technical_violation_type_table,
 
 <br>
 
-## Table 10: Placement Type 
+## Table 11: Placement Type 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### placement types
@@ -453,7 +491,7 @@ kable(df_placement_type_table,
 
 <br>
 
-## Table 11: Offense Level and Type
+## Table 12: Offense Level and Type
 
 
 *Proposed hierarchy (most to least serious) for keeping most serious disposed offense per referral:*
