@@ -10,7 +10,7 @@ Becky Cohen, Emily Rogers (for analysis), and Andrew Byrum (for data cleaning an
 ## Teams/SharePoint Project Folder
 Sharepoint path to JC Resarch folder for JJ AV Dallas Project: https://csgorg.sharepoint.com/:f:/s/Team-JC-Research-JJ_AV/EuGqNP2adN9LpUy7_EShBQIBzTA9ZNIK6YxZY9R7GWXsrg?e=LfOizE
 
-## Databook Site (with Netlify)
+## Netlify Site
 Here's the path to the Netlify-hosted site, which will be updated with data diagrams, codebooks, and code for analytic file creation throughout the project: https://jj-av-dallas-county.netlify.app/
 
 The password is csgjc_dallas
