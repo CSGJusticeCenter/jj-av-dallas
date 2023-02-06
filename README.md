@@ -18,59 +18,45 @@ The password is csgjc_dallas
 ## Repository Structure
 
 ```
-│   ├── _freeze/
-|   |    ├── img/
+│   ├── _freeze/ # folder with frozen copies of entire repo; using 'auto' freeze option to "denote that documents only be re-rendered when their source file change"
+│   ├── _site/ # folder with knitted html files that is hosted by netlify site
+|   |    ├── data_cleaning/ # copy for site
+|   |    ├── data_diagram/ # copy for site
+|   |    ├── img/ # folder with files/packages for respective html (b/c rmd is not self contained)
 │   │    |   ├── csg-logo.png
 │   │    |   ├── favicon.png
-│   │    |   ├── iowa_revocation_data_mapping.png
-|   |    ├── iowa_appointment_contact_trend_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_data_diagram_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_district_descriptives_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_revocation_count_trend_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_revocation_rate_trend_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_study_sample_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
+│   │    |   ├── jj_av_dallas_data_diagram.png
+|   |    ├── jj_av_dallas_data_codebooks_file/figure-html/ # folder with files/packages for respective html (b/c rmd is not self contained)
+|   |    ├── site_libs/ # folder with files/packages for respective html (b/c rmd is not self contained)
+|   |    ├── index.html/ # knitted landing page html for site
+|   |    ├── jj_av_dallas_create_analytic_files.html/ # knitted html for site
+|   |    ├── jj_av_dallas_create_analytic_files.html/ # knitted html for site
+|   |    ├── jj_av_dallas_data_codebooks.html/ # knitted html for site
+|   |    ├── jj_av_dallas_data_diagram.html/ # knitted html for site
+|   |    ├── jj_av_dallas_data_diagram_viz.html/ # knitted html for site
+|   |    ├── jj_av_dallas_questions_updates.html/ # knitted html for site
+|   |    ├── jj_av_dallas_preliminary_descriptives.html/ # knitted html for site
 |   |    ├── search.json
-|   |    ├── theme.css
-│   ├── _site/
-|   |    ├── img/
-│   │    |   ├── csg-logo.png
-│   │    |   ├── favicon.png
-│   │    |   ├── iowa_revocation_data_mapping.png
-|   |    ├── iowa_appointment_contact_trend_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_data_diagram_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_district_descriptives_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_revocation_count_trend_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_revocation_rate_trend_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── iowa_study_sample_analysis_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-|   |    ├── search.json
-|   |    ├── theme.css
+|   |    ├── style.css
 │   ├── data_cleaning/
-│   │    |   ├──  research/ # folder for all research-specific cleaning (for final presentation)
-│   │    |   |   |   ├── district_level_analytic/ # file aggregated by district for research
-│   │    |   |   |   |   ├── 1_greg_request_district_level_pre_mid_post_covid.Rmd # produce counts of cases and violations due to violent offenses
-│   │    |   ├──  updated_data_pull_through_12_2021/ # folder for cleaning updated IDOC data pull (6/2021 through 12/2021)
-│   │    |   |   ├── 1_iowa_preliminary_exploration_import_clean.Rmd # initial cleaning file to import, join, and clean important analytic variables w/ updated data
-│   │    |   |   ├── 2_iowa_cleaning_trend_analysis.Rmd # second cleaning step, produces several analytic files for data analysis & combines original and new data
-│   │    |   ├──  1_iowa_preliminary_exploration_import_clean.Rmd # initial cleaning file to import, join, and clean important analytic variables
-│   │    |   ├──  2_iowa_cleaning_trend_analysis.Rmd # second cleaning step, produces several analytic files for data analysis syntax/Rmd's
-│   │    |   ├──  iowa_violation_cleaning.Rmd # intial cleaning file to prep violation data for analytic prep in '2_iowa_cleaning_trend_analysis'
+│   │    |   ├──  jj_av_dallas_exploration_import_clean.Rmd/ # initial cleaning file for import and basic data prep
 │   ├── data_diagram/
-│   │    |   |   ├── img/
-│   │    |   |   |   |   ├── iowa_revocation_data_mapping.png/ # data diagram output
-│   │    |   |   ├── iowa_data_diagram_files/ # folder with files/packages for respective html (b/c rmd is not self contained)
-│   │    |   ├──  iowa_data_diagram.Rmd 
-│   │    |   ├──  iowa_data_diagram.html
-│   │    |   ├──  iowa_revocation_data_mapping.Rmd 
-│   │    |   ├──  iowa_revocation_data_mapping.html
+│   │    |   ├──  jj_av_dallas_data_diagram_build.qmd/ # file to create data diagram for project
 │   ├── img/           
 │   │    |   ├── csg-logo.png
 │   │    |   ├── favicon.png
+│   │    |   ├── jj_av_dallas_data_diagram.png
 |
+├── index.qmd/ # landing page to knit for site
+├── jj_av_dallas_create_analytic_files.qmd/ # html to knit for site; file builds both analytic files -- pushing to site for QA with team
+├── jj_av_dallas_data_codebooks.qmd/ # html to knit for site -- creates codebooks for each file
+├── jj_av_dallas_data_diagram_viz.qmd/ # html to knit for site -- renders data diagram
+├── jj_av_dallas_questions_updates.qmd/ # html to knit for site -- running list of questions and communication with Dallas County
+├── jj_av_dallas_preliminary_descriptives.qmd/ # html to knit for site -- basic descriptives for files and variables of interest
 ├── .gitignore
 ├── .nojekyll
 ├── README.md
-├── _site.yml
-├── index.Rmd
+├── _quarto.yml/ # site structure
 └── theme.css
 ```
 
