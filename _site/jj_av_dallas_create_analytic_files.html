@@ -192,7 +192,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#join-2.-join-of-supervision_child_join_1-and-supervision_extension_clean" id="toc-join-2.-join-of-supervision_child_join_1-and-supervision_extension_clean" class="nav-link" data-scroll-target="#join-2.-join-of-supervision_child_join_1-and-supervision_extension_clean">Join 2. Join of <code>supervision_child_join_1</code> and <code>supervision_extension_clean</code></a></li>
   <li><a href="#join-3.-join-of-supervision_child_join_2-and-supervision_level_clean" id="toc-join-3.-join-of-supervision_child_join_2-and-supervision_level_clean" class="nav-link" data-scroll-target="#join-3.-join-of-supervision_child_join_2-and-supervision_level_clean">Join 3. Join of <code>supervision_child_join_2</code> and <code>supervision_level_clean</code></a></li>
   <li><a href="#join-4.-join-of-supervision_child_join_3-and-offenses_clean_de_dup" id="toc-join-4.-join-of-supervision_child_join_3-and-offenses_clean_de_dup" class="nav-link" data-scroll-target="#join-4.-join-of-supervision_child_join_3-and-offenses_clean_de_dup">Join 4. Join of <code>supervision_child_join_3</code> and <code>offenses_clean_de_dup</code></a></li>
-  <li><a href="#join-4.-join-of-supervision_child_join_4-and-violations_clean" id="toc-join-4.-join-of-supervision_child_join_4-and-violations_clean" class="nav-link" data-scroll-target="#join-4.-join-of-supervision_child_join_4-and-violations_clean">Join 4. Join of <code>supervision_child_join_4</code> and <code>violations_clean</code></a></li>
+  <li><a href="#join-4.-join-of-supervision_child_join_offenses_4-and-violations_clean" id="toc-join-4.-join-of-supervision_child_join_offenses_4-and-violations_clean" class="nav-link" data-scroll-target="#join-4.-join-of-supervision_child_join_offenses_4-and-violations_clean">Join 4. Join of <code>supervision_child_join_offenses_4</code> and <code>violations_clean</code></a></li>
+  <li><a href="#join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean" id="toc-join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean" class="nav-link" data-scroll-target="#join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean">Join 5. Join of <code>supervision_child_join_offenses_violatons_5</code> and <code>detentions_clean</code></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -787,14 +788,14 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p><br><br></p>
 </section>
-<section id="join-4.-join-of-supervision_child_join_4-and-violations_clean" class="level2">
-<h2 class="anchored" data-anchor-id="join-4.-join-of-supervision_child_join_4-and-violations_clean">Join 4. Join of <code>supervision_child_join_4</code> and <code>violations_clean</code></h2>
+<section id="join-4.-join-of-supervision_child_join_offenses_4-and-violations_clean" class="level2">
+<h2 class="anchored" data-anchor-id="join-4.-join-of-supervision_child_join_offenses_4-and-violations_clean">Join 4. Join of <code>supervision_child_join_offenses_4</code> and <code>violations_clean</code></h2>
 <p>Using a left join only joins offense records that led to supervision/disposition to supervision. Later, should I also join just by unique_id to capture offense records which occurred during supervision? The offense file is already de-duped by referral – keeping the most serious offense – so the file will still be unique by referral, supervision period, supervision extension, and supervision level</p>
 <p><strong>Logic to double check:</strong> only keeping violation records where the violation_date&gt;=supervision_begin_date &amp; violation_date&lt;=supervision_end_date</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb86"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb86-1"><a href="#cb86-1" aria-hidden="true" tabindex="-1"></a><span class="do">### left join of violations_clean file to supervision_child_join_3 file </span></span>
-<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>supervision_child_join_offenses_4 <span class="ot">&lt;-</span> </span>
-<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(supervision_child_join_3,</span>
+<span id="cb86-2"><a href="#cb86-2" aria-hidden="true" tabindex="-1"></a>supervision_child_join_offenses_violatons_5 <span class="ot">&lt;-</span> </span>
+<span id="cb86-3"><a href="#cb86-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(supervision_child_join_offenses_4,</span>
 <span id="cb86-4"><a href="#cb86-4" aria-hidden="true" tabindex="-1"></a>            violations_clean,</span>
 <span id="cb86-5"><a href="#cb86-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>)) <span class="sc">%&gt;%</span> <span class="do">### this is a many to many join so there are now lots of records (all violations joining to all supervisions/supervision extensions/supervision levels)</span></span>
 <span id="cb86-6"><a href="#cb86-6" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now we need to filter on date -- only keeping violation records where the violation_date&gt;=supervision_begin_date &amp; violation_date&lt;=supervision_end_date</span></span>
@@ -803,7 +804,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb86-9"><a href="#cb86-9" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(<span class="st">"2030-01-01"</span>)),</span>
 <span id="cb86-10"><a href="#cb86-10" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date))),</span>
 <span id="cb86-11"><a href="#cb86-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">supervision_end_date_missing_include =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date_missing_include))) <span class="sc">%&gt;%</span> </span>
-<span id="cb86-12"><a href="#cb86-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_date<span class="sc">&gt;=</span>supervision_begin_date <span class="sc">&amp;</span> violation_date<span class="sc">&lt;=</span>supervision_end_date_missing_include) <span class="do">### we've removed about a third of the records; need to spot check dataframe to make sure things look right </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb86-12"><a href="#cb86-12" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we're removing about a third of the records; need to spot check dataframe to make sure things look right </span></span>
+<span id="cb86-13"><a href="#cb86-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_date<span class="sc">&gt;=</span>supervision_begin_date <span class="sc">&amp;</span> violation_date<span class="sc">&lt;=</span>supervision_end_date_missing_include)  </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>left_join: added 9 columns (violation_referral_number, violation, violation_date, violation_filed_date, violation_prosectur_action, …)</code></pre>
 </div>
@@ -828,6 +830,30 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell-output cell-output-stderr">
 <pre><code>filter: removed 30,363 rows (26%), 84,828 rows remaining</code></pre>
 </div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now pivot violation records wide to keep same number of records as in previous file </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><br><br></p>
+<p>HEREHEREHERE</p>
+</section>
+<section id="join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean" class="level2">
+<h2 class="anchored" data-anchor-id="join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean">Join 5. Join of <code>supervision_child_join_offenses_violatons_5</code> and <code>detentions_clean</code></h2>
+<p>Using a left join only joins offense records that led to supervision/disposition to supervision. Later, should I also join just by unique_id to capture offense records which occurred during supervision? The offense file is already de-duped by referral – keeping the most serious offense – so the file will still be unique by referral, supervision period, supervision extension, and supervision level</p>
+<p><strong>Logic to double check:</strong> only keeping violation records where the violation_date&gt;=supervision_begin_date &amp; violation_date&lt;=supervision_end_date</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="do">### left join of violations_clean file to supervision_child_join_3 file </span></span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a>supervision_child_join_offenses_4 <span class="ot">&lt;-</span> </span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(supervision_child_join_offenses_violatons_5,</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a>            violations_clean,</span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>)) <span class="sc">%&gt;%</span> <span class="do">### this is a many to many join so there are now lots of records (all violations joining to all supervisions/supervision extensions/supervision levels)</span></span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now we need to filter on date -- only keeping violation records where the violation_date&gt;=supervision_begin_date &amp; violation_date&lt;=supervision_end_date</span></span>
+<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a>  <span class="do">### first create fake end date for records where the end date is blank; since this indicates that supervision was ongoing at time of data pull, we still want to include violations that occurred so changing NA to '2030-01-01' in new variable for the following filter</span></span>
+<span id="cb96-8"><a href="#cb96-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_end_date_missing_include =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(supervision_end_date)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
+<span id="cb96-9"><a href="#cb96-9" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(<span class="st">"2030-01-01"</span>)),</span>
+<span id="cb96-10"><a href="#cb96-10" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date))),</span>
+<span id="cb96-11"><a href="#cb96-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">supervision_end_date_missing_include =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date_missing_include))) <span class="sc">%&gt;%</span> </span>
+<span id="cb96-12"><a href="#cb96-12" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we're removing about a third of the records; need to spot check dataframe to make sure things look right </span></span>
+<span id="cb96-13"><a href="#cb96-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_date<span class="sc">&gt;=</span>supervision_begin_date <span class="sc">&amp;</span> violation_date<span class="sc">&lt;=</span>supervision_end_date_missing_include)  </span>
+<span id="cb96-14"><a href="#cb96-14" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now pivot violation records wide to keep same number of records as in previous file </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br><br></p>
 

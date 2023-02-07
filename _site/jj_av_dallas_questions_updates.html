@@ -160,6 +160,12 @@ ul.task-list li input[type="checkbox"] {
 <li><p>Do missing supervision outcomes and supervision end dates indicate youth was under supervision at time of data pull?</p></li>
 <li><p>Can we use <code>supervision_level</code> for placement information?</p></li>
 <li><p>How should we interpret violation records without prosecutor actions or prosecutor action dates?</p></li>
+<li><p>How should we interpret overlapping supervision and detention dates (e.g.&nbsp;the supervision begin date starts several weeks before a detention end date)?</p></li>
+<li><p>Should I use IOI/DOI for de-duplicating offense file? How well does this map onto the logic I’ve already built out?</p></li>
+<li><p>Why is the violation disposition date the same across multiple violations over time?</p></li>
+<li><p>Is there a way to see the original supervision end date at time of initial disposition? (i.e., before any violations or extensions to supervision)</p></li>
+<li><p>Do you all have (and do we need..) a data dictionary for the phase values in the supervision level file? (e.g., ISP level 1, prob level R2, etc.)</p></li>
+<li><p>Referral ID, in supervision level and extension files, appears to link back to original referral leading to first supervision disposition – whereas the referral IDs in the violations, detentions, and placements files seems to link to the most recent referral (in the offense file) that directly pertains to that given violation, detention, or placement. Is this understanding correct? If so, is it okay to join records from these files back to the supervision file via unique youth ID and dates (i.e., if a given placement occurred during a youth’s supervision, then it is joined to that supervision?)</p></li>
 </ul>
 <p><br></p>
 

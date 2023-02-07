@@ -1,8 +1,10 @@
 {
-  "hash": "90e62d7cbeebe43155323920c56f02b1",
+  "hash": "4d68eb63042b16d4c219f453d57ede6b",
   "result": {
     "markdown": "---\ntitle: \"Dallas County Data Diagram\"\nformat: html\n---\n\n\nThis syntax pulls in all data files provided by Dallas County stored as a series of Excel file tabs -- and preliminarily maps their relationships with the datamodelr package (https://github.com/bergant/datamodelr)\n\nFile names reflect the names provided by Dallas County. Find more information on files and variables in `Codebook` tab.\n\n\n**TO DO:**\n\n- Double check that referral numbers can be used to link across all files where present (e.g., `detention_referral_number` in `detentions` table == `referral_number` from `supervision table`)**\n\n- Figure out business rule for joining assessment data to child-/offense-/detention-level data\n\n- Think through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral \n\n\n\n\n\n\n::: {.cell}\n\n:::\n",
-    "supporting": [],
+    "supporting": [
+      "jj_av_dallas_data_diagram_build_files"
+    ],
     "filters": [
       "rmarkdown/pagebreak.lua"
     ],
