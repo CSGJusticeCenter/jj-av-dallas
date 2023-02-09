@@ -467,7 +467,34 @@ kable(df_technical_violation_type_table,
 
 <br>
 
-## Table 11: Placement Type 
+## Table 11: Violation Dispositions 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### violation disposition information
+df_violation_dispo_table <- violations %>% 
+  mutate(disposition = ifelse(is.na(disposition)==TRUE,
+                              "Missing Disposition Data",
+                              disposition)) %>% 
+  dplyr::group_by(disposition) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_id,violation_referral_number)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Violation Dispositions` = disposition) 
+
+### print table via kableextra
+kable(df_violation_dispo_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br>
+
+## Table 12: Placement Type 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### placement types
@@ -491,7 +518,7 @@ kable(df_placement_type_table,
 
 <br>
 
-## Table 12: Offense Level and Type
+## Table 13: Offense Level and Type
 
 
 *Proposed hierarchy (most to least serious) for keeping most serious disposed offense per referral:*

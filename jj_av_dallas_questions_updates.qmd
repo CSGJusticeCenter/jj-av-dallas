@@ -12,6 +12,10 @@ TBD
 
 **Current Internal Questions & Next Steps:**
 
+- To double check with Emily: For "Number of TV During Supervision" -- is a count of unique referrals where the most serious violation is a technical violation okay? Or do we want an overall count of all unique technical violations (e.g., if a new referral has three violations linked -- one new offense and two technical -- do we count that as two technical violations or zero technical violations since the most serious violation for that referral was a new offense?). For "Number of New Referrals", I think this will be the same as our total count of all unique violation referrals but I can double check by joining to the offense table
+
+- Double check business rules for de-duping by referral/supervision and joins (especially when using dates for youth with multiple supervision records per referral)
+
 - Double check that referral numbers can be used to link across all files where present (e.g., `detention_referral_number` in `detentions` table == `referral_number` from `supervision table`)**
 
 - Figure out business rule for joining assessment data to child-/offense-/detention-level data. Or should we just use Dallas-provided risk and needs data linked to offenses?
@@ -34,16 +38,22 @@ TBD
 
 - How should we interpret violation records without prosecutor actions or prosecutor action dates? 
 
-- How should we interpret overlapping supervision and detention dates (e.g. the supervision begin date starts several weeks before a detention end date)?
+- How should we interpret overlapping supervision and detention dates (e.g. the supervision begin date starts several weeks before a detention end date)? Tentative answer: supervision period encompasses all detention/placement/etc.
 
-- Should I use IOI/DOI for de-duplicating offense file? How well does this map onto the logic I've already built out?
+- Does supervision period start with disposition? Or can it include pre-disposition detention -- need to double check.
 
-- Why is the violation disposition date the same across multiple violations over time? 
+- Should I use IOI ("Intake Offense Indicator level of the listed offense")/DOI ("Disposition Offense Indicator level of the listed offense") for de-duplicating offense file? How well does this map onto the logic I've already built out?
+
+- Why is the violation disposition date the same across multiple violations over time?
+
+- Do missing values for 'prosecutor_action', 'prosecutor_action_date', 'disposition_date', and 'disposition' in the violations file indicate something specific? Is there a reason these fields are missing for certain violation records? 
 
 - Is there a way to see the original supervision end date at time of initial disposition? (i.e., before any violations or extensions to supervision)
 
 - Do you all have (and do we need..) a data dictionary for the phase values in the supervision level file? (e.g., ISP level 1, prob level R2, etc.)
 
 - Referral ID, in supervision level and extension files, appears to link back to original referral leading to first supervision disposition -- whereas the referral IDs in the violations, detentions, and placements files seems to link to the most recent referral (in the offense file) that directly pertains to that given violation, detention, or placement. Is this understanding correct? If so, is it okay to join records from these files back to the supervision file via unique youth ID and dates (i.e., if a given placement occurred during a youth's supervision, then it is joined to that supervision?)
+
+- Need to confirm that only supervision periods that were extended appear in extension file -- i.e., supervision without any extension won't be in extension file, right? 
 
 <br>

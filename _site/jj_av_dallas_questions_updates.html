@@ -149,6 +149,8 @@ ul.task-list li input[type="checkbox"] {
 <p><br></p>
 <p><strong>Current Internal Questions &amp; Next Steps:</strong></p>
 <ul>
+<li><p>To double check with Emily: For “Number of TV During Supervision” – is a count of unique referrals where the most serious violation is a technical violation okay? Or do we want an overall count of all unique technical violations (e.g., if a new referral has three violations linked – one new offense and two technical – do we count that as two technical violations or zero technical violations since the most serious violation for that referral was a new offense?). For “Number of New Referrals”, I think this will be the same as our total count of all unique violation referrals but I can double check by joining to the offense table</p></li>
+<li><p>Double check business rules for de-duping by referral/supervision and joins (especially when using dates for youth with multiple supervision records per referral)</p></li>
 <li><p>Double check that referral numbers can be used to link across all files where present (e.g., <code>detention_referral_number</code> in <code>detentions</code> table == <code>referral_number</code> from <code>supervision table</code>)**</p></li>
 <li><p>Figure out business rule for joining assessment data to child-/offense-/detention-level data. Or should we just use Dallas-provided risk and needs data linked to offenses?</p></li>
 <li><p>Think through use of detention, placement, supervision, supervision level supervision extension, and violation dates to figure out possibilities for correct sequencing of events within a single referral. Likely need to join violations to supervision records based on dates (i.e., violation date falls between supervision start and end, etc)</p></li>
@@ -160,12 +162,15 @@ ul.task-list li input[type="checkbox"] {
 <li><p>Do missing supervision outcomes and supervision end dates indicate youth was under supervision at time of data pull?</p></li>
 <li><p>Can we use <code>supervision_level</code> for placement information?</p></li>
 <li><p>How should we interpret violation records without prosecutor actions or prosecutor action dates?</p></li>
-<li><p>How should we interpret overlapping supervision and detention dates (e.g.&nbsp;the supervision begin date starts several weeks before a detention end date)?</p></li>
-<li><p>Should I use IOI/DOI for de-duplicating offense file? How well does this map onto the logic I’ve already built out?</p></li>
+<li><p>How should we interpret overlapping supervision and detention dates (e.g.&nbsp;the supervision begin date starts several weeks before a detention end date)? Tentative answer: supervision period encompasses all detention/placement/etc.</p></li>
+<li><p>Does supervision period start with disposition? Or can it include pre-disposition detention – need to double check.</p></li>
+<li><p>Should I use IOI (“Intake Offense Indicator level of the listed offense”)/DOI (“Disposition Offense Indicator level of the listed offense”) for de-duplicating offense file? How well does this map onto the logic I’ve already built out?</p></li>
 <li><p>Why is the violation disposition date the same across multiple violations over time?</p></li>
+<li><p>Do missing values for ‘prosecutor_action’, ‘prosecutor_action_date’, ‘disposition_date’, and ‘disposition’ in the violations file indicate something specific? Is there a reason these fields are missing for certain violation records?</p></li>
 <li><p>Is there a way to see the original supervision end date at time of initial disposition? (i.e., before any violations or extensions to supervision)</p></li>
 <li><p>Do you all have (and do we need..) a data dictionary for the phase values in the supervision level file? (e.g., ISP level 1, prob level R2, etc.)</p></li>
 <li><p>Referral ID, in supervision level and extension files, appears to link back to original referral leading to first supervision disposition – whereas the referral IDs in the violations, detentions, and placements files seems to link to the most recent referral (in the offense file) that directly pertains to that given violation, detention, or placement. Is this understanding correct? If so, is it okay to join records from these files back to the supervision file via unique youth ID and dates (i.e., if a given placement occurred during a youth’s supervision, then it is joined to that supervision?)</p></li>
+<li><p>Need to confirm that only supervision periods that were extended appear in extension file – i.e., supervision without any extension won’t be in extension file, right?</p></li>
 </ul>
 <p><br></p>
 
