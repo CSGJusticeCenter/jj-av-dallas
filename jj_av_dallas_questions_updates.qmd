@@ -22,7 +22,7 @@ format: html
 
 - Is there a way to see the original supervision end date at time of initial disposition? (i.e., before any violations or extensions to supervision)
 
-- Do you all have (and do we need..) a data dictionary for the phase values in the supervision level file? (e.g., ISP level 1, prob level R2, etc.)
+- Do you all have a data dictionary for the phase values in the supervision level file? (e.g., ISP level 1, prob level R2, etc.)
 
 - Referral ID, in supervision level and extension files, appears to link back to original referral leading to first supervision disposition -- whereas the referral IDs in the violations, detentions, and placements files seems to link to the most recent referral (in the offense file) that directly pertains to that given violation, detention, or placement. Is this understanding correct? If so, is it okay to join records from these files back to the supervision file via unique youth ID and dates (i.e., if a given placement occurred during a youth's supervision, then it is joined to that supervision?)
 
