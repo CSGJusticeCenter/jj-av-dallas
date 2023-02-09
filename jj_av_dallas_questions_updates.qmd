@@ -34,7 +34,7 @@ format: html
 
 - Which violation dispositions should be coded as: probation extended due to TV, placement due to TV, and committed due to TV? see table 11 on `Sample Descriptives` page for full list of dispositions
 
-- Should I use IOI ("Intake Offense Indicator level of the listed offense")/DOI ("Disposition Offense Indicator level of the listed offense") for de-duplicating offense file? How well does this map onto the logic I've already built out?
+- Should I use IOI ("Intake Offense Indicator level of the listed offense")/DOI ("Disposition Offense Indicator level of the listed offense") for de-duplicating offense file? (e.g. IOI=="Primary" as opposed to "Secondary") instead of the hierarchy I've built based on offense severity?
 
 - To double check with Emily: For "Number of TV During Supervision" -- is a count of unique referrals where the most serious violation is a technical violation okay? Or do we want an overall count of all unique technical violations (e.g., if a new referral has three violations linked -- one new offense and two technical -- do we count that as two technical violations or zero technical violations since the most serious violation for that referral was a new offense?). For "Number of New Referrals", I think this will be the same as our total count of all unique violation referrals but I can double check by joining to the offense table
 

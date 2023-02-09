@@ -193,14 +193,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   <li><a href="#join-3.-join-of-supervision_child_join_2-and-supervision_level_clean" id="toc-join-3.-join-of-supervision_child_join_2-and-supervision_level_clean" class="nav-link" data-scroll-target="#join-3.-join-of-supervision_child_join_2-and-supervision_level_clean">Join 3. Join of <code>supervision_child_join_2</code> and <code>supervision_level_clean</code></a></li>
   <li><a href="#join-4.-join-of-supervision_child_join_3-and-offenses_clean_de_dup" id="toc-join-4.-join-of-supervision_child_join_3-and-offenses_clean_de_dup" class="nav-link" data-scroll-target="#join-4.-join-of-supervision_child_join_3-and-offenses_clean_de_dup">Join 4. Join of <code>supervision_child_join_3</code> and <code>offenses_clean_de_dup</code></a></li>
   <li><a href="#join-5.-join-of-supervision_child_join_3-and-prior_offenses_clean_de_dup-for-historic-offense-data-this-time" id="toc-join-5.-join-of-supervision_child_join_3-and-prior_offenses_clean_de_dup-for-historic-offense-data-this-time" class="nav-link" data-scroll-target="#join-5.-join-of-supervision_child_join_3-and-prior_offenses_clean_de_dup-for-historic-offense-data-this-time">Join 5. Join of <code>supervision_child_join_3</code> and <code>prior_offenses_clean_de_dup</code> (for historic offense data this time)</a></li>
-  <li><a href="#join-5.-join-of-supervision_child_join_offenses_5-and-violations_clean_de_dup" id="toc-join-5.-join-of-supervision_child_join_offenses_5-and-violations_clean_de_dup" class="nav-link" data-scroll-target="#join-5.-join-of-supervision_child_join_offenses_5-and-violations_clean_de_dup">Join 5. Join of <code>supervision_child_join_offenses_5</code> and <code>violations_clean_de_dup</code></a>
-  <ul class="collapse">
-  <li><a href="#placement-due-to-tv" id="toc-placement-due-to-tv" class="nav-link" data-scroll-target="#placement-due-to-tv">placement due to TV?</a></li>
-  <li><a href="#committed-due-to-tv-how-is-this-different-than-placement" id="toc-committed-due-to-tv-how-is-this-different-than-placement" class="nav-link" data-scroll-target="#committed-due-to-tv-how-is-this-different-than-placement">committed due to TV? how is this different than placement?</a></li>
-  <li><a href="#detention-data" id="toc-detention-data" class="nav-link" data-scroll-target="#detention-data">detention data?</a></li>
-  <li><a href="#additional-assessment-data" id="toc-additional-assessment-data" class="nav-link" data-scroll-target="#additional-assessment-data">additional assessment data?</a></li>
-  </ul></li>
-  <li><a href="#join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean" id="toc-join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean" class="nav-link" data-scroll-target="#join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean">Join 5. Join of <code>supervision_child_join_offenses_violatons_5</code> and <code>detentions_clean</code></a></li>
+  <li><a href="#join-5.-join-of-supervision_child_join_offenses_5-and-violations_clean_de_dup" id="toc-join-5.-join-of-supervision_child_join_offenses_5-and-violations_clean_de_dup" class="nav-link" data-scroll-target="#join-5.-join-of-supervision_child_join_offenses_5-and-violations_clean_de_dup">Join 5. Join of <code>supervision_child_join_offenses_5</code> and <code>violations_clean_de_dup</code></a></li>
   </ul></li>
   </ul>
 </nav>
@@ -1123,42 +1116,6 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="sourceCode cell-code" id="cb144"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb144-1"><a href="#cb144-1" aria-hidden="true" tabindex="-1"></a><span class="do">### probation extended due to TV?</span></span>
 <span id="cb144-2"><a href="#cb144-2" aria-hidden="true" tabindex="-1"></a><span class="do">### placement due to TV?</span></span>
 <span id="cb144-3"><a href="#cb144-3" aria-hidden="true" tabindex="-1"></a><span class="do">### committed due to TV? how is this different than placement?</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p><br><br></p>
-<p>HEREHEREHERE</p>
-<p>TO DO:</p>
-<section id="placement-due-to-tv" class="level3">
-<h3 class="anchored" data-anchor-id="placement-due-to-tv">placement due to TV?</h3>
-</section>
-<section id="committed-due-to-tv-how-is-this-different-than-placement" class="level3">
-<h3 class="anchored" data-anchor-id="committed-due-to-tv-how-is-this-different-than-placement">committed due to TV? how is this different than placement?</h3>
-</section>
-<section id="detention-data" class="level3">
-<h3 class="anchored" data-anchor-id="detention-data">detention data?</h3>
-</section>
-<section id="additional-assessment-data" class="level3">
-<h3 class="anchored" data-anchor-id="additional-assessment-data">additional assessment data?</h3>
-</section>
-</section>
-<section id="join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean" class="level2">
-<h2 class="anchored" data-anchor-id="join-5.-join-of-supervision_child_join_offenses_violatons_5-and-detentions_clean">Join 5. Join of <code>supervision_child_join_offenses_violatons_5</code> and <code>detentions_clean</code></h2>
-<p>Using a left join only joins offense records that led to supervision/disposition to supervision. Later, should I also join just by unique_id to capture offense records which occurred during supervision? The offense file is already de-duped by referral – keeping the most serious offense – so the file will still be unique by referral, supervision period, supervision extension, and supervision level</p>
-<p><strong>Logic to double check:</strong> only keeping violation records where the violation_date&gt;=supervision_begin_date &amp; violation_date&lt;=supervision_end_date</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb145"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb145-1"><a href="#cb145-1" aria-hidden="true" tabindex="-1"></a><span class="do">### left join of violations_clean file to supervision_child_join_3 file </span></span>
-<span id="cb145-2"><a href="#cb145-2" aria-hidden="true" tabindex="-1"></a>supervision_child_join_offenses_4 <span class="ot">&lt;-</span> </span>
-<span id="cb145-3"><a href="#cb145-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(supervision_child_join_offenses_violatons_5,</span>
-<span id="cb145-4"><a href="#cb145-4" aria-hidden="true" tabindex="-1"></a>            violations_clean,</span>
-<span id="cb145-5"><a href="#cb145-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>)) <span class="sc">%&gt;%</span> <span class="do">### this is a many to many join so there are now lots of records (all violations joining to all supervisions/supervision extensions/supervision levels)</span></span>
-<span id="cb145-6"><a href="#cb145-6" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now we need to filter on date -- only keeping violation records where the violation_date&gt;=supervision_begin_date &amp; violation_date&lt;=supervision_end_date</span></span>
-<span id="cb145-7"><a href="#cb145-7" aria-hidden="true" tabindex="-1"></a>  <span class="do">### first create fake end date for records where the end date is blank; since this indicates that supervision was ongoing at time of data pull, we still want to include violations that occurred so changing NA to '2030-01-01' in new variable for the following filter</span></span>
-<span id="cb145-8"><a href="#cb145-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_end_date_missing_include =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(supervision_end_date)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
-<span id="cb145-9"><a href="#cb145-9" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(<span class="st">"2030-01-01"</span>)),</span>
-<span id="cb145-10"><a href="#cb145-10" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date))),</span>
-<span id="cb145-11"><a href="#cb145-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">supervision_end_date_missing_include =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date_missing_include))) <span class="sc">%&gt;%</span> </span>
-<span id="cb145-12"><a href="#cb145-12" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we're removing about a third of the records; need to spot check dataframe to make sure things look right </span></span>
-<span id="cb145-13"><a href="#cb145-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_date<span class="sc">&gt;=</span>supervision_begin_date <span class="sc">&amp;</span> violation_date<span class="sc">&lt;=</span>supervision_end_date_missing_include)  </span>
-<span id="cb145-14"><a href="#cb145-14" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now pivot violation records wide to keep same number of records as in previous file </span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><br><br></p>
 
