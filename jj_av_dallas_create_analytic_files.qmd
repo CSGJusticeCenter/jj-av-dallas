@@ -185,12 +185,43 @@ supervision_level_clean <- supervision_level %>%
                 supervision_level_supervision_type = supervision_type,
                 supervision_level_phase_begin_date = phase_begin_date,
                 supervision_level_phase_end_date = phase_end_date) %>% 
+  ### calculate los by supervision level type (probation, detention, placement, none, and warrant)
+  mutate(overall_supervision_los_days = as.numeric(difftime(supervision_end_date,
+                                                            supervision_begin_date,
+                                                                    units="days")),
+         probation_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase%in%c("ISP LEVEL 1",
+                                                                                                        "ISP LEVEL 2",
+                                                                                                        "ISP LEVEL 3",
+                                                                                                        "PROB LEVEL R1",
+                                                                                                        "PROB LEVEL R2",
+                                                                                                        "PROB LEVEL R3",
+                                                                                                        "PROB LEVEL R4")],
+                                              na.rm = TRUE),
+         detention_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase=="DETENTION/SHELTER"],
+                                              na.rm = TRUE),
+         placement_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase=="PLACEMENT"],
+                                              na.rm = TRUE),
+         none_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase=="NONE"],
+                                              na.rm = TRUE),
+         warrant_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase=="WARRANT"],
+                                              na.rm = TRUE)) %>% 
   ### create a count variable in case it's handy for later analysis
+  ### sum los by supervision phase/level type at supervision record-level 
   group_by(unique_supervision_id) %>% 
   mutate(unique_supervision_levels_per_supervision_count = n_distinct(unique_id,
                                                            referral_number,
                                                            supervision_level_phase_begin_date,
-                                                           supervision_level_phase_end_date)) %>% 
+                                                           supervision_level_phase_end_date),
+         probation_supervision_los_days = sum(probation_supervision_los_days,
+                                              na.rm = TRUE),
+         detention_supervision_los_days = sum(detention_supervision_los_days,
+                                              na.rm = TRUE),
+         placement_supervision_los_days = sum(placement_supervision_los_days,
+                                              na.rm = TRUE),
+         none_supervision_los_days = sum(none_supervision_los_days,
+                                              na.rm = TRUE),
+         warrant_supervision_los_days = sum(warrant_supervision_los_days,
+                                              na.rm = TRUE)) %>% 
   ungroup() %>% 
   ### de-dup, keeping first record to preserve initial level for supervision period
   arrange(unique_supervision_id,
@@ -200,7 +231,8 @@ supervision_level_clean <- supervision_level %>%
   ### only keeping variables created at supervision record-level
   dplyr::select(unique_supervision_id,
                 initial_supervision_level = supervision_level_phase,
-                unique_supervision_levels_per_supervision_count)
+                unique_supervision_levels_per_supervision_count,
+                probation_supervision_los_days:warrant_supervision_los_days)
  
 
 #############################################
@@ -238,7 +270,7 @@ offenses_clean <- offenses %>%
   ungroup() %>% 
   ### create factor variable for offense severity based on hierarchy outlined in table 11 on descriptives page
   ### need to confirm order with team
-  mutate(offense_level_type_severity = 
+  mutate(offense_level_type_combined_grouped = 
            case_when(
              offense_level=="Felony" & offense_type%in%c("Homicide",
                                                          "Sexual Assault", 
@@ -265,7 +297,7 @@ offenses_clean <- offenses %>%
              offense_level=="Other" ~ 12, 
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
-         offense_level_type_severity = factor(offense_level_type_severity,
+         offense_level_type_combined_grouped = factor(offense_level_type_combined_grouped,
          levels = c(1,2,3,4,5,6,7,8,9,10,11,12),
          labels = c("Felony, Violent",
                     "Felony, Property",
@@ -278,13 +310,38 @@ offenses_clean <- offenses %>%
                     "CINS",
                     "VOP",
                     "Contempt",
+                    "Other")),
+         ### now create variable for offense type only 
+         offense_type_grouped = 
+           case_when(
+             offense_type%in%c("Homicide",
+                               "Sexual Assault", 
+                               "Assaultive",
+                               "Weapons Offenses", 
+                               "Robbery",
+                               "Other Violent") ~ 1,
+             offense_type%in%c("Burglary", 
+                               "Theft", 
+                               "Other Property") ~ 2,
+             offense_type%in%c("Drug Offenses") ~ 3,             
+             offense_type%in%c("Other Felony","Other Misdemeanor") ~ 4,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_type_grouped = factor(offense_type_grouped,
+         levels = c(1,2,3,4),
+         labels = c("Violent",
+                    "Property",
+                    "Drug",
                     "Other"))) 
 
-### now create a de-duplicated dataframe with most serious offense kept per referral
-### should i use loi/doi here instead? 
+### de-duplicate in two steps here:
+### first use ioi=="primary"
+### then de-dup by offense severity if there are still more than one offense per referral
+### we ultimately want a de-duplicated dataframe with only the most serious offense kept per referral
 offenses_clean_de_dup <- offenses_clean %>% 
+  filter(ioi=="Primary") %>% 
   arrange(unique_referral_id,
-          offense_level_type_severity) %>% 
+          offense_level_type_combined_grouped) %>% 
   distinct(unique_referral_id,
            .keep_all = TRUE) %>% 
   ### rename columns with duplicate names across files to indicate where data initially came from 
@@ -485,9 +542,11 @@ offenses_clean_de_dup_initial_join <- offenses_clean_de_dup %>%
                 offense_date,
                 referral_date,
                 referral_type,
-                offense_level_type_severity,
+                offense_citation_number,
+                offense_level_type_combined_grouped,
                 offense_level,
                 offense_type,
+                offense_type_grouped,
                 offense_description,
                 offense_disposition,
                 offense_disposition_date:offense_disposition_year,
@@ -524,7 +583,7 @@ prior_offenses_clean_de_dup_to_join <- prior_offenses_clean_de_dup %>%
                 prior_unique_referral_id,
                 prior_referral_date,
                 prior_referral_type,
-                prior_offense_level_type_severity,
+                prior_offense_level_type_combined_grouped,
                 prior_offense_level,
                 prior_offense_type,
                 prior_offense_description,
@@ -608,20 +667,75 @@ supervision_child_join_offenses_violatons_6 <-
          technical_violation_referral_count_in_2021 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2021],
                                                          na.rm = TRUE)) %>% 
   ungroup() %>% 
-  ### only keep individual level variables on prior referrals
-  # dplyr::select(unique_id,
-  #               prior_overall_referral_count:prior_cins_referral_count) %>% 
-  ### no de-dup by individual
-  distinct(unique_id,
-           .keep_all=TRUE)
+  ### now de-dup by supervision record to keep same row count as before join 
+  distinct(unique_supervision_id,
+           .keep_all=TRUE) %>% 
+  mutate(technical_violation_flag = ifelse(technical_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
+                                           1,0),
+         overall_violation_referral_flag = ifelse(overall_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
+                                                  1,0))
   
-
-### probation extended due to TV?
-### placement due to TV?
-### committed due to TV? how is this different than placement?
-
-
 ```
 
 <br><br>
+
+```{r warning=FALSE}
+### select final variables we want for supervision analytic file
+prelim_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses_violatons_6 %>%
+  dplyr::select(unique_supervision_id,
+                referral_number,
+                unique_youth_id = unique_id, 
+                offense_citation_number,
+                offense_description,
+                offense_level,
+                offense_type_grouped,
+                offense_level_type_combined_grouped,
+                supervision_type,
+                referral_type,
+                offense_referral_risk_level,
+                offense_referral_needs_level,
+                mental_health_needs,
+                mental_health_needs_indicator,
+                substance_use_need,
+                prior_overall_referral_count,
+                prior_felony_referral_count,
+                prior_misd_referral_count,
+                prior_cins_referral_count,
+                supervision_begin_date,
+                supervision_end_date,
+                technical_violation_flag,
+                technical_violation_referral_count,
+                new_offense_violation_referral_count,
+                technical_violation_referral_count_in_2017,
+                technical_violation_referral_count_in_2018,
+                technical_violation_referral_count_in_2019,
+                technical_violation_referral_count_in_2020,
+                technical_violation_referral_count_in_2021,
+                overall_violation_referral_count,
+                overall_violation_referral_flag,
+                supervision_outcome,
+                overall_supervision_los_days,
+                probation_supervision_los_days,
+                detention_supervision_los_days,
+                placement_supervision_los_days,
+                none_supervision_los_days,
+                warrant_supervision_los_days,
+                age_at_start_of_supervision,
+                gender_clean,
+                race_clean)
+
+
+###############
+### export file
+###############
+
+### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
+sharepoint_jj_av_dallas_analytic_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/analysis")
+
+write_delim(prelim_dallas_county_av_supervision_analytic_file,
+            file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "prelim_dallas_county_av_supervision_analytic_file.txt"),
+                      delim = "|")
+
+```
 

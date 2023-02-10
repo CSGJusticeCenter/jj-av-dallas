@@ -14,19 +14,20 @@ format: html
 
 - Do missing supervision outcomes and supervision end dates indicate youth was under supervision at time of data pull?
 
-- For "Mental health needs status of the listed juvenile" in "Child" file -- does that capture needs status at time of data pull/most recent assessment only? Or does it indicate if youth has ever had documented mental health needs?
+- For "Mental health needs status of the listed juvenile" in "Child" file -- does that capture needs status at time of data pull/most recent assessment only? Or does it indicate if youth has ever had documented mental health needs? It appears that the substance use need variable indicates any history that youth have had with substance use services/needs. Is the same true for mental health needs?
 
 - Does supervision period start with disposition? Or can it include pre-disposition detention?
 
 - Do missing values for 'prosecutor_action', 'prosecutor_action_date', 'disposition_date', and 'disposition' in the violations file indicate something specific? Is there a reason these fields are missing for certain violation records? 
 
-- Is there a way to see the original supervision end date at time of initial disposition? (i.e., before any violations or extensions to supervision)
+- Is there a way to see the original supervision end date at time of initial disposition? (i.e., before any violations or extensions were made to supervision)
 
-- Do you all have a data dictionary for the phase values in the supervision level file? (e.g., ISP level 1, prob level R2, etc.)
+- We are currently using phase information from the supervision level file for placement, detention/shelter information -- is this correct?
+
+- What do a supervision phases of "None" and "Warrant" indicate?
 
 - Referral ID, in supervision level and extension files, appears to link back to original referral leading to first supervision disposition -- whereas the referral IDs in the violations, detentions, and placements files seems to link to the most recent referral (in the offense file) that directly pertains to that given violation, detention, or placement. Is this understanding correct? If so, is it okay to join records from these files back to the supervision file via unique youth ID and dates (i.e., if a given placement occurred during a youth's supervision, then it is joined to that supervision?)
 
-- Need to confirm that only supervision periods that were extended appear in extension file -- i.e., supervision without any extension won't be in extension file, right? 
 
 <br>
 
@@ -34,7 +35,11 @@ format: html
 
 - Which violation dispositions should be coded as: probation extended due to TV, placement due to TV, and committed due to TV? see table 11 on `Sample Descriptives` page for full list of dispositions
 
-- Should I use IOI ("Intake Offense Indicator level of the listed offense")/DOI ("Disposition Offense Indicator level of the listed offense") for de-duplicating offense file? (e.g. IOI=="Primary" as opposed to "Secondary") instead of the hierarchy I've built based on offense severity?
+- I am currently de-duplicating offenses, by referral number, in two steps. First, I use IOI ("Intake Offense Indicator level of the listed offense"; e.g. IOI=="Primary" as opposed to "Secondary"). Then I de-dup by offense severity if there are still more than one offense per referral -- using the hierarchy I outlined on the `Sample Descriptives` page for table 12. Does this make sense?
+
+- LOS calculations: based on supervision level phases (see table 7 on `Sample Descriptives` page), currently grouped into probation (ISP LEVEL 1 - ISP LEVEL 3, PROB LEVEL R1 - PROB LEVEL R4), detention/shelter (DETENTION/SHELTER), placement (PLACEMENT), none (NONE), and warrant (WARRANT). Does this make sense? 
+
+- For "LOS 2017" - "LOS 2021": do we want the supervision LOS for referrals that start in these years, or supervision LOS that occurs in these years? And by supervision, do we only want probation? (ISP LEVEL 1 - ISP LEVEL 3, PROB LEVEL R1 - PROB LEVEL R4)
 
 - To double check with Emily: For "Number of TV During Supervision" -- is a count of unique referrals where the most serious violation is a technical violation okay? Or do we want an overall count of all unique technical violations (e.g., if a new referral has three violations linked -- one new offense and two technical -- do we count that as two technical violations or zero technical violations since the most serious violation for that referral was a new offense?). For "Number of New Referrals", I think this will be the same as our total count of all unique violation referrals but I can double check by joining to the offense table
 
@@ -46,9 +51,9 @@ format: html
 
 **Other:** 
 
-- Is there overlap of supervision periods for youth? 
+- Need to confirm that only supervision periods that were extended appear in extension file -- i.e., supervision without any extension won't be in extension file, right? 
 
-- Can we use `supervision_level` for placement information if needed?
+- Is there overlap of supervision periods for youth? 
 
 - Why is the violation disposition date the same across multiple violations over time?
 
