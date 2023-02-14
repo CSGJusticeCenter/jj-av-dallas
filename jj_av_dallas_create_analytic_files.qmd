@@ -335,11 +335,11 @@ offenses_clean <- offenses %>%
                     "Other"))) 
 
 ### de-duplicate in two steps here:
-### first use ioi=="primary"
+### first use doi=="primary" (this is the primary offense at disposition)
 ### then de-dup by offense severity if there are still more than one offense per referral
 ### we ultimately want a de-duplicated dataframe with only the most serious offense kept per referral
 offenses_clean_de_dup <- offenses_clean %>% 
-  filter(ioi=="Primary") %>% 
+  filter(doi=="Primary") %>% 
   arrange(unique_referral_id,
           offense_level_type_combined_grouped) %>% 
   distinct(unique_referral_id,

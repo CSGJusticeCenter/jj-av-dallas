@@ -687,11 +687,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>        new variable 'offense_type_grouped' (factor) with 5 unique values and 38% NA</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="do">### de-duplicate in two steps here:</span></span>
-<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="do">### first use ioi=="primary"</span></span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a><span class="do">### first use doi=="primary" (this is the primary offense at disposition)</span></span>
 <span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a><span class="do">### then de-dup by offense severity if there are still more than one offense per referral</span></span>
 <span id="cb67-4"><a href="#cb67-4" aria-hidden="true" tabindex="-1"></a><span class="do">### we ultimately want a de-duplicated dataframe with only the most serious offense kept per referral</span></span>
 <span id="cb67-5"><a href="#cb67-5" aria-hidden="true" tabindex="-1"></a>offenses_clean_de_dup <span class="ot">&lt;-</span> offenses_clean <span class="sc">%&gt;%</span> </span>
-<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(ioi<span class="sc">==</span><span class="st">"Primary"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb67-6"><a href="#cb67-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(doi<span class="sc">==</span><span class="st">"Primary"</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb67-7"><a href="#cb67-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(unique_referral_id,</span>
 <span id="cb67-8"><a href="#cb67-8" aria-hidden="true" tabindex="-1"></a>          offense_level_type_combined_grouped) <span class="sc">%&gt;%</span> </span>
 <span id="cb67-9"><a href="#cb67-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_referral_id,</span>
@@ -703,7 +703,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb67-15"><a href="#cb67-15" aria-hidden="true" tabindex="-1"></a>                <span class="at">offense_referral_risk_level =</span> risk_level,</span>
 <span id="cb67-16"><a href="#cb67-16" aria-hidden="true" tabindex="-1"></a>                <span class="at">offense_referral_needs_level =</span> needs_level)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>filter: removed 8,614 rows (30%), 19,953 rows remaining</code></pre>
+<pre><code>filter: removed 8,913 rows (31%), 19,654 rows remaining</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>distinct: no rows removed</code></pre>
@@ -974,7 +974,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>           &gt; rows only in x        0</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>           &gt; rows only in y  (11,362)</code></pre>
+<pre><code>           &gt; rows only in y  (11,063)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>           &gt; matched rows      8,760</code></pre>
@@ -1043,16 +1043,16 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>            &gt; rows only in y        0</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>            &gt; matched rows     25,558    (includes duplicates)</code></pre>
+<pre><code>            &gt; matched rows     25,203    (includes duplicates)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>            &gt;                 ========</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>            &gt; rows total       25,558</code></pre>
+<pre><code>            &gt; rows total       25,203</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>filter: removed 19,033 rows (74%), 6,525 rows remaining</code></pre>
+<pre><code>filter: removed 18,680 rows (74%), 6,523 rows remaining</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>group_by: one grouping variable (unique_id)</code></pre>
@@ -1073,7 +1073,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>ungroup: no grouping variables</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>distinct: removed 4,062 rows (62%), 2,463 rows remaining</code></pre>
+<pre><code>distinct: removed 4,060 rows (62%), 2,463 rows remaining</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="do">### left join of prior_offenses_clean_de_dup_to_join file to supervision_child_join_offenses_4 file </span></span>
 <span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a>supervision_child_join_offenses_5 <span class="ot">&lt;-</span> </span>
