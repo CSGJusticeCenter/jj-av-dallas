@@ -440,16 +440,6 @@ violations_clean_de_dup <- violations %>%
 
 * Number of TV During Supervision
 
-* Number of TV 2017
-
-* Number of TV 2018
-
-* Number of TV 2019
-
-* Number of TV 2020
-
-* Number of TV 2021
-
 * Number of New Referrals
 
 * New Referral
@@ -457,16 +447,6 @@ violations_clean_de_dup <- violations %>%
 * Supervision Outcome
 
 * Supervision Length of Stay
-
-* LOS 2017
-
-* LOS 2018
-
-* LOS 2019
-
-* LOS 2020
-
-* LOS 2021
 
 * Probation Extended Due to TV
 
@@ -625,8 +605,6 @@ supervision_child_join_offenses_5 <-
 ```
 
 
-HEREHEREHERE
-
 <br><br>
 
 ## Join 5. Join of `supervision_child_join_offenses_5` and `violations_clean_de_dup`
@@ -659,17 +637,18 @@ supervision_child_join_offenses_violatons_6 <-
          technical_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation"],
                                                          na.rm = TRUE),
          new_offense_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="New Offense"],
-                                                           na.rm = TRUE),
-         technical_violation_referral_count_in_2017 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2017],
-                                                         na.rm = TRUE),
-         technical_violation_referral_count_in_2018 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2018],
-                                                         na.rm = TRUE),
-         technical_violation_referral_count_in_2019 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2019],
-                                                         na.rm = TRUE),
-         technical_violation_referral_count_in_2020 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2020],
-                                                         na.rm = TRUE),
-         technical_violation_referral_count_in_2021 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2021],
-                                                         na.rm = TRUE)) %>% 
+                                                           na.rm = TRUE)
+         # technical_violation_referral_count_in_2017 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2017],
+         #                                                 na.rm = TRUE),
+         # technical_violation_referral_count_in_2018 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2018],
+         #                                                 na.rm = TRUE),
+         # technical_violation_referral_count_in_2019 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2019],
+         #                                                 na.rm = TRUE),
+         # technical_violation_referral_count_in_2020 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2020],
+         #                                                 na.rm = TRUE),
+         # technical_violation_referral_count_in_2021 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2021],
+         #                                                 na.rm = TRUE)
+         ) %>% 
   ungroup() %>% 
   ### now de-dup by supervision record to keep same row count as before join 
   distinct(unique_supervision_id,
@@ -710,11 +689,6 @@ prelim_dallas_county_av_supervision_analytic_file <- supervision_child_join_offe
                 technical_violation_flag,
                 technical_violation_referral_count,
                 new_offense_violation_referral_count,
-                technical_violation_referral_count_in_2017,
-                technical_violation_referral_count_in_2018,
-                technical_violation_referral_count_in_2019,
-                technical_violation_referral_count_in_2020,
-                technical_violation_referral_count_in_2021,
                 overall_violation_referral_count,
                 overall_violation_referral_flag,
                 supervision_outcome,
