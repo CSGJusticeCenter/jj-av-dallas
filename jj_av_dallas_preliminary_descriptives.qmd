@@ -469,17 +469,64 @@ kable(df_technical_violation_type_table,
 
 ## Table 11: Violation Dispositions 
 
+Note: This table reflects dispositions for violations that have been grouped and de-duplicated at the disposition-level -- keeping the most serious violation (i.e., new offense over technical)
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
+### group and de-dup violations file by disposition day and not referral ID (multiple referrals could be consolidated into a single disposition)
+violations_clean_de_dup <- violations %>% 
+  filter(!is.na(violation_date)) %>% ### just double checking since we'll need violation_date for later joins; no records dropped
+  mutate(disposition_date_no_missing_values = ifelse(!is.na(disposition_date)==TRUE,
+                                                     disposition_date,
+                                                     filed_date)) %>% 
+  ### clean dates and create years for potential grouping in future trend analysis
+  mutate(unique_violation_referral_id = paste0(unique_id,violation_referral_number),
+         unique_violation_disposition_id = paste0(unique_id,disposition_date_no_missing_values),
+         violation_date = ymd(as_date(violation_date)),
+         filed_date = ymd(as_date(filed_date)),
+         prosecutor_action_date = ymd(as_date(prosecutor_action_date)),
+         disposition_date = ymd(as_date(disposition_date)),
+         violation_date_year = year(violation_date)) %>% 
+  ### rename columns with duplicate names across files to indicate where data initially came from 
+  dplyr::rename(violation_filed_date = filed_date,
+                violation_prosecutor_action_date = prosecutor_action_date,
+                violation_disposition_date = disposition_date,
+                violation_disposition = disposition,
+                violation_offense_description = offense_description,
+                violation_prosectur_action = prosecutor_action) %>% 
+  ### create factor variable for violation type based 
+  ### need to confirm hierarchy with team
+  mutate(violation_severity = case_when(
+    violation_offense_description%in%c("VIOL OF COURT ORDER - NEW OFFENSE",
+                   "VIOL OF COURT ORDER (DET SENT PROB) -NEW OFF") ~ 1,
+    violation_offense_description%in%c("VIOL OF COURT ORDER - TECHNICAL",
+                   "VIOL OF COURT ORDER (DET SENT PROB) -TECHNICAL") ~ 2,
+    violation_offense_description%in%c("ADMINISTRATIVE HOLD",
+                   "MODIFY DISPOSITION - NO VIOLATION",
+                   "REOPEN DISPOSITION",
+                   "VIOLATIONS OF CONDITIONS OF RELEASE (VCR)") ~ 3,
+    TRUE ~ as.numeric(NA)),
+    ### use factor function to assign labels to values
+    violation_severity_factor = factor(violation_severity,
+                                       levels = c(1,2,3),
+                                       labels = c("New Offense",
+                                                  "Technical Violation",
+                                                  "Other"))) %>% 
+    ### now de-dup by violation referral ID -- keeping most serious violation
+    arrange(unique_violation_disposition_id,
+            violation_severity) %>% 
+    distinct(unique_violation_disposition_id,
+             .keep_all = TRUE)
+
 ### violation disposition information
-df_violation_dispo_table <- violations %>% 
-  mutate(disposition = ifelse(is.na(disposition)==TRUE,
+df_violation_dispo_table <- violations_clean_de_dup %>% 
+  mutate(violation_disposition = ifelse(is.na(violation_disposition)==TRUE,
                               "Missing Disposition Data",
-                              disposition)) %>% 
-  dplyr::group_by(disposition) %>% 
+                              violation_disposition)) %>% 
+  dplyr::group_by(violation_disposition) %>% 
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_id,violation_referral_number)) %>% 
   ungroup() %>% 
-  dplyr::rename(`Violation Dispositions` = disposition) 
+  dplyr::rename(`Violation Dispositions` = violation_disposition) 
 
 ### print table via kableextra
 kable(df_violation_dispo_table, 

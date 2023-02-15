@@ -367,8 +367,12 @@ prior_offenses_clean_de_dup <- offenses_clean_de_dup %>%
 
 violations_clean_de_dup <- violations %>% 
   filter(!is.na(violation_date)) %>% ### just double checking since we'll need violation_date for later joins; no records dropped
+  mutate(disposition_date_no_missing_values = ifelse(!is.na(disposition_date)==TRUE,
+                                                     disposition_date,
+                                                     filed_date)) %>% 
   ### clean dates and create years for potential grouping in future trend analysis
   mutate(unique_violation_referral_id = paste0(unique_id,violation_referral_number),
+         unique_violation_disposition_id = paste0(unique_id,disposition_date_no_missing_values),
          violation_date = ymd(as_date(violation_date)),
          filed_date = ymd(as_date(filed_date)),
          prosecutor_action_date = ymd(as_date(prosecutor_action_date)),
@@ -400,9 +404,9 @@ violations_clean_de_dup <- violations %>%
                                                   "Technical Violation",
                                                   "Other"))) %>% 
     ### now de-dup by violation referral ID -- keeping most serious violation
-    arrange(unique_violation_referral_id,
+    arrange(unique_violation_disposition_id,
             violation_severity) %>% 
-    distinct(unique_violation_referral_id,
+    distinct(unique_violation_disposition_id,
              .keep_all = TRUE)
 ```
 
