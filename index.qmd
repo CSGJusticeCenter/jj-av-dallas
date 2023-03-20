@@ -19,17 +19,19 @@ This is the JJ AV Dallas County project databook. FOR INTERNAL CSG JC USE ONLY.
 
 The CSG Justice Center is partnering with sites to assess and improve their approach to juvenile probation condition setting and enforcement, following the principles laid out in the Breaking the Rules Toolkit. CSG Justice Center staff will assess the use of graduated responses, technical violations, and revocations, including type, frequency, who is receiving them, why, and the outcomes. Case-level data analysis will describe the population of youth on probation, including use of technical violations and reasons for violations. 
 
+<br><br>
 
 **Research Questions and Methodological Approach**
 
+<br>
 
 **Who receives technical violations?**
 
-What proportion of youth on probation supervision receive a technical violation during a probation term? How does this vary across race/ethnicity, sex, and risk level? 
+* What proportion of youth on probation supervision receive a technical violation during a probation term? How does this vary across race/ethnicity, sex, and risk level? 
 
-Descriptive overview of the population of youth who receive a technical violation during the study period (when technical violation was the primary offense) by race/ethnicity, age category, sex, and risk level  
+* Descriptive overview of the population of youth who receive a technical violation during the study period (when technical violation was the primary offense) by race/ethnicity, age category, sex, and risk level  
 
-What proportion of violations filed by a PO are rejected by supervisor or prosecutor? 
+* What proportion of violations filed by a PO are rejected by supervisor or prosecutor? 
 
 
 **When and how often do youth receive technical violations?**  
@@ -56,11 +58,11 @@ What proportion of violations filed by a PO are rejected by supervisor or prosec
 
 * In Dallas, probation can file a violation to get a kid into a 30 day residential program. The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
 
-
+<br>
 
 *All questions will be answered descriptively. We will assess unadjusted differences in the likelihood of technical violation, time to violation, number of violations, and outcomes of violations across race/ethnicity, sex, and risk level using relative rate index calculations (to show differences in rates between two groups) and ANOVA (to identify difference in means across several groups).*
 
-<br>
+<br><br>
 
 **Anticipated Project Timeline and Next Steps**
 
