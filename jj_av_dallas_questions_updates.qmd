@@ -6,17 +6,47 @@ format: html
 
 **Dallas County Data Questions and Responses:**
 
-- In the supervision file there appears to be a small number of (around 170) supervision records that have duplicate referral IDs. They seem to have different start dates. How should we interpret these? 
+- In the supervision file there appears to be a small number of (around 170) supervision records that have duplicate referral IDs. They seem to have different start dates. How should we interpret these?
+
+* Response from Dallas: Transferring out of jurisdiction is a common reason. Deferred prosecution to failure to comply to pre-adjudication processing is another. Most duplicates should be turned into 1 record. *Internal question:* Should we drop deferred prosecution? VOP isn't possible. 
 
 - Do pure duplicates (every value is duplicated across all columns in files) in violations data file indicate multiple violations? Or should we de-duplicate this file?  
 
+* Response from Dallas: Christian will re-send file
+
 - Do missing supervision outcomes and supervision end dates indicate youth was under supervision at time of data pull?  
+
+* Response from Dallas: yes
 
 - For “Mental health needs status of the listed juvenile” in “Child” file – does that capture needs status at time of data pull/most recent assessment only? Or does it indicate if youth has ever had documented mental health needs? It appears that the substance use need variable indicates any history that youth have had with substance use services/needs. Is the same true for mental health needs?  
 
+* Response from Dallas: both are historic and reflect data at time of data pull 
+
 - How should we interpret missing values for ‘prosecutor_action’, ‘prosecutor_action_date’, ‘disposition_date’, and ‘disposition’ in the violations file? Is there a reason these fields are missing for certain violation records (e.g., could missing disposition information indicate a VOP referral was dropped/withdrawn)?  
 
+* Response from Dallas: Are used to access 30-day detention/programming, but not actually sent to prosecution (CIA is voluntary non-secure residential program used as sanction); if kid does well, violation won’t be sent on to prosecutor 
+
+i.	“withdrawn” as disposition means department decision, not prosecutor
+
+ii.	Blank disposition means referral is still pending
+
+iii.	Missing referral number –PO filed violation, but supervisor rejected VOP (no action taken)
+
+iv.	Prosecutor action fields are simply not complete – not sure we can use these fields for anything
+
+v.	Disposition is at referral-level – so most serious offense leads to dispo for entire referral including technicals
+
+**Christian added primary/secondary to indicate if specific offense/violation is leading to the listed dispo**
+
+
 - What do a supervision phase of “None” and “Warrant” indicate?  
+
+* Response from Dallas:
+
+a.	Child has absconded and is on warrant during time period 
+
+b.	None is deferred prosecution 
+
 
 
 <br>
