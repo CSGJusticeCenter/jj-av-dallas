@@ -19,11 +19,11 @@ This is the JJ AV Dallas County project databook. FOR INTERNAL CSG JC USE ONLY.
 
 The CSG Justice Center is partnering with sites to assess and improve their approach to juvenile probation condition setting and enforcement, following the principles laid out in the Breaking the Rules Toolkit. CSG Justice Center staff will assess the use of graduated responses, technical violations, and revocations, including type, frequency, who is receiving them, why, and the outcomes. Case-level data analysis will describe the population of youth on probation, including use of technical violations and reasons for violations. 
 
-<br><br>
+<br>
 
 **Research Questions and Methodological Approach**
 
-<br>
+
 
 **Who receives technical violations?**
 
@@ -58,75 +58,75 @@ The CSG Justice Center is partnering with sites to assess and improve their appr
 
 * In Dallas, probation can file a violation to get a kid into a 30 day residential program. The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
 
-<br>
+
 
 *All questions will be answered descriptively. We will assess unadjusted differences in the likelihood of technical violation, time to violation, number of violations, and outcomes of violations across race/ethnicity, sex, and risk level using relative rate index calculations (to show differences in rates between two groups) and ANOVA (to identify difference in means across several groups).*
 
-<br><br>
+<br>
 
 **Anticipated Project Timeline and Next Steps**
 
 
-* *Data Request and Executed Data Sharing Agreement* 
+*Data Request and Executed Data Sharing Agreement* 
 
-November – December 2022 
-
-
-* *Date Extract Delivered* 
-
-Original extract delivered January 2023 
-
-Updated extract delivered 2/22/23 
+* November – December 2022 
 
 
-* *Data Cleaning*  
+*Date Extract Delivered* 
 
-Feb- March 2023 
+* Original extract delivered January 2023 
 
- 
-* *Review Revised Research Plan with Policy Team* 
-
-By Mar 31 
+* Updated extract delivered 2/22/23 
 
 
-* *Complete Analytic File*  
+*Data Cleaning*  
 
-By April 7 
+* Feb- March 2023 
 
  
-* *Data Analysis* 
+*Review Revised Research Plan with Policy Team* 
 
-March- April 2023 
+* By Mar 31 
+
+
+*Complete Analytic File*  
+
+* By April 7 
 
  
-* *Review preliminary findings with Policy Team* 
+*Data Analysis* 
 
-By April 28th 
+* March- April 2023 
 
  
-* *Revise/update*  
+*Review preliminary findings with Policy Team* 
 
-By May 12th 
+* By April 28th 
 
+ 
+*Revise/update*  
 
-* *Research Division QA* 
-
-April- May 2023 
-
-
-* *Review findings with Dallas research team* 
-
-By May 19th 
+* By May 12th 
 
 
-* *Develop visualizations for PPT* 
+*Research Division QA* 
 
-May 22-June 9  
+* April- May 2023 
 
 
-* *Presentation of Findings and Recommendations* 
+*Review findings with Dallas research team* 
 
-June 2022 
+* By May 19th 
+
+
+*Develop visualizations for PPT* 
+
+* May 22-June 9  
+
+
+*Presentation of Findings and Recommendations* 
+
+* June 2022 
 
  
 <br>
