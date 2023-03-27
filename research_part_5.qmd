@@ -1,0 +1,88 @@
+---
+title: "What happens to youth as the result of a technical violation?"
+format: html
+---
+
+**What happens to youth as the result of a technical violation?** 
+
+* Of youth who receive a technical violation as a primary offense, what proportion are placed in a residential facility; detention; committed to state custody? How does this vary across race/ethnicity, sex, and risk level? 
+
+* Of youth who receive a technical violation as a primary offense, what proportion receive an extended supervision episode? 
+
+* What is the average length of time a supervision episode is extended as the result of a technical violation? How does this vary across race/ethnicity, sex, and risk level? 
+
+* In Dallas, probation can file a violation to get a kid into a 30 day residential program. The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
+
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog")
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set chunk output specifications
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dev = "ragg_png",
+  cache = FALSE)
+
+### set theme
+theme_set(theme_minimal())
+```
+
+```{r eval=FALSE}
+### pull in dallas data from raw data folder
+
+### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
+sharepoint_jj_av_dallas_raw_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw")
+
+
+```
+
+## Table 1. 
+
+```{r eval=FALSE}
+### create denominator -- unique referrals for entire sample
+unique_referrals_sample_denom <- n_distinct(offenses_clean$unique_id,
+                                            offenses_clean$referral_number)
+
+### create denominator -- unique youth for entire sample
+unique_youth_sample_denom <- n_distinct(offenses_clean$unique_id)
+
+### unique youth and referrals per year
+df_referrals_youth_per_year <- offenses_clean %>% 
+  dplyr::group_by(referral_year) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Year of Referral` = referral_year) %>% 
+  mutate(`Year of Referral` = as.character(`Year of Referral`))
+
+### overall
+df_referrals_youth_overall <- offenses_clean %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Year of Referral` = "Overall")
+
+### combine tables for kable
+df_referrals_youth_per_year_table <- rbind(df_referrals_youth_per_year,df_referrals_youth_overall)
+
+### print table via kableextra
+kable(df_referrals_youth_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(14, bold = TRUE)
+```
+
+
+<br>
