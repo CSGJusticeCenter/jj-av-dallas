@@ -679,7 +679,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>        converted 'referral_date' from double to Date (0 new NA)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>        converted 'disposition_date' from character to Date (460 new NA)</code></pre>
+<pre><code>        converted 'disposition_date' from double to Date (28107 new NA)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>        new variable 'offense_year' (integer) with 15 unique values and 0% NA</code></pre>
@@ -688,7 +688,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>        new variable 'referral_year' (integer) with 13 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>        new variable 'offense_disposition_year' (integer) with 14 unique values and 2% NA</code></pre>
+<pre><code>        new variable 'offense_disposition_year' (integer) with one unique value and 100% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>mutate: new variable 'unique_referral_id' (character) with 19,953 unique values and 0% NA</code></pre>
@@ -805,7 +805,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>filter: no rows removed</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>mutate: new variable 'disposition_date_no_missing_values' (double) with 1,417 unique values and 0% NA</code></pre>
+<pre><code>mutate: new variable 'disposition_date_no_missing_values' (double) with 1,445 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>mutate: converted 'violation_date' from double to Date (0 new NA)</code></pre>
@@ -820,13 +820,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>        converted 'disposition_date' from double to Date (0 new NA)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>        new variable 'unique_violation_referral_id' (character) with 3,315 unique values and 0% NA</code></pre>
+<pre><code>        new variable 'unique_violation_referral_id' (character) with 3,366 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>        new variable 'unique_violation_disposition_id' (character) with 3,277 unique values and 0% NA</code></pre>
+<pre><code>        new variable 'unique_violation_disposition_id' (character) with 3,328 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>        new variable 'violation_date_year' (integer) with 12 unique values and 0% NA</code></pre>
+<pre><code>        new variable 'violation_date_year' (integer) with 13 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>mutate: new variable 'violation_severity' (double) with 4 unique values and 98% NA</code></pre>
@@ -835,7 +835,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>        new variable 'violation_severity_factor' (factor) with 4 unique values and 98% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>distinct: removed 3,920 rows (54%), 3,277 rows remaining</code></pre>
+<pre><code>distinct: removed 2,154 rows (39%), 3,328 rows remaining</code></pre>
 </div>
 </div>
 <p><br></p>
@@ -1184,22 +1184,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb137-42"><a href="#cb137-42" aria-hidden="true" tabindex="-1"></a>         <span class="at">overall_violation_referral_flag =</span> <span class="fu">ifelse</span>(overall_violation_referral_count<span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(overall_violation_referral_count)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
 <span id="cb137-43"><a href="#cb137-43" aria-hidden="true" tabindex="-1"></a>                                                  <span class="dv">1</span>,<span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
-<pre><code>left_join: added 15 columns (violation_referral_number, violation, violation_date, violation_filed_date, violation_prosectur_action, …)</code></pre>
+<pre><code>left_join: added 16 columns (violation_referral_number, violation, violation_date, violation_filed_date, violation_prosectur_action, …)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>           &gt; rows only in x    6,297</code></pre>
+<pre><code>           &gt; rows only in x    6,258</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>           &gt; rows only in y  (     0)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>           &gt; matched rows      4,363    (includes duplicates)</code></pre>
+<pre><code>           &gt; matched rows      4,431    (includes duplicates)</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>           &gt;                 ========</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>           &gt; rows total       10,660</code></pre>
+<pre><code>           &gt; rows total       10,689</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>mutate: new variable 'supervision_end_date_missing_include' (Date) with 1,670 unique values and 0% NA</code></pre>
@@ -1208,7 +1208,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>        new variable 'no_violation_records_joined' (double) with 2 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>filter: removed 1,223 rows (11%), 9,437 rows remaining</code></pre>
+<pre><code>filter: removed 1,242 rows (12%), 9,447 rows remaining</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>group_by: one grouping variable (unique_supervision_id)</code></pre>
@@ -1226,7 +1226,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>ungroup: no grouping variables</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>distinct: removed 1,171 rows (12%), 8,266 rows remaining</code></pre>
+<pre><code>distinct: removed 1,191 rows (13%), 8,256 rows remaining</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>mutate: new variable 'technical_violation_flag' (double) with one unique value and 0% NA</code></pre>
