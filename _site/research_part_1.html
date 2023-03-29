@@ -20,69 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1.6em;
   vertical-align: middle;
 }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-    color: #aaaaaa;
-  }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -122,6 +59,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     "search-submit-button-title": "Submit"
   }
 }</script>
+
+<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="styles.css">
@@ -220,7 +160,21 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#table-1." id="toc-table-1." class="nav-link active" data-scroll-target="#table-1.">Table 1.</a></li>
+  <li><a href="#modifications-overview" id="toc-modifications-overview" class="nav-link active" data-scroll-target="#modifications-overview">Modifications Overview</a>
+  <ul class="collapse">
+  <li><a href="#table-1.-by-year-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" id="toc-table-1.-by-year-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" class="nav-link" data-scroll-target="#table-1.-by-year-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 1. By year: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</a></li>
+  <li><a href="#table-2.-by-raceethnicity-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" id="toc-table-2.-by-raceethnicity-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" class="nav-link" data-scroll-target="#table-2.-by-raceethnicity-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 2. By Race/Ethnicity: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</a></li>
+  <li><a href="#table-3.-by-risk-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" id="toc-table-3.-by-risk-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" class="nav-link" data-scroll-target="#table-3.-by-risk-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 3. By Risk Level: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</a></li>
+  <li><a href="#table-4.-by-needs-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" id="toc-table-4.-by-needs-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" class="nav-link" data-scroll-target="#table-4.-by-needs-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 4. By Needs Level: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</a></li>
+  </ul></li>
+  <li><a href="#average-number-of-modifications" id="toc-average-number-of-modifications" class="nav-link" data-scroll-target="#average-number-of-modifications">Average Number of Modifications</a>
+  <ul class="collapse">
+  <li><a href="#table-5.-by-year-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" id="toc-table-5.-by-year-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" class="nav-link" data-scroll-target="#table-5.-by-year-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 5. By year: Average Number of Supervision Modifications and Extensions per Supervision Episode</a></li>
+  <li><a href="#table-6.-by-raceethnicity-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" id="toc-table-6.-by-raceethnicity-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" class="nav-link" data-scroll-target="#table-6.-by-raceethnicity-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 6. By Race/Ethnicity: Average Number of Supervision Modifications and Extensions per Supervision Episode</a></li>
+  <li><a href="#table-7.-by-risk-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" id="toc-table-7.-by-risk-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" class="nav-link" data-scroll-target="#table-7.-by-risk-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 7. By Risk Level: Average Number of Supervision Modifications and Extensions per Supervision Episode</a></li>
+  <li><a href="#table-8.-by-needs-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" id="toc-table-8.-by-needs-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" class="nav-link" data-scroll-target="#table-8.-by-needs-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 8. By Needs Level: Average Number of Supervision Modifications and Extensions per Supervision Episode</a></li>
+  </ul></li>
+  <li><a href="#reasons-and-outcomes-of-modifications" id="toc-reasons-and-outcomes-of-modifications" class="nav-link" data-scroll-target="#reasons-and-outcomes-of-modifications">Reasons and Outcomes of Modifications</a></li>
   </ul>
 </nav>
 </nav>
@@ -254,56 +208,743 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><p>What are the most common reasons for modifications?</p></li>
 <li><p>What are the most common results of modifications?</p></li>
 </ul>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">### pull in dallas data from raw data folder</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="do">### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sharepoint_jj_av_dallas_raw_data <span class="ot">&lt;-</span> <span class="fu">file.path</span>(<span class="st">"C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<section id="table-1." class="level2">
-<h2 class="anchored" data-anchor-id="table-1.">Table 1.</h2>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">### create denominator -- unique referrals for entire sample</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>unique_referrals_sample_denom <span class="ot">&lt;-</span> <span class="fu">n_distinct</span>(offenses_clean<span class="sc">$</span>unique_id,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>                                            offenses_clean<span class="sc">$</span>referral_number)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="do">### create denominator -- unique youth for entire sample</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>unique_youth_sample_denom <span class="ot">&lt;-</span> <span class="fu">n_distinct</span>(offenses_clean<span class="sc">$</span>unique_id)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="do">### unique youth and referrals per year</span></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df_referrals_youth_per_year <span class="ot">&lt;-</span> offenses_clean <span class="sc">%&gt;%</span> </span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(referral_year) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="st">`</span><span class="at">Unique Youth (N)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">n_distinct</span>(unique_id),</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Unique Referrals (N)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">n_distinct</span>(unique_referral_id),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Referrals, Percent of Sample (%)</span><span class="st">`</span> <span class="ot">=</span> scales<span class="sc">::</span><span class="fu">percent</span>(<span class="st">`</span><span class="at">Unique Referrals (N)</span><span class="st">`</span><span class="sc">/</span>unique_referrals_sample_denom,</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>                                                                       <span class="at">accuracy =</span> .<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">`</span><span class="at">Year of Referral</span><span class="st">`</span> <span class="ot">=</span> referral_year) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Year of Referral</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.character</span>(<span class="st">`</span><span class="at">Year of Referral</span><span class="st">`</span>))</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a><span class="do">### overall</span></span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>df_referrals_youth_overall <span class="ot">&lt;-</span> offenses_clean <span class="sc">%&gt;%</span> </span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(<span class="st">`</span><span class="at">Unique Youth (N)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">n_distinct</span>(unique_id),</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Unique Referrals (N)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">n_distinct</span>(unique_referral_id),</span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Referrals, Percent of Sample (%)</span><span class="st">`</span> <span class="ot">=</span> scales<span class="sc">::</span><span class="fu">percent</span>(<span class="st">`</span><span class="at">Unique Referrals (N)</span><span class="st">`</span><span class="sc">/</span>unique_referrals_sample_denom,</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>                                                                       <span class="at">accuracy =</span> .<span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Year of Referral</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"Overall"</span>)</span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="do">### combine tables for kable</span></span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>df_referrals_youth_per_year_table <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_referrals_youth_per_year,df_referrals_youth_overall)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="do">### print table via kableextra</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(df_referrals_youth_per_year_table, </span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>      <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">","</span>), </span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>      <span class="at">align=</span><span class="fu">rep</span>(<span class="st">'c'</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">"striped"</span>, </span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">"hover"</span>, </span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">"condensed"</span>, </span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">"responsive"</span>), </span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>                 <span class="at">row_label_position =</span> <span class="st">"l"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">row_spec</span>(<span class="dv">14</span>, <span class="at">bold =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
+<section id="modifications-overview" class="level1">
+<h1>Modifications Overview</h1>
 <p><br></p>
+<section id="table-1.-by-year-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" class="level2">
+<h2 class="anchored" data-anchor-id="table-1.-by-year-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 1. By year: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Year of Referral </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
+   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (%) </th>
+   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (%) </th>
+   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (%) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> 2013 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 0.1% </td>
+   <td style="text-align:center;"> 100.0% </td>
+   <td style="text-align:center;"> 100.0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2014 </td>
+   <td style="text-align:center;"> 54 </td>
+   <td style="text-align:center;"> 54 </td>
+   <td style="text-align:center;"> 54 </td>
+   <td style="text-align:center;"> 0.7% </td>
+   <td style="text-align:center;"> 98.1% </td>
+   <td style="text-align:center;"> 87.0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2015 </td>
+   <td style="text-align:center;"> 175 </td>
+   <td style="text-align:center;"> 175 </td>
+   <td style="text-align:center;"> 176 </td>
+   <td style="text-align:center;"> 2.1% </td>
+   <td style="text-align:center;"> 94.9% </td>
+   <td style="text-align:center;"> 65.9% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2016 </td>
+   <td style="text-align:center;"> 611 </td>
+   <td style="text-align:center;"> 613 </td>
+   <td style="text-align:center;"> 617 </td>
+   <td style="text-align:center;"> 7.5% </td>
+   <td style="text-align:center;"> 79.6% </td>
+   <td style="text-align:center;"> 35.3% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2017 </td>
+   <td style="text-align:center;"> 1,561 </td>
+   <td style="text-align:center;"> 1,586 </td>
+   <td style="text-align:center;"> 1,602 </td>
+   <td style="text-align:center;"> 19.4% </td>
+   <td style="text-align:center;"> 48.3% </td>
+   <td style="text-align:center;"> 17.1% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2018 </td>
+   <td style="text-align:center;"> 1,630 </td>
+   <td style="text-align:center;"> 1,661 </td>
+   <td style="text-align:center;"> 1,695 </td>
+   <td style="text-align:center;"> 20.5% </td>
+   <td style="text-align:center;"> 43.1% </td>
+   <td style="text-align:center;"> 13.7% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2019 </td>
+   <td style="text-align:center;"> 1,566 </td>
+   <td style="text-align:center;"> 1,612 </td>
+   <td style="text-align:center;"> 1,626 </td>
+   <td style="text-align:center;"> 19.7% </td>
+   <td style="text-align:center;"> 31.7% </td>
+   <td style="text-align:center;"> 9.2% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2020 </td>
+   <td style="text-align:center;"> 908 </td>
+   <td style="text-align:center;"> 922 </td>
+   <td style="text-align:center;"> 930 </td>
+   <td style="text-align:center;"> 11.3% </td>
+   <td style="text-align:center;"> 35.9% </td>
+   <td style="text-align:center;"> 13.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2021 </td>
+   <td style="text-align:center;"> 1,007 </td>
+   <td style="text-align:center;"> 1,024 </td>
+   <td style="text-align:center;"> 1,031 </td>
+   <td style="text-align:center;"> 12.5% </td>
+   <td style="text-align:center;"> 36.8% </td>
+   <td style="text-align:center;"> 9.0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2022 </td>
+   <td style="text-align:center;"> 502 </td>
+   <td style="text-align:center;"> 509 </td>
+   <td style="text-align:center;"> 510 </td>
+   <td style="text-align:center;"> 6.2% </td>
+   <td style="text-align:center;"> 19.8% </td>
+   <td style="text-align:center;"> 2.5% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;font-weight: bold;"> Overall </td>
+   <td style="text-align:center;font-weight: bold;"> 7,594 </td>
+   <td style="text-align:center;font-weight: bold;"> 8,164 </td>
+   <td style="text-align:center;font-weight: bold;"> 8,249 </td>
+   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
+   <td style="text-align:center;font-weight: bold;"> 43.1% </td>
+   <td style="text-align:center;font-weight: bold;"> 15.4% </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br><br></p>
+</section>
+<section id="table-2.-by-raceethnicity-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" class="level2">
+<h2 class="anchored" data-anchor-id="table-2.-by-raceethnicity-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 2. By Race/Ethnicity: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Race/Ethnicity </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
+   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (%) </th>
+   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (%) </th>
+   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (%) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> Asian </td>
+   <td style="text-align:center;"> 74 </td>
+   <td style="text-align:center;"> 79 </td>
+   <td style="text-align:center;"> 80 </td>
+   <td style="text-align:center;"> 1.0% </td>
+   <td style="text-align:center;"> 23.7% </td>
+   <td style="text-align:center;"> 10.0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Black </td>
+   <td style="text-align:center;"> 3,351 </td>
+   <td style="text-align:center;"> 3,629 </td>
+   <td style="text-align:center;"> 3,673 </td>
+   <td style="text-align:center;"> 44.5% </td>
+   <td style="text-align:center;"> 44.3% </td>
+   <td style="text-align:center;"> 16.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Hispanic </td>
+   <td style="text-align:center;"> 3,413 </td>
+   <td style="text-align:center;"> 3,671 </td>
+   <td style="text-align:center;"> 3,704 </td>
+   <td style="text-align:center;"> 44.9% </td>
+   <td style="text-align:center;"> 44.5% </td>
+   <td style="text-align:center;"> 15.4% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Other </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 0.1% </td>
+   <td style="text-align:center;"> 75.0% </td>
+   <td style="text-align:center;"> 37.5% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> White </td>
+   <td style="text-align:center;"> 748 </td>
+   <td style="text-align:center;"> 777 </td>
+   <td style="text-align:center;"> 784 </td>
+   <td style="text-align:center;"> 9.5% </td>
+   <td style="text-align:center;"> 31.9% </td>
+   <td style="text-align:center;"> 9.7% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;font-weight: bold;"> Overall </td>
+   <td style="text-align:center;font-weight: bold;"> 7,594 </td>
+   <td style="text-align:center;font-weight: bold;"> 8,164 </td>
+   <td style="text-align:center;font-weight: bold;"> 8,249 </td>
+   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
+   <td style="text-align:center;font-weight: bold;"> 43.1% </td>
+   <td style="text-align:center;font-weight: bold;"> 15.4% </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br><br></p>
+</section>
+<section id="table-3.-by-risk-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" class="level2">
+<h2 class="anchored" data-anchor-id="table-3.-by-risk-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 3. By Risk Level: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</h2>
+<p>Note: This is the “listed risk level at the time of referral disposition”</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Risk Level </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
+   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (%) </th>
+   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (%) </th>
+   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (%) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> High Risk </td>
+   <td style="text-align:center;"> 1,061 </td>
+   <td style="text-align:center;"> 1,129 </td>
+   <td style="text-align:center;"> 1,136 </td>
+   <td style="text-align:center;"> 13.8% </td>
+   <td style="text-align:center;"> 83.1% </td>
+   <td style="text-align:center;"> 36.7% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Low Risk </td>
+   <td style="text-align:center;"> 4,058 </td>
+   <td style="text-align:center;"> 4,162 </td>
+   <td style="text-align:center;"> 4,207 </td>
+   <td style="text-align:center;"> 51.0% </td>
+   <td style="text-align:center;"> 25.8% </td>
+   <td style="text-align:center;"> 6.3% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Medium-High Risk </td>
+   <td style="text-align:center;"> 17 </td>
+   <td style="text-align:center;"> 17 </td>
+   <td style="text-align:center;"> 18 </td>
+   <td style="text-align:center;"> 0.2% </td>
+   <td style="text-align:center;"> 50.0% </td>
+   <td style="text-align:center;"> 16.7% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Medium-Low Risk </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 0.0% </td>
+   <td style="text-align:center;"> 100.0% </td>
+   <td style="text-align:center;"> 100.0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Moderate Risk </td>
+   <td style="text-align:center;"> 2,428 </td>
+   <td style="text-align:center;"> 2,512 </td>
+   <td style="text-align:center;"> 2,541 </td>
+   <td style="text-align:center;"> 30.8% </td>
+   <td style="text-align:center;"> 55.7% </td>
+   <td style="text-align:center;"> 22.1% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Not Administered </td>
+   <td style="text-align:center;"> 256 </td>
+   <td style="text-align:center;"> 258 </td>
+   <td style="text-align:center;"> 259 </td>
+   <td style="text-align:center;"> 3.1% </td>
+   <td style="text-align:center;"> 33.2% </td>
+   <td style="text-align:center;"> 8.5% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Unknown </td>
+   <td style="text-align:center;"> 84 </td>
+   <td style="text-align:center;"> 85 </td>
+   <td style="text-align:center;"> 87 </td>
+   <td style="text-align:center;"> 1.1% </td>
+   <td style="text-align:center;"> 14.9% </td>
+   <td style="text-align:center;"> 6.9% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;font-weight: bold;"> Overall </td>
+   <td style="text-align:center;font-weight: bold;"> 7,594 </td>
+   <td style="text-align:center;font-weight: bold;"> 8,164 </td>
+   <td style="text-align:center;font-weight: bold;"> 8,249 </td>
+   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
+   <td style="text-align:center;font-weight: bold;"> 43.1% </td>
+   <td style="text-align:center;font-weight: bold;"> 15.4% </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br><br></p>
+</section>
+<section id="table-4.-by-needs-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension" class="level2">
+<h2 class="anchored" data-anchor-id="table-4.-by-needs-level-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 4. By Needs Level: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</h2>
+<p>Note: This is the “listed needs level at the time of referral disposition”</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Needs Level </th>
+   <th style="text-align:center;"> Unique Youth (N) </th>
+   <th style="text-align:center;"> Unique Referrals (N) </th>
+   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
+   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (%) </th>
+   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (%) </th>
+   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (%) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> High Needs </td>
+   <td style="text-align:center;"> 1,704 </td>
+   <td style="text-align:center;"> 1,790 </td>
+   <td style="text-align:center;"> 1,802 </td>
+   <td style="text-align:center;"> 21.8% </td>
+   <td style="text-align:center;"> 78.5% </td>
+   <td style="text-align:center;"> 33.5% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Low Needs </td>
+   <td style="text-align:center;"> 3,065 </td>
+   <td style="text-align:center;"> 3,150 </td>
+   <td style="text-align:center;"> 3,183 </td>
+   <td style="text-align:center;"> 38.6% </td>
+   <td style="text-align:center;"> 20.5% </td>
+   <td style="text-align:center;"> 4.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Moderate Needs </td>
+   <td style="text-align:center;"> 2,768 </td>
+   <td style="text-align:center;"> 2,864 </td>
+   <td style="text-align:center;"> 2,900 </td>
+   <td style="text-align:center;"> 35.2% </td>
+   <td style="text-align:center;"> 47.6% </td>
+   <td style="text-align:center;"> 16.8% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Not Administered </td>
+   <td style="text-align:center;"> 273 </td>
+   <td style="text-align:center;"> 275 </td>
+   <td style="text-align:center;"> 277 </td>
+   <td style="text-align:center;"> 3.4% </td>
+   <td style="text-align:center;"> 33.9% </td>
+   <td style="text-align:center;"> 9.0% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Unknown </td>
+   <td style="text-align:center;"> 84 </td>
+   <td style="text-align:center;"> 85 </td>
+   <td style="text-align:center;"> 87 </td>
+   <td style="text-align:center;"> 1.1% </td>
+   <td style="text-align:center;"> 14.9% </td>
+   <td style="text-align:center;"> 6.9% </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;font-weight: bold;"> Overall </td>
+   <td style="text-align:center;font-weight: bold;"> 7,594 </td>
+   <td style="text-align:center;font-weight: bold;"> 8,164 </td>
+   <td style="text-align:center;font-weight: bold;"> 8,249 </td>
+   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
+   <td style="text-align:center;font-weight: bold;"> 43.1% </td>
+   <td style="text-align:center;font-weight: bold;"> 15.4% </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="average-number-of-modifications" class="level1">
+<h1>Average Number of Modifications</h1>
+<p>Note: This current analysis does not account for the timing of modifications or extensions relative to technical violations</p>
+<p><br></p>
+<section id="table-5.-by-year-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" class="level2">
+<h2 class="anchored" data-anchor-id="table-5.-by-year-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 5. By year: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Year of Referral </th>
+   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
+   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
+   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
+   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
+   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> 2013 </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 9.0000000 </td>
+   <td style="text-align:center;"> 9.5 </td>
+   <td style="text-align:center;"> 1.8750000 </td>
+   <td style="text-align:center;"> 1.5 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2014 </td>
+   <td style="text-align:center;"> 54 </td>
+   <td style="text-align:center;"> 8.8888889 </td>
+   <td style="text-align:center;"> 10.0 </td>
+   <td style="text-align:center;"> 2.3148148 </td>
+   <td style="text-align:center;"> 2.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2015 </td>
+   <td style="text-align:center;"> 176 </td>
+   <td style="text-align:center;"> 5.7613636 </td>
+   <td style="text-align:center;"> 5.0 </td>
+   <td style="text-align:center;"> 1.1477273 </td>
+   <td style="text-align:center;"> 1.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2016 </td>
+   <td style="text-align:center;"> 617 </td>
+   <td style="text-align:center;"> 3.2188006 </td>
+   <td style="text-align:center;"> 2.0 </td>
+   <td style="text-align:center;"> 0.5218801 </td>
+   <td style="text-align:center;"> 0.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2017 </td>
+   <td style="text-align:center;"> 1,602 </td>
+   <td style="text-align:center;"> 1.7122347 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.2415730 </td>
+   <td style="text-align:center;"> 0.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2018 </td>
+   <td style="text-align:center;"> 1,695 </td>
+   <td style="text-align:center;"> 1.2460177 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.1769912 </td>
+   <td style="text-align:center;"> 0.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2019 </td>
+   <td style="text-align:center;"> 1,626 </td>
+   <td style="text-align:center;"> 0.8198032 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.1137761 </td>
+   <td style="text-align:center;"> 0.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2020 </td>
+   <td style="text-align:center;"> 930 </td>
+   <td style="text-align:center;"> 0.9956989 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.1634409 </td>
+   <td style="text-align:center;"> 0.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2021 </td>
+   <td style="text-align:center;"> 1,031 </td>
+   <td style="text-align:center;"> 0.8254122 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.0960233 </td>
+   <td style="text-align:center;"> 0.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> 2022 </td>
+   <td style="text-align:center;"> 510 </td>
+   <td style="text-align:center;"> 0.3117647 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.0254902 </td>
+   <td style="text-align:center;"> 0.0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;font-weight: bold;"> Overall </td>
+   <td style="text-align:center;font-weight: bold;"> 8,249 </td>
+   <td style="text-align:center;font-weight: bold;"> 1.4154443 </td>
+   <td style="text-align:center;font-weight: bold;"> 0.0 </td>
+   <td style="text-align:center;font-weight: bold;"> 0.2182083 </td>
+   <td style="text-align:center;font-weight: bold;"> 0.0 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br><br></p>
+</section>
+<section id="table-6.-by-raceethnicity-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" class="level2">
+<h2 class="anchored" data-anchor-id="table-6.-by-raceethnicity-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 6. By Race/Ethnicity: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Race/Ethnicity </th>
+   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
+   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
+   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
+   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
+   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> Asian </td>
+   <td style="text-align:center;"> 80 </td>
+   <td style="text-align:center;"> 0.475000 </td>
+   <td style="text-align:center;"> 0 </td>
+   <td style="text-align:center;"> 0.0875000 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Black </td>
+   <td style="text-align:center;"> 3,673 </td>
+   <td style="text-align:center;"> 1.492785 </td>
+   <td style="text-align:center;"> 0 </td>
+   <td style="text-align:center;"> 0.2425810 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Hispanic </td>
+   <td style="text-align:center;"> 3,704 </td>
+   <td style="text-align:center;"> 1.458423 </td>
+   <td style="text-align:center;"> 0 </td>
+   <td style="text-align:center;"> 0.2111231 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Other </td>
+   <td style="text-align:center;"> 8 </td>
+   <td style="text-align:center;"> 2.500000 </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.2500000 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> White </td>
+   <td style="text-align:center;"> 784 </td>
+   <td style="text-align:center;"> 0.934949 </td>
+   <td style="text-align:center;"> 0 </td>
+   <td style="text-align:center;"> 0.1505102 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;font-weight: bold;"> Overall </td>
+   <td style="text-align:center;font-weight: bold;"> 8,249 </td>
+   <td style="text-align:center;font-weight: bold;"> 1.415444 </td>
+   <td style="text-align:center;font-weight: bold;"> 0 </td>
+   <td style="text-align:center;font-weight: bold;"> 0.2182083 </td>
+   <td style="text-align:center;font-weight: bold;"> 0 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br><br></p>
+</section>
+<section id="table-7.-by-risk-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" class="level2">
+<h2 class="anchored" data-anchor-id="table-7.-by-risk-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 7. By Risk Level: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Risk Level </th>
+   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
+   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
+   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
+   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
+   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> High Risk </td>
+   <td style="text-align:center;"> 1,136 </td>
+   <td style="text-align:center;"> 3.3160211 </td>
+   <td style="text-align:center;"> 2.0 </td>
+   <td style="text-align:center;"> 0.5484155 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Low Risk </td>
+   <td style="text-align:center;"> 4,207 </td>
+   <td style="text-align:center;"> 0.6151652 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.0793915 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Medium-High Risk </td>
+   <td style="text-align:center;"> 18 </td>
+   <td style="text-align:center;"> 1.6111111 </td>
+   <td style="text-align:center;"> 0.5 </td>
+   <td style="text-align:center;"> 0.1111111 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Medium-Low Risk </td>
+   <td style="text-align:center;"> 1 </td>
+   <td style="text-align:center;"> 3.0000000 </td>
+   <td style="text-align:center;"> 3.0 </td>
+   <td style="text-align:center;"> 0.0000000 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Moderate Risk </td>
+   <td style="text-align:center;"> 2,541 </td>
+   <td style="text-align:center;"> 1.9826840 </td>
+   <td style="text-align:center;"> 1.0 </td>
+   <td style="text-align:center;"> 0.3191657 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Not Administered </td>
+   <td style="text-align:center;"> 259 </td>
+   <td style="text-align:center;"> 0.8185328 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.0888031 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Unknown </td>
+   <td style="text-align:center;"> 87 </td>
+   <td style="text-align:center;"> 0.4482759 </td>
+   <td style="text-align:center;"> 0.0 </td>
+   <td style="text-align:center;"> 0.0804598 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;font-weight: bold;"> Overall </td>
+   <td style="text-align:center;font-weight: bold;"> 8,249 </td>
+   <td style="text-align:center;font-weight: bold;"> 1.4154443 </td>
+   <td style="text-align:center;font-weight: bold;"> 0.0 </td>
+   <td style="text-align:center;font-weight: bold;"> 0.2182083 </td>
+   <td style="text-align:center;font-weight: bold;"> 0 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br><br></p>
+</section>
+<section id="table-8.-by-needs-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode" class="level2">
+<h2 class="anchored" data-anchor-id="table-8.-by-needs-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 8. By Needs Level: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
+<div class="cell">
+<div class="cell-output-display">
+
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+ <thead>
+  <tr>
+   <th style="text-align:center;"> Needs Level </th>
+   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
+   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
+   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
+   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
+   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:center;"> High Needs </td>
+   <td style="text-align:center;"> 1,802 </td>
+   <td style="text-align:center;"> 3.0899001 </td>
+   <td style="text-align:center;"> 2 </td>
+   <td style="text-align:center;"> 0.5000000 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Low Needs </td>
+   <td style="text-align:center;"> 3,183 </td>
+   <td style="text-align:center;"> 0.4348099 </td>
+   <td style="text-align:center;"> 0 </td>
+   <td style="text-align:center;"> 0.0568646 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Moderate Needs </td>
+   <td style="text-align:center;"> 2,900 </td>
+   <td style="text-align:center;"> 1.5334483 </td>
+   <td style="text-align:center;"> 0 </td>
+   <td style="text-align:center;"> 0.2358621 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Not Administered </td>
+   <td style="text-align:center;"> 277 </td>
+   <td style="text-align:center;"> 0.8592058 </td>
+   <td style="text-align:center;"> 0 </td>
+   <td style="text-align:center;"> 0.0974729 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;"> Unknown </td>
+   <td style="text-align:center;"> 87 </td>
+   <td style="text-align:center;"> 0.4482759 </td>
+   <td style="text-align:center;"> 0 </td>
+   <td style="text-align:center;"> 0.0804598 </td>
+   <td style="text-align:center;"> 0 </td>
+  </tr>
+  <tr>
+   <td style="text-align:center;font-weight: bold;"> Overall </td>
+   <td style="text-align:center;font-weight: bold;"> 8,249 </td>
+   <td style="text-align:center;font-weight: bold;"> 1.4154443 </td>
+   <td style="text-align:center;font-weight: bold;"> 0 </td>
+   <td style="text-align:center;font-weight: bold;"> 0.2182083 </td>
+   <td style="text-align:center;font-weight: bold;"> 0 </td>
+  </tr>
+</tbody>
+</table>
+
+</div>
+</div>
+<p><br><br></p>
+</section>
+</section>
+<section id="reasons-and-outcomes-of-modifications" class="level1">
+<h1>Reasons and Outcomes of Modifications</h1>
+<p>TBD</p>
 
 
 </section>

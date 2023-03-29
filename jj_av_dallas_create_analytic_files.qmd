@@ -27,8 +27,11 @@ theme_set(theme_minimal())
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ### pull in dallas data from raw data folder
 
+### data path
+sp_data_path <- csg_get_project_path("jj-av-dallas")
+
 ### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
-sharepoint_jj_av_dallas_raw_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw")
+sharepoint_jj_av_dallas_raw_data <- file.path(sp_data_path,"Data/raw")
 
 ### using purrr::map, import list of tabs from excel worksheet
 dallas_raw_tab_list <- purrr::map(purrr::set_names(excel_sheets(file.path(sharepoint_jj_av_dallas_raw_data,
@@ -189,7 +192,11 @@ supervision_level_clean <- supervision_level %>%
   mutate(overall_supervision_los_days = as.numeric(difftime(supervision_end_date,
                                                             supervision_begin_date,
                                                                     units="days")),
-         probation_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase%in%c("ISP LEVEL 1",
+         temp_supervision_level_los_days = as.numeric(difftime(supervision_level_phase_end_date,
+                                                            supervision_level_phase_begin_date,
+                                                                    units="days"))) %>% 
+  group_by(unique_supervision_id) %>% 
+  mutate(probation_supervision_los_days = sum(temp_supervision_level_los_days[supervision_level_phase%in%c("ISP LEVEL 1",
                                                                                                         "ISP LEVEL 2",
                                                                                                         "ISP LEVEL 3",
                                                                                                         "PROB LEVEL R1",
@@ -197,18 +204,17 @@ supervision_level_clean <- supervision_level %>%
                                                                                                         "PROB LEVEL R3",
                                                                                                         "PROB LEVEL R4")],
                                               na.rm = TRUE),
-         detention_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase=="DETENTION/SHELTER"],
+         detention_supervision_los_days = sum(temp_supervision_level_los_days[supervision_level_phase=="DETENTION/SHELTER"],
                                               na.rm = TRUE),
-         placement_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase=="PLACEMENT"],
+         placement_supervision_los_days = sum(temp_supervision_level_los_days[supervision_level_phase=="PLACEMENT"],
                                               na.rm = TRUE),
-         none_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase=="NONE"],
+         none_supervision_los_days = sum(temp_supervision_level_los_days[supervision_level_phase=="NONE"],
                                               na.rm = TRUE),
-         warrant_supervision_los_days = sum(overall_supervision_los_days[supervision_level_phase=="WARRANT"],
+         warrant_supervision_los_days = sum(temp_supervision_level_los_days[supervision_level_phase=="WARRANT"],
                                               na.rm = TRUE)) %>% 
   ### create a count variable in case it's handy for later analysis
   ### sum los by supervision phase/level type at supervision record-level 
-  group_by(unique_supervision_id) %>% 
-  mutate(unique_supervision_levels_per_supervision_count = n_distinct(unique_id,
+  mutate(unique_supervision_levels_per_supervision_episode_count = n_distinct(unique_id,
                                                            referral_number,
                                                            supervision_level_phase_begin_date,
                                                            supervision_level_phase_end_date),
@@ -231,7 +237,8 @@ supervision_level_clean <- supervision_level %>%
   ### only keeping variables created at supervision record-level
   dplyr::select(unique_supervision_id,
                 initial_supervision_level = supervision_level_phase,
-                unique_supervision_levels_per_supervision_count,
+                overall_supervision_los_days,
+                unique_supervision_levels_per_supervision_episode_count,
                 probation_supervision_los_days:warrant_supervision_los_days)
  
 
@@ -332,7 +339,11 @@ offenses_clean <- offenses %>%
          labels = c("Violent",
                     "Property",
                     "Drug",
-                    "Other"))) 
+                    "Other"))) %>% 
+  mutate(risk_level = factor(risk_level,
+         levels = c("Low Risk", "Medium-Low Risk", "Medium-High Risk", "Moderate Risk", "High Risk","Unknown","Not Administered")),
+         needs_level = factor(needs_level,
+         levels = c("Low Needs", "Moderate Needs", "High Needs","Unknown","Not Administered")))
 
 ### de-duplicate in two steps here:
 ### first use doi=="primary" (this is the primary offense at disposition)
@@ -369,7 +380,7 @@ violations_clean_de_dup <- violations %>%
   filter(!is.na(violation_date)) %>% ### just double checking since we'll need violation_date for later joins; no records dropped
   mutate(disposition_date_no_missing_values = ifelse(!is.na(disposition_date)==TRUE,
                                                      disposition_date,
-                                                     filed_date)) %>% 
+                                                     filed_date)) %>%
   ### clean dates and create years for potential grouping in future trend analysis
   mutate(unique_violation_referral_id = paste0(unique_id,violation_referral_number),
          unique_violation_disposition_id = paste0(unique_id,disposition_date_no_missing_values),
@@ -385,12 +396,12 @@ violations_clean_de_dup <- violations %>%
                 violation_disposition = disposition,
                 violation_offense_description = offense_description,
                 violation_prosectur_action = prosecutor_action) %>% 
-  ### create factor variable for violation type based 
+  ### create factor variable for violation type based
   ### need to confirm hierarchy with team
   mutate(violation_severity = case_when(
-    violation_offense_description%in%c("VIOL OF COURT ORDER - NEW OFFENSE",
+    violation_offense_description%in%c("VIOL OF COURT ORDER  - NEW OFFENSE",
                    "VIOL OF COURT ORDER (DET SENT PROB) -NEW OFF") ~ 1,
-    violation_offense_description%in%c("VIOL OF COURT ORDER - TECHNICAL",
+    violation_offense_description%in%c("VIOL OF COURT ORDER  - TECHNICAL",
                    "VIOL OF COURT ORDER (DET SENT PROB) -TECHNICAL") ~ 2,
     violation_offense_description%in%c("ADMINISTRATIVE HOLD",
                    "MODIFY DISPOSITION - NO VIOLATION",
@@ -402,12 +413,37 @@ violations_clean_de_dup <- violations %>%
                                        levels = c(1,2,3),
                                        labels = c("New Offense",
                                                   "Technical Violation",
-                                                  "Other"))) %>% 
-    ### now de-dup by violation referral ID -- keeping most serious violation
-    arrange(unique_violation_disposition_id,
-            violation_severity) %>% 
-    distinct(unique_violation_disposition_id,
-             .keep_all = TRUE)
+                                                  "Other"))) %>%
+  mutate(violation_technical_flag = ifelse(violation_severity==2,
+                                           1,0),
+         violation_new_offense_flag = ifelse(violation_severity==1,
+                                           1,0),
+         violation_other_flag = ifelse(violation_severity==3,
+                                           1,0)) %>% 
+
+  group_by(unique_violation_referral_id) %>% 
+  mutate(new_offense_violation_count = sum(violation_new_offense_flag,
+                                           na.rm = TRUE),
+         technical_violation_count = sum(violation_technical_flag,
+                                           na.rm = TRUE),
+         other_violation_count = sum(violation_other_flag,
+                                           na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  ### keep most serious violation as coded by Dallas County
+  filter(primary_offense_at_disposition=="Yes") %>% 
+  
+  ### need clarity on missing disposition information/missing primary_offense_at_disposition values
+  ### are these just recent cases w/o disposition at time of data pull and should be dropped?
+  
+  ## now de-dup by violation referral ID -- keeping most serious violation according
+  ## to our coding
+  ## this only affects violations with missing 'primary_offense_at_disposition' or instances
+  ## where one violation referral has multiple violations as primary offense
+  arrange(unique_violation_referral_id,
+          violation_severity) %>%
+  ### some violation referrals have multiple individual violations considered primary_offense_at_disposition -- we've already created the important referral-flag/columns so it's okay to de-dup here (if we end up exploring specific types of technicals, we will need to revisit this as we're just randomly keeping one of potentially several technical violations here)
+  distinct(unique_violation_referral_id,
+           .keep_all = TRUE)
 ```
 
 <br>
@@ -664,51 +700,53 @@ supervision_child_join_offenses_violatons_6 <-
 
 ```{r warning=FALSE}
 ### select final variables we want for supervision analytic file
-prelim_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses_violatons_6 %>%
-  dplyr::select(unique_supervision_id,
-                referral_number,
-                unique_youth_id = unique_id, 
-                offense_citation_number,
-                offense_description,
-                offense_level,
-                offense_type_grouped,
-                offense_level_type_combined_grouped,
-                supervision_type,
-                referral_type,
-                offense_referral_risk_level,
-                offense_referral_needs_level,
-                mental_health_needs,
-                mental_health_needs_indicator,
-                substance_use_need,
-                prior_overall_referral_count,
-                prior_felony_referral_count,
-                prior_misd_referral_count,
-                prior_cins_referral_count,
-                supervision_begin_date,
-                supervision_end_date,
-                technical_violation_flag,
-                technical_violation_referral_count,
-                new_offense_violation_referral_count,
-                overall_violation_referral_count,
-                overall_violation_referral_flag,
-                supervision_outcome,
-                overall_supervision_los_days,
-                probation_supervision_los_days,
-                detention_supervision_los_days,
-                placement_supervision_los_days,
-                none_supervision_los_days,
-                warrant_supervision_los_days,
-                age_at_start_of_supervision,
-                gender_clean,
-                race_clean)
+prelim_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses_violatons_6 
+
+# %>%
+#   dplyr::select(unique_supervision_id,
+#                 referral_number,
+#                 unique_youth_id = unique_id, 
+#                 offense_citation_number,
+#                 offense_description,
+#                 offense_level,
+#                 offense_type_grouped,
+#                 offense_level_type_combined_grouped,
+#                 supervision_type,
+#                 referral_type,
+#                 offense_referral_risk_level,
+#                 offense_referral_needs_level,
+#                 mental_health_needs,
+#                 mental_health_needs_indicator,
+#                 substance_use_need,
+#                 prior_overall_referral_count,
+#                 prior_felony_referral_count,
+#                 prior_misd_referral_count,
+#                 prior_cins_referral_count,
+#                 supervision_begin_date,
+#                 supervision_end_date,
+#                 technical_violation_flag,
+#                 technical_violation_referral_count,
+#                 new_offense_violation_referral_count,
+#                 overall_violation_referral_count,
+#                 overall_violation_referral_flag,
+#                 supervision_outcome,
+#                 overall_supervision_los_days,
+#                 probation_supervision_los_days,
+#                 detention_supervision_los_days,
+#                 placement_supervision_los_days,
+#                 none_supervision_los_days,
+#                 warrant_supervision_los_days,
+#                 age_at_start_of_supervision,
+#                 gender_clean,
+#                 race_clean)
 
 
 ###############
 ### export file
 ###############
 
-### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
-sharepoint_jj_av_dallas_analytic_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/analysis")
+### set sharepoint path using sp_data_path and file.path function 
+sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
 
 write_delim(prelim_dallas_county_av_supervision_analytic_file,
             file.path(sharepoint_jj_av_dallas_analytic_data,
