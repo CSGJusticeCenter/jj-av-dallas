@@ -15,128 +15,13 @@ knitr::include_graphics("img/csg-logo.png")
 This is the JJ AV Dallas County project databook. FOR INTERNAL CSG JC USE ONLY. 
 
 
-**Project Background**
-
-The CSG Justice Center is partnering with sites to assess and improve their approach to juvenile probation condition setting and enforcement, following the principles laid out in the Breaking the Rules Toolkit. CSG Justice Center staff will assess the use of graduated responses, technical violations, and revocations, including type, frequency, who is receiving them, why, and the outcomes. Case-level data analysis will describe the population of youth on probation, including use of technical violations and reasons for violations. 
-
 <br>
 
-**Research Questions and Methodological Approach**
+**Research Plan and Timeline:**
 
+<iframe src="https://csgorg.sharepoint.com/sites/Team-JC-Research-JJ_AV/_layouts/15/Doc.aspx?sourcedoc={254c9fcd-8505-4ab8-be95-1e79538a1e4d}&amp;action=embedview" width="1024px" height="800px" frameborder="0"></iframe>
 
-**How are modifications used?**
 
-* What is the average number of modifications per supervision episode? How does this vary across race/ethnicity, sex, and risk level? 
+[View on SharePoint](https://csgorg.sharepoint.com/:w:/s/Team-JC-Research-JJ_AV/Ec2fTCUFhbhKvpUeeVOKHk0BbWuiIf7UjDwkNNpv0j5zRA?e=LxdS1K)
 
-* What is the average number of modifications for youth who receive a technical violation? How does this vary across race/ethnicity, sex, and risk level? 
-
-* What are the most common reasons for modifications? 
-
-* What are the most common results of modifications? 
-
-
-**Who receives technical violations?**
-
-* What proportion of youth on probation supervision receive a technical violation during a probation term? How does this vary across race/ethnicity, sex, and risk level? 
-
-* Descriptive overview of the population of youth who receive a technical violation during the study period (when technical violation was the primary offense) by race/ethnicity, age category, sex, and risk level  
-
-* What proportion of violations filed by a PO are rejected by supervisor or prosecutor? 
-
-
-**When and how often do youth receive technical violations?**  
-
-* What is the average time to a first technical violation on a supervision episode? How does this vary across race/ethnicity, sex, and risk level? 
-
-* What is the average number of technical violations that occur during a probation episode? How does this vary across race/ethnicity, sex, and risk level? 
-
-
-**Why do youth receive technical violations?** 
-
-* What are the most common reasons for technical violations when the violation was the primary offense? How do reasons vary across race/ethnicity, sex, and risk level? 
-
-* What are the most common offenses when the violation was not the primary offense?  
-
-
-**What happens to youth as the result of a technical violation?** 
-
-* Of youth who receive a technical violation as a primary offense, what proportion are placed in a residential facility; detention; committed to state custody? How does this vary across race/ethnicity, sex, and risk level? 
-
-* Of youth who receive a technical violation as a primary offense, what proportion receive an extended supervision episode? 
-
-* What is the average length of time a supervision episode is extended as the result of a technical violation? How does this vary across race/ethnicity, sex, and risk level? 
-
-* In Dallas, probation can file a violation to get a kid into a 30 day residential program. The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
-
-
-
-*All questions will be answered descriptively. We will assess unadjusted differences in the likelihood of technical violation, time to violation, number of violations, and outcomes of violations across race/ethnicity, sex, and risk level using relative rate index calculations (to show differences in rates between two groups) and ANOVA (to identify difference in means across several groups).*
-
-<br>
-
-**Anticipated Project Timeline and Next Steps**
-
-
-*Data Request and Executed Data Sharing Agreement* 
-
-* November – December 2022 
-
-
-*Date Extract Delivered* 
-
-* Original extract delivered January 2023 
-
-* Updated extract delivered 2/22/23 
-
-
-*Data Cleaning*  
-
-* Feb- March 2023 
-
- 
-*Review Revised Research Plan with Policy Team* 
-
-* By Mar 31 
-
-
-*Complete Analytic File*  
-
-* By April 7 
-
- 
-*Data Analysis* 
-
-* March- April 2023 
-
- 
-*Review preliminary findings with Policy Team* 
-
-* By April 28th 
-
- 
-*Revise/update*  
-
-* By May 12th 
-
-
-*Research Division QA* 
-
-* April- May 2023 
-
-
-*Review findings with Dallas research team* 
-
-* By May 19th 
-
-
-*Develop visualizations for PPT* 
-
-* May 22-June 9  
-
-
-*Presentation of Findings and Recommendations* 
-
-* June 2022 
-
- 
 <br>
