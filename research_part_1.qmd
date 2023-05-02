@@ -58,6 +58,8 @@ prelim_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharep
 
 # Modifications Overview
 
+**NOTE:** All analysis of supervision level modifications (e.g., supervision episodes with at least one supervision level modification) refer to instances where a supervision phase/level is modified to a more intensive level of supervision. 
+
 <br>
 
 ## Table 1. By year: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
@@ -81,7 +83,7 @@ df_modifications_extensions_per_year <- prelim_dallas_county_av_supervision_anal
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_levels_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[supervision_level_increases_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
@@ -96,7 +98,7 @@ df_modifications_extensions_overall <- prelim_dallas_county_av_supervision_analy
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_levels_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[supervision_level_increases_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
@@ -130,7 +132,7 @@ df_modifications_extensions_race <- prelim_dallas_county_av_supervision_analytic
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_levels_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[supervision_level_increases_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
@@ -144,7 +146,7 @@ df_modifications_extensions_overall <- prelim_dallas_county_av_supervision_analy
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_levels_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[supervision_level_increases_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
@@ -181,7 +183,7 @@ df_modifications_extensions_risk <- prelim_dallas_county_av_supervision_analytic
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_levels_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[supervision_level_increases_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
@@ -195,7 +197,7 @@ df_modifications_extensions_overall <- prelim_dallas_county_av_supervision_analy
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_levels_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[supervision_level_increases_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
@@ -231,7 +233,7 @@ df_modifications_extensions_needs <- prelim_dallas_county_av_supervision_analyti
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_levels_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[supervision_level_increases_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
@@ -245,7 +247,7 @@ df_modifications_extensions_overall <- prelim_dallas_county_av_supervision_analy
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_levels_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one level modification (%)` = scales::percent(n_distinct(unique_supervision_id[supervision_level_increases_per_supervision_episode_count>1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
@@ -282,7 +284,7 @@ Note: This current analysis does not account for the timing of modifications or 
 prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup <- prelim_dallas_county_av_supervision_analytic_file %>% 
   distinct(unique_supervision_id,
            .keep_all = TRUE) %>% 
-  mutate(unique_supervision_levels_per_supervision_episode_count_average = unique_supervision_levels_per_supervision_episode_count-1,
+  mutate(supervision_level_increases_per_supervision_episode_count_average = supervision_level_increases_per_supervision_episode_count-1,
          unique_supervision_extensions_per_supervision_count_average = ifelse(is.na(unique_supervision_extensions_per_supervision_count)==TRUE,
                                                                               0,unique_supervision_extensions_per_supervision_count))
   
@@ -291,9 +293,9 @@ prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup <- 
 df_modifications_mean_median_year <- prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
   dplyr::group_by(referral_year) %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-                   `Mean Number of Supervision Level Modifications` = mean(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
-                   `Median Number of Supervision Level Modifications` = median(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
@@ -306,9 +308,9 @@ df_modifications_mean_median_year <- prelim_dallas_county_av_supervision_analyti
 ### overall
 df_modifications_mean_median_overall <- prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-                   `Mean Number of Supervision Level Modifications` = mean(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
-                   `Median Number of Supervision Level Modifications` = median(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
@@ -340,9 +342,9 @@ kable(df_modifications_mean_median_year_table,
 df_modifications_mean_median_race <- prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
   dplyr::group_by(race_clean) %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-                   `Mean Number of Supervision Level Modifications` = mean(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
-                   `Median Number of Supervision Level Modifications` = median(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
@@ -354,9 +356,9 @@ df_modifications_mean_median_race <- prelim_dallas_county_av_supervision_analyti
 ### overall
 df_modifications_mean_median_overall <- prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-                   `Mean Number of Supervision Level Modifications` = mean(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
-                   `Median Number of Supervision Level Modifications` = median(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
@@ -388,9 +390,9 @@ kable(df_modifications_mean_median_race_table,
 df_modifications_mean_median_risk <- prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
   dplyr::group_by(offense_referral_risk_level) %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-                   `Mean Number of Supervision Level Modifications` = mean(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
-                   `Median Number of Supervision Level Modifications` = median(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
@@ -402,9 +404,9 @@ df_modifications_mean_median_risk <- prelim_dallas_county_av_supervision_analyti
 ### overall
 df_modifications_mean_median_overall <- prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-                   `Mean Number of Supervision Level Modifications` = mean(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
-                   `Median Number of Supervision Level Modifications` = median(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
@@ -436,9 +438,9 @@ kable(df_modifications_mean_median_risk_table,
 df_modifications_mean_median_needs <- prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
   dplyr::group_by(offense_referral_needs_level) %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-                   `Mean Number of Supervision Level Modifications` = mean(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
-                   `Median Number of Supervision Level Modifications` = median(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
@@ -450,9 +452,9 @@ df_modifications_mean_median_needs <- prelim_dallas_county_av_supervision_analyt
 ### overall
 df_modifications_mean_median_overall <- prelim_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-                   `Mean Number of Supervision Level Modifications` = mean(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
-                   `Median Number of Supervision Level Modifications` = median(unique_supervision_levels_per_supervision_episode_count_average,
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count_average,
                                                                  na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),

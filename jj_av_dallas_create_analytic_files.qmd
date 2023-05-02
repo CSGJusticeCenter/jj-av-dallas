@@ -188,6 +188,40 @@ supervision_level_clean <- supervision_level %>%
                 supervision_level_supervision_type = supervision_type,
                 supervision_level_phase_begin_date = phase_begin_date,
                 supervision_level_phase_end_date = phase_end_date) %>% 
+  ### create hierarchy of supervision levels
+  ### when we measure changes/modifications to supervision levels,
+  ### we are most interested in changes to more intensive levels of supervision 
+  ### (as opposed to planned decreases in intensity over time)
+    mutate(supervision_level_phase_severity = 
+           case_when(
+             supervision_level_phase=="PLACEMENT" ~ 1,
+             supervision_level_phase=="DETENTION/SHELTER" ~ 2,
+             supervision_level_phase=="ISP LEVEL 1" ~ 3,             
+             supervision_level_phase=="ISP LEVEL 2" ~ 4,
+             supervision_level_phase=="ISP LEVEL 3" ~ 5,
+             supervision_level_phase=="PROB LEVEL R1" ~ 6,
+             supervision_level_phase=="PROB LEVEL R2" ~ 7,             
+             supervision_level_phase=="PROB LEVEL R3" ~ 8,
+             supervision_level_phase=="PROB LEVEL R4" ~ 9,
+             supervision_level_phase%in%c("None","WARRANT") ~ 11, 
+             TRUE ~ as.numeric(NA))) %>% 
+  ### now arrange and group by youth to take the next supervision level, if present
+  ### using dplyr::lead to take the next supervision_level_phase_severity value
+  ### using https://dplyr.tidyverse.org/reference/lead-lag.html
+  ### this will allow us to calculate the number of instances where youth 
+  ### experienced an increase in supervision intensiveness 
+  ### logic: using supervision_level_phase_severity, next value is less than current value
+  ### indicates an increase in intensity of supervision
+  arrange(unique_id,
+          referral_number,
+          supervision_level_phase_begin_date) %>%
+  group_by(unique_id) %>%
+  mutate(next_supervision_level = dplyr::lead(supervision_level_phase_severity,
+                                                   1,
+                                                   default=NA)) %>%
+  ungroup() %>%
+  mutate(next_supervision_level_is_increase_flag = ifelse(supervision_level_phase_severity>next_supervision_level,
+                                                          1,0)) %>% 
   ### calculate los by supervision level type (probation, detention, placement, none, and warrant)
   mutate(overall_supervision_los_days = as.numeric(difftime(supervision_end_date,
                                                             supervision_begin_date,
@@ -214,10 +248,12 @@ supervision_level_clean <- supervision_level %>%
                                               na.rm = TRUE)) %>% 
   ### create a count variable in case it's handy for later analysis
   ### sum los by supervision phase/level type at supervision record-level 
-  mutate(unique_supervision_levels_per_supervision_episode_count = n_distinct(unique_id,
+  mutate(overall_unique_supervision_levels_per_supervision_episode_count = n_distinct(unique_id,
                                                            referral_number,
                                                            supervision_level_phase_begin_date,
                                                            supervision_level_phase_end_date),
+         supervision_level_increases_per_supervision_episode_count = sum(next_supervision_level_is_increase_flag,
+                                              na.rm = TRUE),
          probation_supervision_los_days = sum(probation_supervision_los_days,
                                               na.rm = TRUE),
          detention_supervision_los_days = sum(detention_supervision_los_days,
@@ -238,7 +274,8 @@ supervision_level_clean <- supervision_level %>%
   dplyr::select(unique_supervision_id,
                 initial_supervision_level = supervision_level_phase,
                 overall_supervision_los_days,
-                unique_supervision_levels_per_supervision_episode_count,
+                overall_unique_supervision_levels_per_supervision_episode_count,
+                supervision_level_increases_per_supervision_episode_count,
                 probation_supervision_los_days:warrant_supervision_los_days)
  
 
