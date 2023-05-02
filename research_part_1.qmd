@@ -52,7 +52,41 @@ sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
 
 prelim_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
                       "prelim_dallas_county_av_supervision_analytic_file.txt"),
-                      delim = "|")
+                      delim = "|") %>% 
+  mutate(offense_referral_risk_level = 
+           case_when(
+             offense_referral_risk_level=="Low Risk" ~ 1,
+             offense_referral_risk_level%in%c("Medium-Low Risk",
+                             "Medium-High Risk",
+                             "Moderate Risk") ~ 2,
+             offense_referral_risk_level=="High Risk" ~ 3,             
+             offense_referral_risk_level=="Unknown" ~ 4,
+             offense_referral_risk_level=="Not Administered" ~ 5,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_risk_level = factor(offense_referral_risk_level,
+         levels = c(1,2,3,4,5),
+         labels =  c("Low Risk", 
+                     "Moderate Risk", 
+                     "High Risk",
+                     "Unknown",
+                     "Not Administered")),
+         offense_referral_needs_level = 
+           case_when(
+             offense_referral_needs_level=="Low Needs" ~ 1,
+             offense_referral_needs_level=="Moderate Needs" ~ 2,
+             offense_referral_needs_level=="High Needs" ~ 3,             
+             offense_referral_needs_level=="Unknown" ~ 4,
+             offense_referral_needs_level=="Not Administered" ~ 5,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_needs_level = factor(offense_referral_needs_level,
+         levels = c(1,2,3,4,5),
+         labels = c("Low Needs", 
+                    "Moderate Needs", 
+                    "High Needs",
+                    "Unknown",
+                    "Not Administered")))
 
 ```
 
@@ -215,7 +249,7 @@ kable(df_modifications_extensions_risk_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(8, bold = TRUE)
+  row_spec(6, bold = TRUE)
 ```
 
 <br><br>
@@ -425,7 +459,7 @@ kable(df_modifications_mean_median_risk_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(8, bold = TRUE)
+  row_spec(6, bold = TRUE)
 ```
 
 <br><br>

@@ -377,11 +377,41 @@ offenses_clean <- offenses %>%
                     "Property",
                     "Drug",
                     "Other"))) %>% 
-  mutate(risk_level = factor(risk_level,
-         levels = c("Low Risk", "Medium-Low Risk", "Medium-High Risk", "Moderate Risk", "High Risk","Unknown","Not Administered")),
+  mutate(risk_level = 
+           case_when(
+             risk_level=="Low Risk" ~ 1,
+             risk_level%in%c("Medium-Low Risk",
+                             "Medium-High Risk",
+                             "Moderate Risk") ~ 2,
+             risk_level=="High Risk" ~ 3,             
+             risk_level=="Unknown" ~ 4,
+             risk_level=="Not Administered" ~ 5,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         risk_level = factor(risk_level,
+         levels = c(1,2,3,4,5),
+         labels =  c("Low Risk", 
+                     "Moderate Risk", 
+                     "High Risk",
+                     "Unknown",
+                     "Not Administered")),
+         needs_level = 
+           case_when(
+             needs_level=="Low Needs" ~ 1,
+             needs_level=="Moderate Needs" ~ 2,
+             needs_level=="High Needs" ~ 3,             
+             needs_level=="Unknown" ~ 4,
+             needs_level=="Not Administered" ~ 5,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
          needs_level = factor(needs_level,
-         levels = c("Low Needs", "Moderate Needs", "High Needs","Unknown","Not Administered")))
-
+         levels = c(1,2,3,4,5),
+         labels = c("Low Needs", 
+                    "Moderate Needs", 
+                    "High Needs",
+                    "Unknown",
+                    "Not Administered")))
+    
 ### de-duplicate in two steps here:
 ### first use doi=="primary" (this is the primary offense at disposition)
 ### then de-dup by offense severity if there are still more than one offense per referral
@@ -397,7 +427,7 @@ offenses_clean_de_dup <- offenses_clean %>%
                 offense_disposition = disposition,
                 offense_disposition_date = disposition_date,
                 offense_referral_risk_level = risk_level,
-                offense_referral_needs_level = needs_level)
+                offense_referral_needs_level =  needs_level)
 
 ### now create additional dataframe with offense data for referral history 
 ### add "prior_" as prefix to all columns to clarify this for eventual join (where we will already have offense data linked to supervision)
