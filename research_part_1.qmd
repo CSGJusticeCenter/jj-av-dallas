@@ -511,7 +511,7 @@ kable(df_modifications_mean_median_needs_table,
 
 # Average Number of Modifications Prior to First Technical Violation
 
-**NOTE:** The following tables are limited to youth with a technical violation. The current analysis counts any supervision level modification that occurs prior to the date of violation. In some cases, we may counting modifications linked to the violation (e.g., when the modification occurred one day before the violation, it's very possible they are linked to the same event).
+**NOTE:** The following tables are limited to youth with a technical violation. The current analysis includes any upward modification of supervision level intensiveness (moving to a more intensive supervision level) that occurs prior to the date of violation. In some instances, we may counting modifications linked to the violation (e.g., when the modification occurred one day before the violation, it's very possible they are linked to the same event).
 
 <br>
 
