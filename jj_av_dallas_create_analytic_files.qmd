@@ -753,7 +753,7 @@ supervision_child_join_offenses_violatons_6 <-
          #                                                 na.rm = TRUE)
          ) %>% 
   ungroup() %>% 
-  ### now de-dup by supervision record to keep same row count as before join 
+  ### now de-dup by supervision record to get same row count as before join 
   distinct(unique_supervision_id,
            .keep_all=TRUE) %>% 
   mutate(technical_violation_flag = ifelse(technical_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
@@ -765,9 +765,156 @@ supervision_child_join_offenses_violatons_6 <-
 
 <br><br>
 
+```{r }
+
+### What is the average number of modifications for youth who receive a technical violation? How does this vary across race/ethnicity, sex, and risk level?
+
+### in this chunk, we'll create a look up table of number of supervision level increases (in intensiveness) that occur prior to a youth's first violation
+
+### we'll then join the file back to our main analytic file
+
+#############################################
+### clean and de-dup supervision_level dataframe
+#############################################
+
+### by unique_id, referral_number, phase_begin_date, phase_end_date
+supervision_level_clean_to_join_modifications_violations <- supervision_level %>% 
+  distinct(unique_id,
+           referral_number,
+           phase,
+           phase_begin_date,
+           phase_end_date,
+           .keep_all=TRUE) %>%  ### 1 record dropped 
+  ### clean dates and create years for potential grouping in future trend analysis
+  mutate(phase_begin_date = ymd(as_date(phase_begin_date)),
+         phase_end_date = ymd(as_date(phase_end_date)),
+         unique_supervision_id = paste0(unique_id,
+                                        referral_number,
+                                        supervision_begin_date)) %>% 
+  ### rename columns with duplicate names across files to indicate where data initially came from 
+  dplyr::rename(supervision_level_phase = phase,
+                supervision_level_supervision_type = supervision_type,
+                supervision_level_phase_begin_date = phase_begin_date,
+                supervision_level_phase_end_date = phase_end_date) %>% 
+  ### create hierarchy of supervision levels
+  ### when we measure changes/modifications to supervision levels,
+  ### we are most interested in changes to more intensive levels of supervision 
+  ### (as opposed to planned decreases in intensity over time)
+    mutate(supervision_level_phase_severity = 
+           case_when(
+             supervision_level_phase=="PLACEMENT" ~ 1,
+             supervision_level_phase=="DETENTION/SHELTER" ~ 2,
+             supervision_level_phase=="ISP LEVEL 1" ~ 3,             
+             supervision_level_phase=="ISP LEVEL 2" ~ 4,
+             supervision_level_phase=="ISP LEVEL 3" ~ 5,
+             supervision_level_phase=="PROB LEVEL R1" ~ 6,
+             supervision_level_phase=="PROB LEVEL R2" ~ 7,             
+             supervision_level_phase=="PROB LEVEL R3" ~ 8,
+             supervision_level_phase=="PROB LEVEL R4" ~ 9,
+             supervision_level_phase%in%c("None","WARRANT") ~ 11, 
+             TRUE ~ as.numeric(NA))) %>% 
+  ### now arrange and group by youth to take the next supervision level, if present
+  ### using dplyr::lead to take the next supervision_level_phase_severity value
+  ### using https://dplyr.tidyverse.org/reference/lead-lag.html
+  ### this will allow us to calculate the number of instances where youth 
+  ### experienced an increase in supervision intensiveness 
+  ### logic: using supervision_level_phase_severity, next value is less than current value
+  ### indicates an increase in intensity of supervision
+  arrange(unique_id,
+          referral_number,
+          supervision_level_phase_begin_date) %>%
+  group_by(unique_id) %>%
+  mutate(prior_supervision_level = dplyr::lag(supervision_level_phase_severity,
+                                                   1,
+                                                   default=NA)) %>%
+  ungroup() %>%
+  mutate(supervision_level_is_increase_flag = ifelse(supervision_level_phase_severity<prior_supervision_level,
+                                                          1,0)) %>% 
+  dplyr::select(unique_id,
+                referral_number,
+                unique_supervision_id,
+                supervision_begin_date,
+                supervision_end_date,
+                supervision_level_phase,
+                supervision_level_supervision_type,
+                supervision_level_phase_begin_date,
+                supervision_level_phase_end_date,
+                supervision_level_is_increase_flag) 
+
+
+################################################################################
+### left join of violations_clean file to supervision_child_join_offenses_5 file 
+################################################################################
+modification_prior_to_technical_violation_count <- 
+  left_join(violations_clean_de_dup,
+            supervision_level_clean_to_join_modifications_violations,
+            by = c("unique_id")) %>% ### this is a many to many join so there are now lots of records (all violations joining to all supervisions/supervision extensions/supervision levels)
+  ### now we need to filter on date -- only keeping violation records where the violation_date>=supervision_begin_date & violation_date<=supervision_end_date
+  ### first create fake end date for records where the end date is blank; since this indicates that supervision was ongoing at time of data pull, we still want to include violations that occurred so changing NA to '2030-01-01' in new variable for the following filter
+  mutate(supervision_end_date_missing_include = ifelse(is.na(supervision_end_date)==TRUE,
+                                       ymd(as_date("2030-01-01")),
+                                       ymd(as_date(supervision_end_date))),
+         supervision_end_date_missing_include = ymd(as_date(supervision_end_date_missing_include)),
+         ### flag records with no joining modification information using supervision_level_phase_begin_date
+         no_modification_records_joined = ifelse(is.na(supervision_level_phase_begin_date==TRUE),
+                                       1,0)) %>% 
+  ### we only want to keep either (1) violation records with no modifications or (2) supervision records with violation records when those violations occurred during the period of supervision  
+  ### we only want records that fit our criteria of:
+  ### violations occurring during the supervision episode
+  filter(no_modification_records_joined==1 | (violation_date>=supervision_begin_date & violation_date<=supervision_end_date_missing_include)) %>% 
+  ### only technical violations
+  filter(violation_severity_factor=="Technical Violation") %>% 
+  ### and modifications occurring before the violation
+  ### and only modifications that were increases in intensiveness
+  ### when we de-dup, we will keep first violation per supervision episode
+  filter(no_modification_records_joined==1 | (supervision_level_phase_begin_date<violation_date & supervision_level_is_increase_flag==1)) %>% 
+  dplyr::select(unique_id,
+                violation_referral_number,
+                referral_number,
+                unique_supervision_id,
+                violation,
+                violation_date,
+                supervision_begin_date,
+                supervision_end_date,
+                supervision_level_phase,
+                supervision_level_phase_begin_date,
+                supervision_level_phase_end_date,
+                supervision_level_is_increase_flag) %>% 
+  distinct() %>% 
+  group_by(unique_supervision_id,
+          violation_date) %>%
+  ### at this point, we only have records that fit our criteria of 
+  ### technical violations occurring during the supervision episode
+  ### modifications occurring before the violation
+  ### and only modifications that were increases in intensiveness
+  ### when we de-dup, we will keep first violation per supervision episode
+  ### now count modifications per violations
+  mutate(modification_increase_prior_to_technical_count = n_distinct(unique_id,
+                                                  unique_supervision_id,
+                                                  supervision_level_phase,
+                                                  supervision_level_phase_begin_date)) %>% 
+  ungroup() %>% 
+  ### for this analysis, keep first violation per supervision episode 
+  ### de-dup, keeping first record to preserve violation and linked modifications for supervision period
+  arrange(unique_supervision_id,
+          violation_date) %>%
+  distinct(unique_supervision_id,
+           .keep_all = TRUE) %>% 
+  dplyr::select(unique_supervision_id,
+                modification_increase_prior_to_technical_count) 
+  
+### join lookup table of modification increases occurring prior to first 
+### technical violation per supervision episode to main analytic file
+supervision_child_join_offenses_violatons_7 <- left_join(supervision_child_join_offenses_violatons_6, 
+                                                         modification_prior_to_technical_violation_count,
+                                                         by = "unique_supervision_id")
+```
+
+<br><br>
+
 ```{r warning=FALSE}
 ### select final variables we want for supervision analytic file
-prelim_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses_violatons_6 
+df_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses_violatons_7 
 
 # %>%
 #   dplyr::select(unique_supervision_id,
@@ -815,9 +962,9 @@ prelim_dallas_county_av_supervision_analytic_file <- supervision_child_join_offe
 ### set sharepoint path using sp_data_path and file.path function 
 sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
 
-write_delim(prelim_dallas_county_av_supervision_analytic_file,
+write_delim(df_dallas_county_av_supervision_analytic_file,
             file.path(sharepoint_jj_av_dallas_analytic_data,
-                      "prelim_dallas_county_av_supervision_analytic_file.txt"),
+                      "df_dallas_county_av_supervision_analytic_file.txt"),
                       delim = "|")
 
 ```
