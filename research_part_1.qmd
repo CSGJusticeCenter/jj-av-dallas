@@ -142,7 +142,7 @@ kable(df_los_per_year_table,
 save_kable("C:\\Users\\abyrum\\Documents\\table_los_per_year_table.png")
 ```
 
-
+ 
 ## Table 1. By FY: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
