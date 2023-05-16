@@ -737,9 +737,9 @@ supervision_child_join_offenses_violatons_6 <-
   ### count of referrals linked to any violation (using no_violation_records_joined), technical violations, and new offense violations
   mutate(overall_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0],
                                                          na.rm = TRUE),
-         technical_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation"],
+         technical_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity_factor=="Technical Violation"],
                                                          na.rm = TRUE),
-         new_offense_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="New Offense"],
+         new_offense_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity_factor=="New Offense"],
                                                            na.rm = TRUE)
          # technical_violation_referral_count_in_2017 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2017],
          #                                                 na.rm = TRUE),

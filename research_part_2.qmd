@@ -5,11 +5,11 @@ format: html
 
 **Who receives technical violations?**
 
-* What proportion of youth on probation supervision receive a technical violation during a probation term? How does this vary across race/ethnicity, sex, and risk level? 
+1. What proportion of youth on probation supervision receive a technical violation during a probation term? How does this vary across race/ethnicity, sex, and risk level? 
 
-* Descriptive overview of the population of youth who receive a technical violation during the study period (when technical violation was the primary offense) by race/ethnicity, age category, sex, and risk level  
+2. Descriptive overview of the population of youth who receive a technical violation during the study period (when technical violation was the primary offense) by race/ethnicity, age category, sex, and risk level  
 
-* What proportion of violations filed by a PO are rejected by supervisor or prosecutor?
+3. What proportion of violations filed by a PO are rejected by supervisor or prosecutor?
 
 
 ```{r include=FALSE}
@@ -27,51 +27,122 @@ knitr::opts_chunk$set(
 
 ### set theme
 theme_set(theme_minimal())
+
+### set project path with csg_get_project_path (just once)
+# csg_set_project_path(project = "jj-av-dallas",
+# sp_folder = "C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas", force = TRUE)
+
+### data path
+sp_data_path <- csg_get_project_path("jj-av-dallas")
+
+### viz output path
+# sp_viz_output_path <- paste(sp_data_path, "/Output/r_output_presentation")
+
 ```
 
-```{r eval=FALSE}
-### pull in dallas data from raw data folder
+```{r include=FALSE,message=FALSE,warning=FALSE}
+###############################
+### import dallas analytic file
+###############################
 
-### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
-sharepoint_jj_av_dallas_raw_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw")
+### set sharepoint path using sp_data_path and file.path function 
+sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
 
+df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "df_dallas_county_av_supervision_analytic_file.txt"),
+                      delim = "|") %>% 
+  mutate(offense_referral_risk_level = 
+           case_when(
+             offense_referral_risk_level=="Low Risk" ~ 1,
+             offense_referral_risk_level%in%c("Medium-Low Risk",
+                             "Medium-High Risk",
+                             "Moderate Risk") ~ 2,
+             offense_referral_risk_level=="High Risk" ~ 3,             
+             offense_referral_risk_level=="Unknown" ~ 4,
+             offense_referral_risk_level=="Not Administered" ~ 5,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_risk_level = factor(offense_referral_risk_level,
+         levels = c(1,2,3,4,5),
+         labels =  c("Low Risk", 
+                     "Moderate Risk", 
+                     "High Risk",
+                     "Unknown",
+                     "Not Administered")),
+         offense_referral_needs_level = 
+           case_when(
+             offense_referral_needs_level=="Low Needs" ~ 1,
+             offense_referral_needs_level=="Moderate Needs" ~ 2,
+             offense_referral_needs_level=="High Needs" ~ 3,             
+             offense_referral_needs_level=="Unknown" ~ 4,
+             offense_referral_needs_level=="Not Administered" ~ 5,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_needs_level = factor(offense_referral_needs_level,
+         levels = c(1,2,3,4,5),
+         labels = c("Low Needs", 
+                    "Moderate Needs", 
+                    "High Needs",
+                    "Unknown",
+                    "Not Administered")))
 
 ```
 
-## Table 1. 
+<br>
 
-```{r eval=FALSE}
+# 1. Technical Violations Overview
+
+**NOTE:** All analysis of technical violations in this section (e.g., supervision episodes with at least one technical violation) refers to the filing of any technical violations regardless of outcome/disposition. 
+
+<br>
+
+## Table 1. By year: Percentage of Supervision Episodes/Referrals with a Technical Violation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### create denominator -- unique referrals for entire sample
-unique_referrals_sample_denom <- n_distinct(offenses_clean$unique_id,
-                                            offenses_clean$referral_number)
+unique_referrals_sample_denom <- n_distinct(df_dallas_county_av_supervision_analytic_file$unique_id,
+                                            df_dallas_county_av_supervision_analytic_file$referral_number)
+
+### create denominator -- unique supervision episodes
+unique_supervision_episode_denom <- n_distinct(df_dallas_county_av_supervision_analytic_file$unique_supervision_id)
 
 ### create denominator -- unique youth for entire sample
-unique_youth_sample_denom <- n_distinct(offenses_clean$unique_id)
+unique_youth_sample_denom <- n_distinct(df_dallas_county_av_supervision_analytic_file$unique_id)
 
 ### unique youth and referrals per year
-df_referrals_youth_per_year <- offenses_clean %>% 
+df_technical_violations_per_year <- df_dallas_county_av_supervision_analytic_file %>% 
   dplyr::group_by(referral_year) %>% 
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
-            `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Year of Referral` = referral_year) %>% 
   mutate(`Year of Referral` = as.character(`Year of Referral`))
 
 ### overall
-df_referrals_youth_overall <- offenses_clean %>% 
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
-            `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Year of Referral` = "Overall")
 
 ### combine tables for kable
-df_referrals_youth_per_year_table <- rbind(df_referrals_youth_per_year,df_referrals_youth_overall)
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
 
 ### print table via kableextra
-kable(df_referrals_youth_per_year_table, 
+kable(df_technical_violations_per_year_table, 
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
   kable_styling(bootstrap_options = c("striped", 
@@ -79,8 +150,170 @@ kable(df_referrals_youth_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(14, bold = TRUE)
+  row_spec(11, bold = TRUE)
+```
+
+<br>
+
+## Table 2. By Race/Ethnicity: Percentage of Supervision Episodes/Referrals with a Technical Violation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_technical_violations_race <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean)
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_technical_violations_race_table <- rbind(df_technical_violations_race,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_race_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
 ```
 
 
 <br>
+
+## Table 3. By Risk Level: Percentage of Supervision Episodes/Referrals with a Technical Violation
+
+**Note:** This is the "listed risk level at the time of referral disposition"
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_technical_violations_risk <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level)
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_technical_violations_risk_table <- rbind(df_technical_violations_risk,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_risk_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br>
+
+## Table 4. By Needs Level: Percentage of Supervision Episodes/Referrals with a Technical Violation
+
+**Note:** This is the "listed needs level at the time of referral disposition"
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_technical_violations_needs <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level)
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_technical_violations_needs_table <- rbind(df_technical_violations_needs,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_needs_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br><br>
+
+# 2. Technical Violations Descriptives
+
+**NOTE:** All analysis of technical violations in this section (e.g., supervision episodes with at least one technical violation) refers to the filing of any technical violation regardless of outcome/disposition -- but where the technical violation was the primary offense/violation. 
+
+**TBD**
+
+<br><br>
+
+# 3. Supervisor/Prosecutor Rejections
+
+**TBD**
+
+<br><br>

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.269">
+<meta name="generator" content="quarto-1.2.335">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -1314,9 +1314,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb155-18"><a href="#cb155-18" aria-hidden="true" tabindex="-1"></a>  <span class="do">### count of referrals linked to any violation (using no_violation_records_joined), technical violations, and new offense violations</span></span>
 <span id="cb155-19"><a href="#cb155-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">overall_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span>],</span>
 <span id="cb155-20"><a href="#cb155-20" aria-hidden="true" tabindex="-1"></a>                                                         <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb155-21"><a href="#cb155-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">technical_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span> <span class="sc">&amp;</span> violation_severity<span class="sc">==</span><span class="st">"Technical Violation"</span>],</span>
+<span id="cb155-21"><a href="#cb155-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">technical_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span> <span class="sc">&amp;</span> violation_severity_factor<span class="sc">==</span><span class="st">"Technical Violation"</span>],</span>
 <span id="cb155-22"><a href="#cb155-22" aria-hidden="true" tabindex="-1"></a>                                                         <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb155-23"><a href="#cb155-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">new_offense_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span> <span class="sc">&amp;</span> violation_severity<span class="sc">==</span><span class="st">"New Offense"</span>],</span>
+<span id="cb155-23"><a href="#cb155-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">new_offense_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span> <span class="sc">&amp;</span> violation_severity_factor<span class="sc">==</span><span class="st">"New Offense"</span>],</span>
 <span id="cb155-24"><a href="#cb155-24" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb155-25"><a href="#cb155-25" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2017 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2017],</span></span>
 <span id="cb155-26"><a href="#cb155-26" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
@@ -1371,10 +1371,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>mutate (grouped): new variable 'overall_violation_referral_count' (integer) with 8 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>                  new variable 'technical_violation_referral_count' (integer) with one unique value and 0% NA</code></pre>
+<pre><code>                  new variable 'technical_violation_referral_count' (integer) with 8 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>                  new variable 'new_offense_violation_referral_count' (integer) with one unique value and 0% NA</code></pre>
+<pre><code>                  new variable 'new_offense_violation_referral_count' (integer) with 5 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ungroup: no grouping variables</code></pre>
@@ -1383,7 +1383,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>distinct: removed 1,067 rows (11%), 8,249 rows remaining</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>mutate: new variable 'technical_violation_flag' (double) with one unique value and 0% NA</code></pre>
+<pre><code>mutate: new variable 'technical_violation_flag' (double) with 2 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>        new variable 'overall_violation_referral_flag' (double) with 2 unique values and 0% NA</code></pre>
