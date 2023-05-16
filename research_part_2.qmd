@@ -96,7 +96,7 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
 
 <br>
 
-## Table 1. By year: Percentage of Supervision Episodes/Referrals with a Technical Violation
+## Table 1. By FY: Percentage of Supervision Episodes/Referrals with a Technical Violation
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### create denominator -- unique referrals for entire sample
@@ -109,9 +109,9 @@ unique_supervision_episode_denom <- n_distinct(df_dallas_county_av_supervision_a
 ### create denominator -- unique youth for entire sample
 unique_youth_sample_denom <- n_distinct(df_dallas_county_av_supervision_analytic_file$unique_id)
 
-### unique youth and referrals per year
+### unique youth and referrals per FY
 df_technical_violations_per_year <- df_dallas_county_av_supervision_analytic_file %>% 
-  dplyr::group_by(referral_year) %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
@@ -122,8 +122,8 @@ df_technical_violations_per_year <- df_dallas_county_av_supervision_analytic_fil
             `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
-  dplyr::rename(`Year of Referral` = referral_year) %>% 
-  mutate(`Year of Referral` = as.character(`Year of Referral`))
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
 
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
@@ -136,7 +136,7 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
-  mutate(`Year of Referral` = "Overall")
+  mutate(`FY of Completion` = "Overall")
 
 ### combine tables for kable
 df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
@@ -150,7 +150,7 @@ kable(df_technical_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(11, bold = TRUE)
+  row_spec(7, bold = TRUE)
 ```
 
 <br>

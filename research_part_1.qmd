@@ -93,7 +93,57 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
 
 <br>
 
-## Table 1. By year: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
+
+```{r eval=FALSE,include=FALSE,message=FALSE,warning=FALSE}
+### explore LOS over time to see what switch to grouping by FY of completion looks like
+
+### total supervision los per FY of exit
+df_los_per_year <- df_dallas_county_av_supervision_analytic_file %>% 
+  distinct(unique_supervision_id,
+           .keep_all = TRUE) |> 
+  dplyr::group_by(supervision_end_fy) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Mean LOS` = mean(overall_supervision_los_days.x,
+                              na.rm = TRUE),
+            `Median LOS` = median(overall_supervision_los_days.x,
+                              na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
+
+### overall
+df_los_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+    distinct(unique_supervision_id,
+           .keep_all = TRUE) |> 
+   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Mean LOS` = mean(overall_supervision_los_days.x,
+                              na.rm = TRUE),
+            `Median LOS` = median(overall_supervision_los_days.x,
+                              na.rm = TRUE)) %>% 
+  mutate(`FY of Completion` = "Overall")
+
+### combine tables for kable
+df_los_per_year_table <- rbind(df_los_per_year,
+                               df_los_overall)
+
+### print table via kableextra
+kable(df_los_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(7, bold = TRUE) |> 
+### save out
+save_kable("C:\\Users\\abyrum\\Documents\\table_los_per_year_table.png")
+```
+
+
+## Table 1. By FY: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### create denominator -- unique referrals for entire sample
@@ -106,9 +156,9 @@ unique_supervision_episode_denom <- n_distinct(df_dallas_county_av_supervision_a
 ### create denominator -- unique youth for entire sample
 unique_youth_sample_denom <- n_distinct(df_dallas_county_av_supervision_analytic_file$unique_id)
 
-### unique youth and referrals per year
+### unique youth and referrals per FY of exit
 df_modifications_extensions_per_year <- df_dallas_county_av_supervision_analytic_file %>% 
-  dplyr::group_by(referral_year) %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
@@ -119,8 +169,8 @@ df_modifications_extensions_per_year <- df_dallas_county_av_supervision_analytic
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
-  dplyr::rename(`Year of Referral` = referral_year) %>% 
-  mutate(`Year of Referral` = as.character(`Year of Referral`))
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
 
 ### overall
 df_modifications_extensions_overall <- df_dallas_county_av_supervision_analytic_file %>% 
@@ -133,7 +183,7 @@ df_modifications_extensions_overall <- df_dallas_county_av_supervision_analytic_
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one supervision extension (%)` = scales::percent(n_distinct(unique_supervision_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
-  mutate(`Year of Referral` = "Overall")
+  mutate(`FY of Completion` = "Overall")
 
 ### combine tables for kable
 df_modifications_extensions_per_year_table <- rbind(df_modifications_extensions_per_year,df_modifications_extensions_overall)
@@ -147,7 +197,7 @@ kable(df_modifications_extensions_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(11, bold = TRUE)
+  row_spec(7, bold = TRUE)
 ```
 
 <br><br>
@@ -307,7 +357,7 @@ kable(df_modifications_extensions_needs_table,
 
 <br>
 
-## Table 5. By year: Average Number of Supervision Modifications and Extensions per Supervision Episode
+## Table 5. By FY: Average Number of Supervision Modifications and Extensions per Supervision Episode
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### de-dup analytic file by supervision episode since we are calculating mean and medians
@@ -321,7 +371,7 @@ df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup <- df_d
 
 ### mean and median modifications and extensions
 df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
-  dplyr::group_by(referral_year) %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
                    `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
@@ -332,8 +382,8 @@ df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_fi
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
-  dplyr::rename(`Year of Referral` = referral_year) %>% 
-  mutate(`Year of Referral` = as.character(`Year of Referral`))
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
 
 ### overall
 df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
@@ -346,7 +396,7 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
-  mutate(`Year of Referral` = "Overall")
+  mutate(`FY of Completion` = "Overall")
 
 ### combine tables for kable
 df_modifications_mean_median_year_table <- rbind(df_modifications_mean_median_year,df_modifications_mean_median_overall)
@@ -360,7 +410,7 @@ kable(df_modifications_mean_median_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(11, bold = TRUE)
+  row_spec(7, bold = TRUE)
 ```
 
 <br><br>
@@ -515,7 +565,7 @@ kable(df_modifications_mean_median_needs_table,
 
 <br>
 
-## Table 9. By year: Average Number of Supervision Modifications and Extensions per Supervision Episode
+## Table 9. By FY: Average Number of Supervision Modifications and Extensions per Supervision Episode
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### using modification_increase_prior_to_technical_count in this section
@@ -537,7 +587,7 @@ df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_d
 
 ### mean and median modifications and extensions
 df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
-  dplyr::group_by(referral_year) %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (%)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
                                                                        accuracy = .1),
@@ -546,8 +596,8 @@ df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_fi
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
-  dplyr::rename(`Year of Referral` = referral_year) %>% 
-  mutate(`Year of Referral` = as.character(`Year of Referral`))
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
 
 ### overall
 df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
@@ -558,7 +608,7 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
-  mutate(`Year of Referral` = "Overall")
+  mutate(`FY of Completion` = "Overall")
 
 ### combine tables for kable
 df_modifications_mean_median_year_table <- rbind(df_modifications_mean_median_year,df_modifications_mean_median_overall)
@@ -572,7 +622,7 @@ kable(df_modifications_mean_median_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(11, bold = TRUE)
+  row_spec(7, bold = TRUE)
 ```
 
 <br><br>

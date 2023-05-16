@@ -102,6 +102,16 @@ supervision_clean <- supervision %>%
          unique_supervision_id = paste0(unique_id,
                                         referral_number,
                                         supervision_begin_date)) %>% 
+  ### count number of supervision periods per referral 
+  group_by(unique_referral_id) |> 
+  mutate(supervision_periods_per_referral = n_distinct(unique_supervision_id,
+                                          na.rm = TRUE)) |> 
+  ungroup() |> 
+  ### and number of referrals per youth
+  group_by(unique_id) |> 
+  mutate(referrals_per_youth = n_distinct(unique_referral_id,
+                                          na.rm = TRUE)) |> 
+  ungroup() |> 
   ### rename columns with duplicate names across files to indicate where data initially came from 
   dplyr::rename(supervision_disposition = disposition,
                 supervision_outcome = outcome)
@@ -909,12 +919,20 @@ supervision_child_join_offenses_violatons_7 <- left_join(supervision_child_join_
                                                          modification_prior_to_technical_violation_count,
                                                          by = "unique_supervision_id")
 ```
-
 <br><br>
 
 ```{r warning=FALSE}
 ### select final variables we want for supervision analytic file
-df_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses_violatons_7 
+df_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses_violatons_7 |>
+  ### here we are adding several sample filters based on conversation with Becky and Emily:
+  ### because we are grouping by exit date (as opposed to referral date)
+  ### we keep only completers (those with data for supervision completion)
+  filter(!is.na(supervision_outcome)==TRUE) |> 
+  ### create fiscal year vars for supervision start and end
+  mutate(supervision_begin_fy = csgjcr::csg_fiscal_year(supervision_begin_date,
+                                                          fy_start="October"),
+         supervision_end_fy = csgjcr::csg_fiscal_year(supervision_end_date,
+                                                          fy_start="October"))
 
 # %>%
 #   dplyr::select(unique_supervision_id,
