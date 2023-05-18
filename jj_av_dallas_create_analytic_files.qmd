@@ -932,7 +932,32 @@ df_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses
   mutate(supervision_begin_fy = csgjcr::csg_fiscal_year(supervision_begin_date,
                                                           fy_start="October"),
          supervision_end_fy = csgjcr::csg_fiscal_year(supervision_end_date,
-                                                          fy_start="October"))
+                                                          fy_start="October")) |> 
+  ### clean age variables
+  mutate(age_at_referral_clean = case_when(
+    age_at_referral < 12 ~ 1,
+    age_at_referral>= 12 &  age_at_referral< 14 ~ 2,
+    age_at_referral>= 14 &  age_at_referral< 16 ~ 3,
+    age_at_referral>= 16 &  age_at_referral< 20 ~ 4,
+    TRUE ~ as.numeric(NA)),
+    age_at_referral_clean = factor(age_at_referral_clean,
+         levels = c(1,2,3,4),
+         labels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 15",
+                    "16 to 20")),
+    age_at_start_of_supervision_clean = case_when(
+    age_at_start_of_supervision < 12 ~ 1,
+    age_at_start_of_supervision>= 12 &  age_at_start_of_supervision< 14 ~ 2,
+    age_at_start_of_supervision>= 14 &  age_at_start_of_supervision< 16 ~ 3,
+    age_at_start_of_supervision>= 16 &  age_at_start_of_supervision< 20 ~ 4,
+    TRUE ~ as.numeric(NA)),
+    age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
+         levels = c(1,2,3,4),
+         labels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 15",
+                    "16 to 20")))
 
 # %>%
 #   dplyr::select(unique_supervision_id,
