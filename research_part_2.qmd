@@ -507,7 +507,7 @@ kable(df_technical_violations_risk_table,
 
 <br>
 
-## Table 10. By Risk Level: At least one Technical Violation
+## Table 10. By Needs Level: At least one Technical Violation
 
 **Note:** This is the "listed needs level at the time of referral disposition"
 
