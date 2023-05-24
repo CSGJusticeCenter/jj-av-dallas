@@ -740,5 +740,47 @@
     "title": "When and how often do youth receive technical violations?",
     "section": "Table 6. By Needs Level: Time to First Technical Violation",
     "text": "Table 6. By Needs Level: Time to First Technical Violation\nNote: This is the “listed needs level at the time of referral disposition”\n\n\n\n\n \n  \n    Needs Level \n    Average Time to First Technical Violation (Mean) \n    Average Time to First Technical Violation (Median) \n  \n \n\n  \n    1 \n    187.0901 \n    146.0 \n  \n  \n    2 \n    122.7355 \n    162.0 \n  \n  \n    3 \n    217.3981 \n    179.5 \n  \n  \n    4 \n    229.5000 \n    230.5 \n  \n  \n    5 \n    199.9500 \n    163.5 \n  \n  \n    Overall \n    178.9232 \n    169.0"
+  },
+  {
+    "objectID": "research_part_3.html#table-7.-by-fy-average-number-of-technical-violations-per-episode",
+    "href": "research_part_3.html#table-7.-by-fy-average-number-of-technical-violations-per-episode",
+    "title": "When and how often do youth receive technical violations?",
+    "section": "Table 7. By FY: Average Number of Technical Violations per Episode",
+    "text": "Table 7. By FY: Average Number of Technical Violations per Episode\n\n\n\n\n \n  \n    FY of Completion \n    Average Number of Technical Violations (Mean) \n    Average Number of Technical Violations (Median) \n  \n \n\n  \n    2018 \n    0.2896111 \n    0 \n  \n  \n    2019 \n    0.2898469 \n    0 \n  \n  \n    2020 \n    0.3447631 \n    0 \n  \n  \n    2021 \n    0.2481977 \n    0 \n  \n  \n    2022 \n    0.1821429 \n    0 \n  \n  \n    2023 \n    0.1843003 \n    0 \n  \n  \n    Overall \n    0.2758898 \n    0"
+  },
+  {
+    "objectID": "research_part_3.html#table-8.-by-raceethnicity-average-number-of-technical-violations-per-episode",
+    "href": "research_part_3.html#table-8.-by-raceethnicity-average-number-of-technical-violations-per-episode",
+    "title": "When and how often do youth receive technical violations?",
+    "section": "Table 8. By Race/Ethnicity: Average Number of Technical Violations per Episode",
+    "text": "Table 8. By Race/Ethnicity: Average Number of Technical Violations per Episode\n\n\n\n\n \n  \n    Race/Ethnicity \n    Average Number of Technical Violations (Mean) \n    Average Number of Technical Violations (Median) \n  \n \n\n  \n    Asian \n    0.0810811 \n    0 \n  \n  \n    Black \n    0.2918689 \n    0 \n  \n  \n    Hispanic \n    0.2871962 \n    0 \n  \n  \n    Other \n    0.5000000 \n    0 \n  \n  \n    White \n    0.1675900 \n    0 \n  \n  \n    Overall \n    0.2758898 \n    0"
+  },
+  {
+    "objectID": "research_part_3.html#table-9.-by-gender-average-number-of-technical-violations-per-episode",
+    "href": "research_part_3.html#table-9.-by-gender-average-number-of-technical-violations-per-episode",
+    "title": "When and how often do youth receive technical violations?",
+    "section": "Table 9. By Gender: Average Number of Technical Violations per Episode",
+    "text": "Table 9. By Gender: Average Number of Technical Violations per Episode\n\n\n\n\n \n  \n    Gender \n    Average Number of Technical Violations (Mean) \n    Average Number of Technical Violations (Median) \n  \n \n\n  \n    Female \n    0.2039877 \n    0 \n  \n  \n    Male \n    0.3013773 \n    0 \n  \n  \n    Overall \n    0.2758898 \n    0"
+  },
+  {
+    "objectID": "research_part_3.html#table-10.-by-age-average-number-of-technical-violations-per-episode",
+    "href": "research_part_3.html#table-10.-by-age-average-number-of-technical-violations-per-episode",
+    "title": "When and how often do youth receive technical violations?",
+    "section": "Table 10. By Age: Average Number of Technical Violations per Episode",
+    "text": "Table 10. By Age: Average Number of Technical Violations per Episode\n\n\n\n\n \n  \n    Age at Referral \n    Average Number of Technical Violations (Mean) \n    Average Number of Technical Violations (Median) \n  \n \n\n  \n    Less than 12 \n    0.2010050 \n    0 \n  \n  \n    12 to 13 \n    0.3081991 \n    0 \n  \n  \n    14 to 15 \n    0.3280408 \n    0 \n  \n  \n    16 to 20 \n    0.1864763 \n    0 \n  \n  \n    Overall \n    0.2759267 \n    0"
+  },
+  {
+    "objectID": "research_part_3.html#table-11.-by-risk-level-average-number-of-technical-violations-per-episode",
+    "href": "research_part_3.html#table-11.-by-risk-level-average-number-of-technical-violations-per-episode",
+    "title": "When and how often do youth receive technical violations?",
+    "section": "Table 11. By Risk Level: Average Number of Technical Violations per Episode",
+    "text": "Table 11. By Risk Level: Average Number of Technical Violations per Episode\nNote: This is the “listed risk level at the time of referral disposition”\n\n\n\n\n \n  \n    Risk Level \n    Average Number of Technical Violations (Mean) \n    Average Number of Technical Violations (Median) \n  \n \n\n  \n    1 \n    0.0777001 \n    0 \n  \n  \n    2 \n    0.4193133 \n    0 \n  \n  \n    3 \n    0.7651210 \n    0 \n  \n  \n    4 \n    0.0759494 \n    0 \n  \n  \n    5 \n    0.0943396 \n    0 \n  \n  \n    Overall \n    0.2758898 \n    0"
+  },
+  {
+    "objectID": "research_part_3.html#table-12.-by-needs-level-average-number-of-technical-violations-per-episode",
+    "href": "research_part_3.html#table-12.-by-needs-level-average-number-of-technical-violations-per-episode",
+    "title": "When and how often do youth receive technical violations?",
+    "section": "Table 12. By Needs Level: Average Number of Technical Violations per Episode",
+    "text": "Table 12. By Needs Level: Average Number of Technical Violations per Episode\nNote: This is the “listed needs level at the time of referral disposition”\n\n\n\n\n \n  \n    Needs Level \n    Average Number of Technical Violations (Mean) \n    Average Number of Technical Violations (Median) \n  \n \n\n  \n    1 \n    0.0502874 \n    0 \n  \n  \n    2 \n    0.2857143 \n    0 \n  \n  \n    3 \n    0.6577571 \n    0 \n  \n  \n    4 \n    0.0759494 \n    0 \n  \n  \n    5 \n    0.1043478 \n    0 \n  \n  \n    Overall \n    0.2758898 \n    0"
   }
 ]

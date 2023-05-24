@@ -343,8 +343,250 @@ kable(df_time_to_technical_fy_table,
 
 # 2. Average Number of Technical Violations per Episode
 
-**TO DO**
+**NOTE:** I am currently counting the average number of filed violations where the most serious individual violation is a technical violation (as opposed to violations for new offenses with accompanying technical violations, etc.)
+
+**TO DO:** Double check calculation of `technical_violation_referral_count`. 
+
+## Table 7. By FY: Average Number of Technical Violations per Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### average time to first technical violation
+df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  mutate(`FY of Completion` = "Overall")
+
+### combine tables for kable
+df_time_to_technical_fy_table <- rbind(df_time_to_technical_fy,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_time_to_technical_fy_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(7, bold = TRUE)
+```
+
+<br>
+
+## Table 8. By Race/Ethnicity: Average Number of Technical Violations per Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### average time to first technical violation
+df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean) 
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_time_to_technical_fy_table <- rbind(df_time_to_technical_fy,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_time_to_technical_fy_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br>
+
+## Table 9. By Gender: Average Number of Technical Violations per Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### average time to first technical violation
+df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(gender_clean) %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean) 
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  mutate(`Gender` = "Overall")
+
+### combine tables for kable
+df_time_to_technical_fy_table <- rbind(df_time_to_technical_fy,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_time_to_technical_fy_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(3, bold = TRUE)
+```
+
+<br>
+
+## Table 10. By Age: Average Number of Technical Violations per Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### turn age into a factor
+df_dallas_county_av_supervision_analytic_file %<>%
+ mutate(age_at_referral_clean = factor(age_at_referral_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 15",
+                    "16 to 20")))
+
+### average time to first technical violation
+df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
+  filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::group_by(age_at_referral_clean) %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age at Referral` = age_at_referral_clean) 
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+    filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  mutate(`Age at Referral` = "Overall")
+
+### combine tables for kable
+df_time_to_technical_fy_table <- rbind(df_time_to_technical_fy,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_time_to_technical_fy_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+## Table 11. By Risk Level: Average Number of Technical Violations per Episode
+
+**Note:** This is the "listed risk level at the time of referral disposition"
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### average time to first technical violation
+df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level) 
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_time_to_technical_fy_table <- rbind(df_time_to_technical_fy,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_time_to_technical_fy_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br>
+
+## Table 12. By Needs Level: Average Number of Technical Violations per Episode
+
+**Note:** This is the "listed needs level at the time of referral disposition"
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### average time to first technical violation
+df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level) 
+
+### overall
+df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_time_to_technical_fy_table <- rbind(df_time_to_technical_fy,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_time_to_technical_fy_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
 
 <br><br>
-
 

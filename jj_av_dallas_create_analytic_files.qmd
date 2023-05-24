@@ -788,9 +788,7 @@ supervision_child_join_offenses_violatons_6 <-
   mutate(technical_violation_flag = ifelse(technical_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
                                            1,0),
          overall_violation_referral_flag = ifelse(overall_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
-                                                  1,0)) %>% 
-  ### convert inf to NA
-  mutate_all(.,.funs = function(x){ifelse(is.infinite(x),NA,x)})
+                                                  1,0))
   
 ```
 
