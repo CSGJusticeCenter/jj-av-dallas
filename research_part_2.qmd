@@ -552,8 +552,73 @@ kable(df_technical_violations_needs_table,
 
 <br><br>
 
-# 3. Supervisor/Prosecutor Rejections
+# 3. Supervisor/Prosecutor Rejections (changed to dismissals)
 
-**TBD**
+**Business Rule:** According to Dallas County, all of the technical violation records without a referral number indicate that a PO filed the violation, but that it was rejected by a supervisor.
+
+**NOTE/To Discuss:** Only about 2% of all violations fit this criteria -- not sure if it warrants analysis (especially anything disaggregated). For now, I am exploring violations with dispositions of "DISMISSED OR WITHDRAWN BY DEPARTMENT" -- which I believe indicates a sanction to the 30 day residential program (where if a kid is successful, the violation is dismissed). If we want to use this analysis, we should (1) confirm this interpretation with Dallas and (2) ask whether this disposition is only for youth who are successful in the program and if so, if there is a way to flag youth who are not successful. 
+
+Is this worth further analysis/exploration? 
+
+<br>
+
+## Table 11. By FY: Percentage of Technical Violations Dismissed/Withdrawn
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### import violations file so that denominator is all violations (grouped)
+### and not just all referrals with a violation
+
+### read in violations file
+df_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "df_violations_clean_demo.txt"),
+                      delim = "|") |> 
+  mutate(youth_violation_id = paste0(unique_id,
+                                    violation_referral_number),
+         violation_filed_date_fy = csgjcr::csg_fiscal_year(violation_filed_date,
+                                                          fy_start="October"),
+         violation_dismissed_withdrawn_flag = ifelse(violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT",
+                                                     1,0)) 
+
+### create denominator -- unique referrals for entire sample
+unique_violations_sample_denom <- n_distinct(df_violations_clean_demo$youth_violation_id)
+
+### unique youth and referrals per FY
+df_dismissed_violations_per_year <- df_violations_clean_demo %>% 
+  filter(violation_filed_date_fy>=2016) |> 
+  dplyr::group_by(violation_filed_date_fy) %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Dismissed (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+            `Unique Filed Violations (N)` = n_distinct(youth_violation_id),
+              `Unique Filed Violations Dismissed/Withdrawn (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
+            `Filed Violations, Percent of all Violations (%)` = scales::percent(`Unique Filed Violations Dismissed/Withdrawn (N)`/`Unique Filed Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Filing` = violation_filed_date_fy) %>% 
+  mutate(`FY of Filing` = as.character(`FY of Filing`)) 
+
+### overall
+df_violations_overall <- df_violations_clean_demo %>% 
+    filter(violation_filed_date_fy>=2016) |> 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Dismissed (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+            `Unique Filed Violations (N)` = n_distinct(youth_violation_id),
+              `Unique Filed Violations Dismissed/Withdrawn (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
+            `Filed Violations, Percent of all Violations (%)` = scales::percent(`Unique Filed Violations Dismissed/Withdrawn (N)`/`Unique Filed Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`FY of Filing` = "Overall")
+
+### combine tables for kable
+df_dismissed_violations_per_year_table <- rbind(df_dismissed_violations_per_year,df_violations_overall)
+
+### print table via kableextra
+kable(df_dismissed_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(9, bold = TRUE)
+```
+
 
 <br><br>

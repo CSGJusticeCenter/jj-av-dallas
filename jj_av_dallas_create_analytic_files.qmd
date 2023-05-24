@@ -451,7 +451,7 @@ prior_offenses_clean_de_dup <- offenses_clean_de_dup %>%
 
 ### business rule: need to de-dup violations file -- keeping one unique_id and referral_id -- with most serious violation kept (new offense over technical over other) per referral id
 
-### ask Dallas County if duplicates indicate multiple violations or not
+### HERE: create separate dataframe for records with no referral number (PO filed, but supervisor rejected?)
 
 violations_clean_de_dup <- violations %>% 
   filter(!is.na(violation_date)) %>% ### just double checking since we'll need violation_date for later joins; no records dropped
@@ -959,6 +959,31 @@ df_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses
                     "14 to 15",
                     "16 to 20")))
 
+####################################################
+### create violation-level analytic file
+### to explore the percentage of violations
+### that are dismissed/withdrawn
+####################################################
+
+### extract pertinent demo information from df_dallas_county_av_supervision_analytic_file
+df_dallas_county_av_supervision_analytic_file_demo_only <- df_dallas_county_av_supervision_analytic_file |> 
+  dplyr::select(unique_id,
+                race_clean,
+                gender_clean,
+                age_at_start_of_supervision_clean,
+                offense_referral_needs_level,
+                offense_referral_risk_level)
+
+### left join of violations_clean file and supervision_child_join_offenses_5 file 
+df_violations_clean_demo <- 
+  left_join(violations_clean_de_dup,
+            supervision_child_join_offenses_5,
+            by = c("unique_id")) |> 
+  ### double check that we joined demo data to all violation records
+  ### we did
+  filter(!is.na(race_clean))
+
+
 # %>%
 #   dplyr::select(unique_supervision_id,
 #                 referral_number,
@@ -1005,9 +1030,16 @@ df_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses
 ### set sharepoint path using sp_data_path and file.path function 
 sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
 
+### write out main analytic file
 write_delim(df_dallas_county_av_supervision_analytic_file,
             file.path(sharepoint_jj_av_dallas_analytic_data,
                       "df_dallas_county_av_supervision_analytic_file.txt"),
+                      delim = "|")
+
+### write out violations file
+write_delim(df_violations_clean_demo,
+            file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "df_violations_clean_demo.txt"),
                       delim = "|")
 
 ```
