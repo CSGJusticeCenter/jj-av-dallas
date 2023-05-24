@@ -740,7 +740,13 @@ supervision_child_join_offenses_violatons_6 <-
          supervision_end_date_missing_include = ymd(as_date(supervision_end_date_missing_include)),
          ### flag records with no joining violation information using violation_referral_number
          no_violation_records_joined = ifelse(is.na(violation_referral_number==TRUE),
-                                       1,0)) %>% 
+                                       1,0),
+         ### create date field for technical violations only
+         ### we'll use this when keeping the first technical violation per referral
+         technical_violation_filed_date = ifelse(violation_severity_factor=="Technical Violation",
+                                                 violation_filed_date,
+                                                 NA),
+         technical_violation_filed_date = ymd(as_date(technical_violation_filed_date))) %>% 
   ### we only want to keep either (1) supervision records with no violations or (2) supervision records with violation records when those violations occurred during the period of supervision  
   filter(no_violation_records_joined==1 | (violation_date>=supervision_begin_date & violation_date<=supervision_end_date_missing_include)) %>% 
   group_by(unique_supervision_id) %>% 
@@ -750,7 +756,9 @@ supervision_child_join_offenses_violatons_6 <-
          technical_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity_factor=="Technical Violation"],
                                                          na.rm = TRUE),
          new_offense_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity_factor=="New Offense"],
-                                                           na.rm = TRUE)
+                                                           na.rm = TRUE),
+         min_technical_violation_date = min(technical_violation_filed_date,
+                                            na.rm = TRUE)
          # technical_violation_referral_count_in_2017 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2017],
          #                                                 na.rm = TRUE),
          # technical_violation_referral_count_in_2018 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2018],
@@ -764,12 +772,25 @@ supervision_child_join_offenses_violatons_6 <-
          ) %>% 
   ungroup() %>% 
   ### now de-dup by supervision record to get same row count as before join 
+  ### first arrange by unique_supervision_id and violation date to keep first
+  ### violation date
+  arrange(unique_supervision_id,
+          violation_filed_date) |> 
   distinct(unique_supervision_id,
            .keep_all=TRUE) %>% 
+  ### calculate time to first technical violation (with both vars)
+  mutate(supervision_start_first_tech_violation_any = as.numeric(difftime(min_technical_violation_date,
+                                                            supervision_begin_date,
+                                                                    units="days")),
+         supervision_start_first_tech_violation_first_overall = as.numeric(difftime(violation_filed_date,
+                                                            supervision_begin_date,
+                                                                    units="days"))) |> 
   mutate(technical_violation_flag = ifelse(technical_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
                                            1,0),
          overall_violation_referral_flag = ifelse(overall_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
-                                                  1,0))
+                                                  1,0)) %>% 
+  ### convert inf to NA
+  mutate_all(.,.funs = function(x){ifelse(is.infinite(x),NA,x)})
   
 ```
 
@@ -977,7 +998,7 @@ df_dallas_county_av_supervision_analytic_file_demo_only <- df_dallas_county_av_s
 ### left join of violations_clean file and supervision_child_join_offenses_5 file 
 df_violations_clean_demo <- 
   left_join(violations_clean_de_dup,
-            supervision_child_join_offenses_5,
+            df_dallas_county_av_supervision_analytic_file_demo_only,
             by = c("unique_id")) |> 
   ### double check that we joined demo data to all violation records
   ### we did

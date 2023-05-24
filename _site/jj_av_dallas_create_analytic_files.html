@@ -886,7 +886,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a><span class="do">### business rule: need to de-dup violations file -- keeping one unique_id and referral_id -- with most serious violation kept (new offense over technical over other) per referral id</span></span>
 <span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a><span class="do">### ask Dallas County if duplicates indicate multiple violations or not</span></span>
+<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a><span class="do">### HERE: create separate dataframe for records with no referral number (PO filed, but supervisor rejected?)</span></span>
 <span id="cb87-8"><a href="#cb87-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb87-9"><a href="#cb87-9" aria-hidden="true" tabindex="-1"></a>violations_clean_de_dup <span class="ot">&lt;-</span> violations <span class="sc">%&gt;%</span> </span>
 <span id="cb87-10"><a href="#cb87-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(violation_date)) <span class="sc">%&gt;%</span> <span class="do">### just double checking since we'll need violation_date for later joins; no records dropped</span></span>
@@ -1335,36 +1335,48 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb161-11"><a href="#cb161-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">supervision_end_date_missing_include =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date_missing_include)),</span>
 <span id="cb161-12"><a href="#cb161-12" aria-hidden="true" tabindex="-1"></a>         <span class="do">### flag records with no joining violation information using violation_referral_number</span></span>
 <span id="cb161-13"><a href="#cb161-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">no_violation_records_joined =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(violation_referral_number<span class="sc">==</span><span class="cn">TRUE</span>),</span>
-<span id="cb161-14"><a href="#cb161-14" aria-hidden="true" tabindex="-1"></a>                                       <span class="dv">1</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb161-15"><a href="#cb161-15" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we only want to keep either (1) supervision records with no violations or (2) supervision records with violation records when those violations occurred during the period of supervision  </span></span>
-<span id="cb161-16"><a href="#cb161-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(no_violation_records_joined<span class="sc">==</span><span class="dv">1</span> <span class="sc">|</span> (violation_date<span class="sc">&gt;=</span>supervision_begin_date <span class="sc">&amp;</span> violation_date<span class="sc">&lt;=</span>supervision_end_date_missing_include)) <span class="sc">%&gt;%</span> </span>
-<span id="cb161-17"><a href="#cb161-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(unique_supervision_id) <span class="sc">%&gt;%</span> </span>
-<span id="cb161-18"><a href="#cb161-18" aria-hidden="true" tabindex="-1"></a>  <span class="do">### count of referrals linked to any violation (using no_violation_records_joined), technical violations, and new offense violations</span></span>
-<span id="cb161-19"><a href="#cb161-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">overall_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span>],</span>
-<span id="cb161-20"><a href="#cb161-20" aria-hidden="true" tabindex="-1"></a>                                                         <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb161-21"><a href="#cb161-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">technical_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span> <span class="sc">&amp;</span> violation_severity_factor<span class="sc">==</span><span class="st">"Technical Violation"</span>],</span>
-<span id="cb161-22"><a href="#cb161-22" aria-hidden="true" tabindex="-1"></a>                                                         <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb161-23"><a href="#cb161-23" aria-hidden="true" tabindex="-1"></a>         <span class="at">new_offense_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span> <span class="sc">&amp;</span> violation_severity_factor<span class="sc">==</span><span class="st">"New Offense"</span>],</span>
-<span id="cb161-24"><a href="#cb161-24" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb161-25"><a href="#cb161-25" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2017 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2017],</span></span>
-<span id="cb161-26"><a href="#cb161-26" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
-<span id="cb161-27"><a href="#cb161-27" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2018 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2018],</span></span>
-<span id="cb161-28"><a href="#cb161-28" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
-<span id="cb161-29"><a href="#cb161-29" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2019 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2019],</span></span>
-<span id="cb161-30"><a href="#cb161-30" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
-<span id="cb161-31"><a href="#cb161-31" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2020 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2020],</span></span>
-<span id="cb161-32"><a href="#cb161-32" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
-<span id="cb161-33"><a href="#cb161-33" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2021 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2021],</span></span>
-<span id="cb161-34"><a href="#cb161-34" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE)</span></span>
-<span id="cb161-35"><a href="#cb161-35" aria-hidden="true" tabindex="-1"></a>         ) <span class="sc">%&gt;%</span> </span>
-<span id="cb161-36"><a href="#cb161-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb161-37"><a href="#cb161-37" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now de-dup by supervision record to get same row count as before join </span></span>
-<span id="cb161-38"><a href="#cb161-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_supervision_id,</span>
-<span id="cb161-39"><a href="#cb161-39" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb161-40"><a href="#cb161-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">technical_violation_flag =</span> <span class="fu">ifelse</span>(technical_violation_referral_count<span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(overall_violation_referral_count)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
-<span id="cb161-41"><a href="#cb161-41" aria-hidden="true" tabindex="-1"></a>                                           <span class="dv">1</span>,<span class="dv">0</span>),</span>
-<span id="cb161-42"><a href="#cb161-42" aria-hidden="true" tabindex="-1"></a>         <span class="at">overall_violation_referral_flag =</span> <span class="fu">ifelse</span>(overall_violation_referral_count<span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(overall_violation_referral_count)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
-<span id="cb161-43"><a href="#cb161-43" aria-hidden="true" tabindex="-1"></a>                                                  <span class="dv">1</span>,<span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb161-14"><a href="#cb161-14" aria-hidden="true" tabindex="-1"></a>                                       <span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb161-15"><a href="#cb161-15" aria-hidden="true" tabindex="-1"></a>         <span class="do">### create date field for technical violations only</span></span>
+<span id="cb161-16"><a href="#cb161-16" aria-hidden="true" tabindex="-1"></a>         <span class="do">### we'll use this when keeping the first technical violation per referral</span></span>
+<span id="cb161-17"><a href="#cb161-17" aria-hidden="true" tabindex="-1"></a>         <span class="at">technical_violation_filed_date =</span> <span class="fu">ifelse</span>(violation_severity_factor<span class="sc">==</span><span class="st">"Technical Violation"</span>,</span>
+<span id="cb161-18"><a href="#cb161-18" aria-hidden="true" tabindex="-1"></a>                                                 violation_filed_date,</span>
+<span id="cb161-19"><a href="#cb161-19" aria-hidden="true" tabindex="-1"></a>                                                 <span class="cn">NA</span>),</span>
+<span id="cb161-20"><a href="#cb161-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">technical_violation_filed_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(technical_violation_filed_date))) <span class="sc">%&gt;%</span> </span>
+<span id="cb161-21"><a href="#cb161-21" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we only want to keep either (1) supervision records with no violations or (2) supervision records with violation records when those violations occurred during the period of supervision  </span></span>
+<span id="cb161-22"><a href="#cb161-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(no_violation_records_joined<span class="sc">==</span><span class="dv">1</span> <span class="sc">|</span> (violation_date<span class="sc">&gt;=</span>supervision_begin_date <span class="sc">&amp;</span> violation_date<span class="sc">&lt;=</span>supervision_end_date_missing_include)) <span class="sc">%&gt;%</span> </span>
+<span id="cb161-23"><a href="#cb161-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(unique_supervision_id) <span class="sc">%&gt;%</span> </span>
+<span id="cb161-24"><a href="#cb161-24" aria-hidden="true" tabindex="-1"></a>  <span class="do">### count of referrals linked to any violation (using no_violation_records_joined), technical violations, and new offense violations</span></span>
+<span id="cb161-25"><a href="#cb161-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">overall_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span>],</span>
+<span id="cb161-26"><a href="#cb161-26" aria-hidden="true" tabindex="-1"></a>                                                         <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb161-27"><a href="#cb161-27" aria-hidden="true" tabindex="-1"></a>         <span class="at">technical_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span> <span class="sc">&amp;</span> violation_severity_factor<span class="sc">==</span><span class="st">"Technical Violation"</span>],</span>
+<span id="cb161-28"><a href="#cb161-28" aria-hidden="true" tabindex="-1"></a>                                                         <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb161-29"><a href="#cb161-29" aria-hidden="true" tabindex="-1"></a>         <span class="at">new_offense_violation_referral_count =</span> <span class="fu">n_distinct</span>(violation_referral_number[no_violation_records_joined<span class="sc">==</span><span class="dv">0</span> <span class="sc">&amp;</span> violation_severity_factor<span class="sc">==</span><span class="st">"New Offense"</span>],</span>
+<span id="cb161-30"><a href="#cb161-30" aria-hidden="true" tabindex="-1"></a>                                                           <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb161-31"><a href="#cb161-31" aria-hidden="true" tabindex="-1"></a>         <span class="at">min_technical_violation_date =</span> <span class="fu">min</span>(technical_violation_filed_date,</span>
+<span id="cb161-32"><a href="#cb161-32" aria-hidden="true" tabindex="-1"></a>                                            <span class="at">na.rm =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb161-33"><a href="#cb161-33" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2017 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2017],</span></span>
+<span id="cb161-34"><a href="#cb161-34" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
+<span id="cb161-35"><a href="#cb161-35" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2018 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2018],</span></span>
+<span id="cb161-36"><a href="#cb161-36" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
+<span id="cb161-37"><a href="#cb161-37" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2019 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2019],</span></span>
+<span id="cb161-38"><a href="#cb161-38" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
+<span id="cb161-39"><a href="#cb161-39" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2020 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2020],</span></span>
+<span id="cb161-40"><a href="#cb161-40" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE),</span></span>
+<span id="cb161-41"><a href="#cb161-41" aria-hidden="true" tabindex="-1"></a>         <span class="co"># technical_violation_referral_count_in_2021 = n_distinct(violation_referral_number[no_violation_records_joined==0 &amp; violation_severity=="Technical Violation" &amp; violation_date_year==2021],</span></span>
+<span id="cb161-42"><a href="#cb161-42" aria-hidden="true" tabindex="-1"></a>         <span class="co">#                                                 na.rm = TRUE)</span></span>
+<span id="cb161-43"><a href="#cb161-43" aria-hidden="true" tabindex="-1"></a>         ) <span class="sc">%&gt;%</span> </span>
+<span id="cb161-44"><a href="#cb161-44" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb161-45"><a href="#cb161-45" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now de-dup by supervision record to get same row count as before join </span></span>
+<span id="cb161-46"><a href="#cb161-46" aria-hidden="true" tabindex="-1"></a>  <span class="do">### first arrange by unique_supervision_id and violation date to keep first</span></span>
+<span id="cb161-47"><a href="#cb161-47" aria-hidden="true" tabindex="-1"></a>  <span class="do">### violation date</span></span>
+<span id="cb161-48"><a href="#cb161-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(unique_supervision_id,</span>
+<span id="cb161-49"><a href="#cb161-49" aria-hidden="true" tabindex="-1"></a>          violation_filed_date) <span class="sc">|&gt;</span> </span>
+<span id="cb161-50"><a href="#cb161-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_supervision_id,</span>
+<span id="cb161-51"><a href="#cb161-51" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb161-52"><a href="#cb161-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">technical_violation_flag =</span> <span class="fu">ifelse</span>(technical_violation_referral_count<span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(overall_violation_referral_count)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
+<span id="cb161-53"><a href="#cb161-53" aria-hidden="true" tabindex="-1"></a>                                           <span class="dv">1</span>,<span class="dv">0</span>),</span>
+<span id="cb161-54"><a href="#cb161-54" aria-hidden="true" tabindex="-1"></a>         <span class="at">overall_violation_referral_flag =</span> <span class="fu">ifelse</span>(overall_violation_referral_count<span class="sc">&gt;</span><span class="dv">0</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(overall_violation_referral_count)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
+<span id="cb161-55"><a href="#cb161-55" aria-hidden="true" tabindex="-1"></a>                                                  <span class="dv">1</span>,<span class="dv">0</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>left_join: added 22 columns (violation_referral_number, violation, violation_date, violation_filed_date, violation_prosectur_action, …)</code></pre>
 </div>
@@ -1390,6 +1402,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>        new variable 'no_violation_records_joined' (double) with 2 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
+<pre><code>        new variable 'technical_violation_filed_date' (Date) with 1,239 unique values and 70% NA</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
 <pre><code>filter: removed 1,113 rows (11%), 9,316 rows remaining</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
@@ -1403,6 +1418,9 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>                  new variable 'new_offense_violation_referral_count' (integer) with 5 unique values and 0% NA</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>                  new variable 'min_technical_violation_date' (Date) with 925 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>ungroup: no grouping variables</code></pre>
@@ -1419,79 +1437,79 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p><br><br></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb179"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb179-1"><a href="#cb179-1" aria-hidden="true" tabindex="-1"></a><span class="do">### What is the average number of modifications for youth who receive a technical violation? How does this vary across race/ethnicity, sex, and risk level?</span></span>
-<span id="cb179-2"><a href="#cb179-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb179-3"><a href="#cb179-3" aria-hidden="true" tabindex="-1"></a><span class="do">### in this chunk, we'll create a look up table of number of supervision level increases (in intensiveness) that occur prior to a youth's first violation</span></span>
-<span id="cb179-4"><a href="#cb179-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb179-5"><a href="#cb179-5" aria-hidden="true" tabindex="-1"></a><span class="do">### we'll then join the file back to our main analytic file</span></span>
-<span id="cb179-6"><a href="#cb179-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb179-7"><a href="#cb179-7" aria-hidden="true" tabindex="-1"></a><span class="do">#############################################</span></span>
-<span id="cb179-8"><a href="#cb179-8" aria-hidden="true" tabindex="-1"></a><span class="do">### clean and de-dup supervision_level dataframe</span></span>
-<span id="cb179-9"><a href="#cb179-9" aria-hidden="true" tabindex="-1"></a><span class="do">#############################################</span></span>
-<span id="cb179-10"><a href="#cb179-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb179-11"><a href="#cb179-11" aria-hidden="true" tabindex="-1"></a><span class="do">### by unique_id, referral_number, phase_begin_date, phase_end_date</span></span>
-<span id="cb179-12"><a href="#cb179-12" aria-hidden="true" tabindex="-1"></a>supervision_level_clean_to_join_modifications_violations <span class="ot">&lt;-</span> supervision_level <span class="sc">%&gt;%</span> </span>
-<span id="cb179-13"><a href="#cb179-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_id,</span>
-<span id="cb179-14"><a href="#cb179-14" aria-hidden="true" tabindex="-1"></a>           referral_number,</span>
-<span id="cb179-15"><a href="#cb179-15" aria-hidden="true" tabindex="-1"></a>           phase,</span>
-<span id="cb179-16"><a href="#cb179-16" aria-hidden="true" tabindex="-1"></a>           phase_begin_date,</span>
-<span id="cb179-17"><a href="#cb179-17" aria-hidden="true" tabindex="-1"></a>           phase_end_date,</span>
-<span id="cb179-18"><a href="#cb179-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span>  <span class="do">### 1 record dropped </span></span>
-<span id="cb179-19"><a href="#cb179-19" aria-hidden="true" tabindex="-1"></a>  <span class="do">### clean dates and create years for potential grouping in future trend analysis</span></span>
-<span id="cb179-20"><a href="#cb179-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">phase_begin_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(phase_begin_date)),</span>
-<span id="cb179-21"><a href="#cb179-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">phase_end_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(phase_end_date)),</span>
-<span id="cb179-22"><a href="#cb179-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">unique_supervision_id =</span> <span class="fu">paste0</span>(unique_id,</span>
-<span id="cb179-23"><a href="#cb179-23" aria-hidden="true" tabindex="-1"></a>                                        referral_number,</span>
-<span id="cb179-24"><a href="#cb179-24" aria-hidden="true" tabindex="-1"></a>                                        supervision_begin_date)) <span class="sc">%&gt;%</span> </span>
-<span id="cb179-25"><a href="#cb179-25" aria-hidden="true" tabindex="-1"></a>  <span class="do">### rename columns with duplicate names across files to indicate where data initially came from </span></span>
-<span id="cb179-26"><a href="#cb179-26" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">supervision_level_phase =</span> phase,</span>
-<span id="cb179-27"><a href="#cb179-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">supervision_level_supervision_type =</span> supervision_type,</span>
-<span id="cb179-28"><a href="#cb179-28" aria-hidden="true" tabindex="-1"></a>                <span class="at">supervision_level_phase_begin_date =</span> phase_begin_date,</span>
-<span id="cb179-29"><a href="#cb179-29" aria-hidden="true" tabindex="-1"></a>                <span class="at">supervision_level_phase_end_date =</span> phase_end_date) <span class="sc">%&gt;%</span> </span>
-<span id="cb179-30"><a href="#cb179-30" aria-hidden="true" tabindex="-1"></a>  <span class="do">### create hierarchy of supervision levels</span></span>
-<span id="cb179-31"><a href="#cb179-31" aria-hidden="true" tabindex="-1"></a>  <span class="do">### when we measure changes/modifications to supervision levels,</span></span>
-<span id="cb179-32"><a href="#cb179-32" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we are most interested in changes to more intensive levels of supervision </span></span>
-<span id="cb179-33"><a href="#cb179-33" aria-hidden="true" tabindex="-1"></a>  <span class="do">### (as opposed to planned decreases in intensity over time)</span></span>
-<span id="cb179-34"><a href="#cb179-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">supervision_level_phase_severity =</span> </span>
-<span id="cb179-35"><a href="#cb179-35" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(</span>
-<span id="cb179-36"><a href="#cb179-36" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PLACEMENT"</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb179-37"><a href="#cb179-37" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"DETENTION/SHELTER"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
-<span id="cb179-38"><a href="#cb179-38" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"ISP LEVEL 1"</span> <span class="sc">~</span> <span class="dv">3</span>,             </span>
-<span id="cb179-39"><a href="#cb179-39" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"ISP LEVEL 2"</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
-<span id="cb179-40"><a href="#cb179-40" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"ISP LEVEL 3"</span> <span class="sc">~</span> <span class="dv">5</span>,</span>
-<span id="cb179-41"><a href="#cb179-41" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PROB LEVEL R1"</span> <span class="sc">~</span> <span class="dv">6</span>,</span>
-<span id="cb179-42"><a href="#cb179-42" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PROB LEVEL R2"</span> <span class="sc">~</span> <span class="dv">7</span>,             </span>
-<span id="cb179-43"><a href="#cb179-43" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PROB LEVEL R3"</span> <span class="sc">~</span> <span class="dv">8</span>,</span>
-<span id="cb179-44"><a href="#cb179-44" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PROB LEVEL R4"</span> <span class="sc">~</span> <span class="dv">9</span>,</span>
-<span id="cb179-45"><a href="#cb179-45" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">%in%</span><span class="fu">c</span>(<span class="st">"None"</span>,<span class="st">"WARRANT"</span>) <span class="sc">~</span> <span class="dv">11</span>, </span>
-<span id="cb179-46"><a href="#cb179-46" aria-hidden="true" tabindex="-1"></a>             <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>))) <span class="sc">%&gt;%</span> </span>
-<span id="cb179-47"><a href="#cb179-47" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now arrange and group by youth to take the next supervision level, if present</span></span>
-<span id="cb179-48"><a href="#cb179-48" aria-hidden="true" tabindex="-1"></a>  <span class="do">### using dplyr::lead to take the next supervision_level_phase_severity value</span></span>
-<span id="cb179-49"><a href="#cb179-49" aria-hidden="true" tabindex="-1"></a>  <span class="do">### using https://dplyr.tidyverse.org/reference/lead-lag.html</span></span>
-<span id="cb179-50"><a href="#cb179-50" aria-hidden="true" tabindex="-1"></a>  <span class="do">### this will allow us to calculate the number of instances where youth </span></span>
-<span id="cb179-51"><a href="#cb179-51" aria-hidden="true" tabindex="-1"></a>  <span class="do">### experienced an increase in supervision intensiveness </span></span>
-<span id="cb179-52"><a href="#cb179-52" aria-hidden="true" tabindex="-1"></a>  <span class="do">### logic: using supervision_level_phase_severity, next value is less than current value</span></span>
-<span id="cb179-53"><a href="#cb179-53" aria-hidden="true" tabindex="-1"></a>  <span class="do">### indicates an increase in intensity of supervision</span></span>
-<span id="cb179-54"><a href="#cb179-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(unique_id,</span>
-<span id="cb179-55"><a href="#cb179-55" aria-hidden="true" tabindex="-1"></a>          referral_number,</span>
-<span id="cb179-56"><a href="#cb179-56" aria-hidden="true" tabindex="-1"></a>          supervision_level_phase_begin_date) <span class="sc">%&gt;%</span></span>
-<span id="cb179-57"><a href="#cb179-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(unique_id) <span class="sc">%&gt;%</span></span>
-<span id="cb179-58"><a href="#cb179-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prior_supervision_level =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(supervision_level_phase_severity,</span>
-<span id="cb179-59"><a href="#cb179-59" aria-hidden="true" tabindex="-1"></a>                                                   <span class="dv">1</span>,</span>
-<span id="cb179-60"><a href="#cb179-60" aria-hidden="true" tabindex="-1"></a>                                                   <span class="at">default=</span><span class="cn">NA</span>)) <span class="sc">%&gt;%</span></span>
-<span id="cb179-61"><a href="#cb179-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
-<span id="cb179-62"><a href="#cb179-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_level_is_increase_flag =</span> <span class="fu">ifelse</span>(supervision_level_phase_severity<span class="sc">&lt;</span>prior_supervision_level,</span>
-<span id="cb179-63"><a href="#cb179-63" aria-hidden="true" tabindex="-1"></a>                                                          <span class="dv">1</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb179-64"><a href="#cb179-64" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unique_id,</span>
-<span id="cb179-65"><a href="#cb179-65" aria-hidden="true" tabindex="-1"></a>                referral_number,</span>
-<span id="cb179-66"><a href="#cb179-66" aria-hidden="true" tabindex="-1"></a>                unique_supervision_id,</span>
-<span id="cb179-67"><a href="#cb179-67" aria-hidden="true" tabindex="-1"></a>                supervision_begin_date,</span>
-<span id="cb179-68"><a href="#cb179-68" aria-hidden="true" tabindex="-1"></a>                supervision_end_date,</span>
-<span id="cb179-69"><a href="#cb179-69" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase,</span>
-<span id="cb179-70"><a href="#cb179-70" aria-hidden="true" tabindex="-1"></a>                supervision_level_supervision_type,</span>
-<span id="cb179-71"><a href="#cb179-71" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase_begin_date,</span>
-<span id="cb179-72"><a href="#cb179-72" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase_end_date,</span>
-<span id="cb179-73"><a href="#cb179-73" aria-hidden="true" tabindex="-1"></a>                supervision_level_is_increase_flag) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb181"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb181-1"><a href="#cb181-1" aria-hidden="true" tabindex="-1"></a><span class="do">### What is the average number of modifications for youth who receive a technical violation? How does this vary across race/ethnicity, sex, and risk level?</span></span>
+<span id="cb181-2"><a href="#cb181-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb181-3"><a href="#cb181-3" aria-hidden="true" tabindex="-1"></a><span class="do">### in this chunk, we'll create a look up table of number of supervision level increases (in intensiveness) that occur prior to a youth's first violation</span></span>
+<span id="cb181-4"><a href="#cb181-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb181-5"><a href="#cb181-5" aria-hidden="true" tabindex="-1"></a><span class="do">### we'll then join the file back to our main analytic file</span></span>
+<span id="cb181-6"><a href="#cb181-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb181-7"><a href="#cb181-7" aria-hidden="true" tabindex="-1"></a><span class="do">#############################################</span></span>
+<span id="cb181-8"><a href="#cb181-8" aria-hidden="true" tabindex="-1"></a><span class="do">### clean and de-dup supervision_level dataframe</span></span>
+<span id="cb181-9"><a href="#cb181-9" aria-hidden="true" tabindex="-1"></a><span class="do">#############################################</span></span>
+<span id="cb181-10"><a href="#cb181-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb181-11"><a href="#cb181-11" aria-hidden="true" tabindex="-1"></a><span class="do">### by unique_id, referral_number, phase_begin_date, phase_end_date</span></span>
+<span id="cb181-12"><a href="#cb181-12" aria-hidden="true" tabindex="-1"></a>supervision_level_clean_to_join_modifications_violations <span class="ot">&lt;-</span> supervision_level <span class="sc">%&gt;%</span> </span>
+<span id="cb181-13"><a href="#cb181-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_id,</span>
+<span id="cb181-14"><a href="#cb181-14" aria-hidden="true" tabindex="-1"></a>           referral_number,</span>
+<span id="cb181-15"><a href="#cb181-15" aria-hidden="true" tabindex="-1"></a>           phase,</span>
+<span id="cb181-16"><a href="#cb181-16" aria-hidden="true" tabindex="-1"></a>           phase_begin_date,</span>
+<span id="cb181-17"><a href="#cb181-17" aria-hidden="true" tabindex="-1"></a>           phase_end_date,</span>
+<span id="cb181-18"><a href="#cb181-18" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all=</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span>  <span class="do">### 1 record dropped </span></span>
+<span id="cb181-19"><a href="#cb181-19" aria-hidden="true" tabindex="-1"></a>  <span class="do">### clean dates and create years for potential grouping in future trend analysis</span></span>
+<span id="cb181-20"><a href="#cb181-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">phase_begin_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(phase_begin_date)),</span>
+<span id="cb181-21"><a href="#cb181-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">phase_end_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(phase_end_date)),</span>
+<span id="cb181-22"><a href="#cb181-22" aria-hidden="true" tabindex="-1"></a>         <span class="at">unique_supervision_id =</span> <span class="fu">paste0</span>(unique_id,</span>
+<span id="cb181-23"><a href="#cb181-23" aria-hidden="true" tabindex="-1"></a>                                        referral_number,</span>
+<span id="cb181-24"><a href="#cb181-24" aria-hidden="true" tabindex="-1"></a>                                        supervision_begin_date)) <span class="sc">%&gt;%</span> </span>
+<span id="cb181-25"><a href="#cb181-25" aria-hidden="true" tabindex="-1"></a>  <span class="do">### rename columns with duplicate names across files to indicate where data initially came from </span></span>
+<span id="cb181-26"><a href="#cb181-26" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">supervision_level_phase =</span> phase,</span>
+<span id="cb181-27"><a href="#cb181-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">supervision_level_supervision_type =</span> supervision_type,</span>
+<span id="cb181-28"><a href="#cb181-28" aria-hidden="true" tabindex="-1"></a>                <span class="at">supervision_level_phase_begin_date =</span> phase_begin_date,</span>
+<span id="cb181-29"><a href="#cb181-29" aria-hidden="true" tabindex="-1"></a>                <span class="at">supervision_level_phase_end_date =</span> phase_end_date) <span class="sc">%&gt;%</span> </span>
+<span id="cb181-30"><a href="#cb181-30" aria-hidden="true" tabindex="-1"></a>  <span class="do">### create hierarchy of supervision levels</span></span>
+<span id="cb181-31"><a href="#cb181-31" aria-hidden="true" tabindex="-1"></a>  <span class="do">### when we measure changes/modifications to supervision levels,</span></span>
+<span id="cb181-32"><a href="#cb181-32" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we are most interested in changes to more intensive levels of supervision </span></span>
+<span id="cb181-33"><a href="#cb181-33" aria-hidden="true" tabindex="-1"></a>  <span class="do">### (as opposed to planned decreases in intensity over time)</span></span>
+<span id="cb181-34"><a href="#cb181-34" aria-hidden="true" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">supervision_level_phase_severity =</span> </span>
+<span id="cb181-35"><a href="#cb181-35" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(</span>
+<span id="cb181-36"><a href="#cb181-36" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PLACEMENT"</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb181-37"><a href="#cb181-37" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"DETENTION/SHELTER"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb181-38"><a href="#cb181-38" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"ISP LEVEL 1"</span> <span class="sc">~</span> <span class="dv">3</span>,             </span>
+<span id="cb181-39"><a href="#cb181-39" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"ISP LEVEL 2"</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb181-40"><a href="#cb181-40" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"ISP LEVEL 3"</span> <span class="sc">~</span> <span class="dv">5</span>,</span>
+<span id="cb181-41"><a href="#cb181-41" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PROB LEVEL R1"</span> <span class="sc">~</span> <span class="dv">6</span>,</span>
+<span id="cb181-42"><a href="#cb181-42" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PROB LEVEL R2"</span> <span class="sc">~</span> <span class="dv">7</span>,             </span>
+<span id="cb181-43"><a href="#cb181-43" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PROB LEVEL R3"</span> <span class="sc">~</span> <span class="dv">8</span>,</span>
+<span id="cb181-44"><a href="#cb181-44" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">==</span><span class="st">"PROB LEVEL R4"</span> <span class="sc">~</span> <span class="dv">9</span>,</span>
+<span id="cb181-45"><a href="#cb181-45" aria-hidden="true" tabindex="-1"></a>             supervision_level_phase<span class="sc">%in%</span><span class="fu">c</span>(<span class="st">"None"</span>,<span class="st">"WARRANT"</span>) <span class="sc">~</span> <span class="dv">11</span>, </span>
+<span id="cb181-46"><a href="#cb181-46" aria-hidden="true" tabindex="-1"></a>             <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>))) <span class="sc">%&gt;%</span> </span>
+<span id="cb181-47"><a href="#cb181-47" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now arrange and group by youth to take the next supervision level, if present</span></span>
+<span id="cb181-48"><a href="#cb181-48" aria-hidden="true" tabindex="-1"></a>  <span class="do">### using dplyr::lead to take the next supervision_level_phase_severity value</span></span>
+<span id="cb181-49"><a href="#cb181-49" aria-hidden="true" tabindex="-1"></a>  <span class="do">### using https://dplyr.tidyverse.org/reference/lead-lag.html</span></span>
+<span id="cb181-50"><a href="#cb181-50" aria-hidden="true" tabindex="-1"></a>  <span class="do">### this will allow us to calculate the number of instances where youth </span></span>
+<span id="cb181-51"><a href="#cb181-51" aria-hidden="true" tabindex="-1"></a>  <span class="do">### experienced an increase in supervision intensiveness </span></span>
+<span id="cb181-52"><a href="#cb181-52" aria-hidden="true" tabindex="-1"></a>  <span class="do">### logic: using supervision_level_phase_severity, next value is less than current value</span></span>
+<span id="cb181-53"><a href="#cb181-53" aria-hidden="true" tabindex="-1"></a>  <span class="do">### indicates an increase in intensity of supervision</span></span>
+<span id="cb181-54"><a href="#cb181-54" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(unique_id,</span>
+<span id="cb181-55"><a href="#cb181-55" aria-hidden="true" tabindex="-1"></a>          referral_number,</span>
+<span id="cb181-56"><a href="#cb181-56" aria-hidden="true" tabindex="-1"></a>          supervision_level_phase_begin_date) <span class="sc">%&gt;%</span></span>
+<span id="cb181-57"><a href="#cb181-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(unique_id) <span class="sc">%&gt;%</span></span>
+<span id="cb181-58"><a href="#cb181-58" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">prior_supervision_level =</span> dplyr<span class="sc">::</span><span class="fu">lag</span>(supervision_level_phase_severity,</span>
+<span id="cb181-59"><a href="#cb181-59" aria-hidden="true" tabindex="-1"></a>                                                   <span class="dv">1</span>,</span>
+<span id="cb181-60"><a href="#cb181-60" aria-hidden="true" tabindex="-1"></a>                                                   <span class="at">default=</span><span class="cn">NA</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb181-61"><a href="#cb181-61" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb181-62"><a href="#cb181-62" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_level_is_increase_flag =</span> <span class="fu">ifelse</span>(supervision_level_phase_severity<span class="sc">&lt;</span>prior_supervision_level,</span>
+<span id="cb181-63"><a href="#cb181-63" aria-hidden="true" tabindex="-1"></a>                                                          <span class="dv">1</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb181-64"><a href="#cb181-64" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unique_id,</span>
+<span id="cb181-65"><a href="#cb181-65" aria-hidden="true" tabindex="-1"></a>                referral_number,</span>
+<span id="cb181-66"><a href="#cb181-66" aria-hidden="true" tabindex="-1"></a>                unique_supervision_id,</span>
+<span id="cb181-67"><a href="#cb181-67" aria-hidden="true" tabindex="-1"></a>                supervision_begin_date,</span>
+<span id="cb181-68"><a href="#cb181-68" aria-hidden="true" tabindex="-1"></a>                supervision_end_date,</span>
+<span id="cb181-69"><a href="#cb181-69" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase,</span>
+<span id="cb181-70"><a href="#cb181-70" aria-hidden="true" tabindex="-1"></a>                supervision_level_supervision_type,</span>
+<span id="cb181-71"><a href="#cb181-71" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase_begin_date,</span>
+<span id="cb181-72"><a href="#cb181-72" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase_end_date,</span>
+<span id="cb181-73"><a href="#cb181-73" aria-hidden="true" tabindex="-1"></a>                supervision_level_is_increase_flag) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>distinct: removed one row (&lt;1%), 20,981 rows remaining</code></pre>
 </div>
@@ -1519,66 +1537,66 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell-output cell-output-stderr">
 <pre><code>mutate: new variable 'supervision_level_is_increase_flag' (double) with 3 unique values and 37% NA</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb189"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb189-1"><a href="#cb189-1" aria-hidden="true" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb189-2"><a href="#cb189-2" aria-hidden="true" tabindex="-1"></a><span class="do">### left join of violations_clean file to supervision_child_join_offenses_5 file </span></span>
-<span id="cb189-3"><a href="#cb189-3" aria-hidden="true" tabindex="-1"></a><span class="do">################################################################################</span></span>
-<span id="cb189-4"><a href="#cb189-4" aria-hidden="true" tabindex="-1"></a>modification_prior_to_technical_violation_count <span class="ot">&lt;-</span> </span>
-<span id="cb189-5"><a href="#cb189-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(violations_clean_de_dup,</span>
-<span id="cb189-6"><a href="#cb189-6" aria-hidden="true" tabindex="-1"></a>            supervision_level_clean_to_join_modifications_violations,</span>
-<span id="cb189-7"><a href="#cb189-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>)) <span class="sc">%&gt;%</span> <span class="do">### this is a many to many join so there are now lots of records (all violations joining to all supervisions/supervision extensions/supervision levels)</span></span>
-<span id="cb189-8"><a href="#cb189-8" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now we need to filter on date -- only keeping violation records where the violation_date&gt;=supervision_begin_date &amp; violation_date&lt;=supervision_end_date</span></span>
-<span id="cb189-9"><a href="#cb189-9" aria-hidden="true" tabindex="-1"></a>  <span class="do">### first create fake end date for records where the end date is blank; since this indicates that supervision was ongoing at time of data pull, we still want to include violations that occurred so changing NA to '2030-01-01' in new variable for the following filter</span></span>
-<span id="cb189-10"><a href="#cb189-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_end_date_missing_include =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(supervision_end_date)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
-<span id="cb189-11"><a href="#cb189-11" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(<span class="st">"2030-01-01"</span>)),</span>
-<span id="cb189-12"><a href="#cb189-12" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date))),</span>
-<span id="cb189-13"><a href="#cb189-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">supervision_end_date_missing_include =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date_missing_include)),</span>
-<span id="cb189-14"><a href="#cb189-14" aria-hidden="true" tabindex="-1"></a>         <span class="do">### flag records with no joining modification information using supervision_level_phase_begin_date</span></span>
-<span id="cb189-15"><a href="#cb189-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">no_modification_records_joined =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(supervision_level_phase_begin_date<span class="sc">==</span><span class="cn">TRUE</span>),</span>
-<span id="cb189-16"><a href="#cb189-16" aria-hidden="true" tabindex="-1"></a>                                       <span class="dv">1</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb189-17"><a href="#cb189-17" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we only want to keep either (1) violation records with no modifications or (2) supervision records with violation records when those violations occurred during the period of supervision  </span></span>
-<span id="cb189-18"><a href="#cb189-18" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we only want records that fit our criteria of:</span></span>
-<span id="cb189-19"><a href="#cb189-19" aria-hidden="true" tabindex="-1"></a>  <span class="do">### violations occurring during the supervision episode</span></span>
-<span id="cb189-20"><a href="#cb189-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(no_modification_records_joined<span class="sc">==</span><span class="dv">1</span> <span class="sc">|</span> (violation_date<span class="sc">&gt;=</span>supervision_begin_date <span class="sc">&amp;</span> violation_date<span class="sc">&lt;=</span>supervision_end_date_missing_include)) <span class="sc">%&gt;%</span> </span>
-<span id="cb189-21"><a href="#cb189-21" aria-hidden="true" tabindex="-1"></a>  <span class="do">### only technical violations</span></span>
-<span id="cb189-22"><a href="#cb189-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_severity_factor<span class="sc">==</span><span class="st">"Technical Violation"</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb189-23"><a href="#cb189-23" aria-hidden="true" tabindex="-1"></a>  <span class="do">### and modifications occurring before the violation</span></span>
-<span id="cb189-24"><a href="#cb189-24" aria-hidden="true" tabindex="-1"></a>  <span class="do">### and only modifications that were increases in intensiveness</span></span>
-<span id="cb189-25"><a href="#cb189-25" aria-hidden="true" tabindex="-1"></a>  <span class="do">### when we de-dup, we will keep first violation per supervision episode</span></span>
-<span id="cb189-26"><a href="#cb189-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(no_modification_records_joined<span class="sc">==</span><span class="dv">1</span> <span class="sc">|</span> (supervision_level_phase_begin_date<span class="sc">&lt;</span>violation_date <span class="sc">&amp;</span> supervision_level_is_increase_flag<span class="sc">==</span><span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
-<span id="cb189-27"><a href="#cb189-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unique_id,</span>
-<span id="cb189-28"><a href="#cb189-28" aria-hidden="true" tabindex="-1"></a>                violation_referral_number,</span>
-<span id="cb189-29"><a href="#cb189-29" aria-hidden="true" tabindex="-1"></a>                referral_number,</span>
-<span id="cb189-30"><a href="#cb189-30" aria-hidden="true" tabindex="-1"></a>                unique_supervision_id,</span>
-<span id="cb189-31"><a href="#cb189-31" aria-hidden="true" tabindex="-1"></a>                violation,</span>
-<span id="cb189-32"><a href="#cb189-32" aria-hidden="true" tabindex="-1"></a>                violation_date,</span>
-<span id="cb189-33"><a href="#cb189-33" aria-hidden="true" tabindex="-1"></a>                supervision_begin_date,</span>
-<span id="cb189-34"><a href="#cb189-34" aria-hidden="true" tabindex="-1"></a>                supervision_end_date,</span>
-<span id="cb189-35"><a href="#cb189-35" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase,</span>
-<span id="cb189-36"><a href="#cb189-36" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase_begin_date,</span>
-<span id="cb189-37"><a href="#cb189-37" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase_end_date,</span>
-<span id="cb189-38"><a href="#cb189-38" aria-hidden="true" tabindex="-1"></a>                supervision_level_is_increase_flag) <span class="sc">%&gt;%</span> </span>
-<span id="cb189-39"><a href="#cb189-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb189-40"><a href="#cb189-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(unique_supervision_id,</span>
-<span id="cb189-41"><a href="#cb189-41" aria-hidden="true" tabindex="-1"></a>          violation_date) <span class="sc">%&gt;%</span></span>
-<span id="cb189-42"><a href="#cb189-42" aria-hidden="true" tabindex="-1"></a>  <span class="do">### at this point, we only have records that fit our criteria of </span></span>
-<span id="cb189-43"><a href="#cb189-43" aria-hidden="true" tabindex="-1"></a>  <span class="do">### technical violations occurring during the supervision episode</span></span>
-<span id="cb189-44"><a href="#cb189-44" aria-hidden="true" tabindex="-1"></a>  <span class="do">### modifications occurring before the violation</span></span>
-<span id="cb189-45"><a href="#cb189-45" aria-hidden="true" tabindex="-1"></a>  <span class="do">### and only modifications that were increases in intensiveness</span></span>
-<span id="cb189-46"><a href="#cb189-46" aria-hidden="true" tabindex="-1"></a>  <span class="do">### when we de-dup, we will keep first violation per supervision episode</span></span>
-<span id="cb189-47"><a href="#cb189-47" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now count modifications per violations</span></span>
-<span id="cb189-48"><a href="#cb189-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">modification_increase_prior_to_technical_count =</span> <span class="fu">n_distinct</span>(unique_id,</span>
-<span id="cb189-49"><a href="#cb189-49" aria-hidden="true" tabindex="-1"></a>                                                  unique_supervision_id,</span>
-<span id="cb189-50"><a href="#cb189-50" aria-hidden="true" tabindex="-1"></a>                                                  supervision_level_phase,</span>
-<span id="cb189-51"><a href="#cb189-51" aria-hidden="true" tabindex="-1"></a>                                                  supervision_level_phase_begin_date)) <span class="sc">%&gt;%</span> </span>
-<span id="cb189-52"><a href="#cb189-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
-<span id="cb189-53"><a href="#cb189-53" aria-hidden="true" tabindex="-1"></a>  <span class="do">### for this analysis, keep first violation per supervision episode </span></span>
-<span id="cb189-54"><a href="#cb189-54" aria-hidden="true" tabindex="-1"></a>  <span class="do">### de-dup, keeping first record to preserve violation and linked modifications for supervision period</span></span>
-<span id="cb189-55"><a href="#cb189-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(unique_supervision_id,</span>
-<span id="cb189-56"><a href="#cb189-56" aria-hidden="true" tabindex="-1"></a>          violation_date) <span class="sc">%&gt;%</span></span>
-<span id="cb189-57"><a href="#cb189-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_supervision_id,</span>
-<span id="cb189-58"><a href="#cb189-58" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
-<span id="cb189-59"><a href="#cb189-59" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unique_supervision_id,</span>
-<span id="cb189-60"><a href="#cb189-60" aria-hidden="true" tabindex="-1"></a>                modification_increase_prior_to_technical_count) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb191"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb191-1"><a href="#cb191-1" aria-hidden="true" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb191-2"><a href="#cb191-2" aria-hidden="true" tabindex="-1"></a><span class="do">### left join of violations_clean file to supervision_child_join_offenses_5 file </span></span>
+<span id="cb191-3"><a href="#cb191-3" aria-hidden="true" tabindex="-1"></a><span class="do">################################################################################</span></span>
+<span id="cb191-4"><a href="#cb191-4" aria-hidden="true" tabindex="-1"></a>modification_prior_to_technical_violation_count <span class="ot">&lt;-</span> </span>
+<span id="cb191-5"><a href="#cb191-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(violations_clean_de_dup,</span>
+<span id="cb191-6"><a href="#cb191-6" aria-hidden="true" tabindex="-1"></a>            supervision_level_clean_to_join_modifications_violations,</span>
+<span id="cb191-7"><a href="#cb191-7" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>)) <span class="sc">%&gt;%</span> <span class="do">### this is a many to many join so there are now lots of records (all violations joining to all supervisions/supervision extensions/supervision levels)</span></span>
+<span id="cb191-8"><a href="#cb191-8" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now we need to filter on date -- only keeping violation records where the violation_date&gt;=supervision_begin_date &amp; violation_date&lt;=supervision_end_date</span></span>
+<span id="cb191-9"><a href="#cb191-9" aria-hidden="true" tabindex="-1"></a>  <span class="do">### first create fake end date for records where the end date is blank; since this indicates that supervision was ongoing at time of data pull, we still want to include violations that occurred so changing NA to '2030-01-01' in new variable for the following filter</span></span>
+<span id="cb191-10"><a href="#cb191-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_end_date_missing_include =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(supervision_end_date)<span class="sc">==</span><span class="cn">TRUE</span>,</span>
+<span id="cb191-11"><a href="#cb191-11" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(<span class="st">"2030-01-01"</span>)),</span>
+<span id="cb191-12"><a href="#cb191-12" aria-hidden="true" tabindex="-1"></a>                                       <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date))),</span>
+<span id="cb191-13"><a href="#cb191-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">supervision_end_date_missing_include =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_end_date_missing_include)),</span>
+<span id="cb191-14"><a href="#cb191-14" aria-hidden="true" tabindex="-1"></a>         <span class="do">### flag records with no joining modification information using supervision_level_phase_begin_date</span></span>
+<span id="cb191-15"><a href="#cb191-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">no_modification_records_joined =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(supervision_level_phase_begin_date<span class="sc">==</span><span class="cn">TRUE</span>),</span>
+<span id="cb191-16"><a href="#cb191-16" aria-hidden="true" tabindex="-1"></a>                                       <span class="dv">1</span>,<span class="dv">0</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb191-17"><a href="#cb191-17" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we only want to keep either (1) violation records with no modifications or (2) supervision records with violation records when those violations occurred during the period of supervision  </span></span>
+<span id="cb191-18"><a href="#cb191-18" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we only want records that fit our criteria of:</span></span>
+<span id="cb191-19"><a href="#cb191-19" aria-hidden="true" tabindex="-1"></a>  <span class="do">### violations occurring during the supervision episode</span></span>
+<span id="cb191-20"><a href="#cb191-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(no_modification_records_joined<span class="sc">==</span><span class="dv">1</span> <span class="sc">|</span> (violation_date<span class="sc">&gt;=</span>supervision_begin_date <span class="sc">&amp;</span> violation_date<span class="sc">&lt;=</span>supervision_end_date_missing_include)) <span class="sc">%&gt;%</span> </span>
+<span id="cb191-21"><a href="#cb191-21" aria-hidden="true" tabindex="-1"></a>  <span class="do">### only technical violations</span></span>
+<span id="cb191-22"><a href="#cb191-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_severity_factor<span class="sc">==</span><span class="st">"Technical Violation"</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb191-23"><a href="#cb191-23" aria-hidden="true" tabindex="-1"></a>  <span class="do">### and modifications occurring before the violation</span></span>
+<span id="cb191-24"><a href="#cb191-24" aria-hidden="true" tabindex="-1"></a>  <span class="do">### and only modifications that were increases in intensiveness</span></span>
+<span id="cb191-25"><a href="#cb191-25" aria-hidden="true" tabindex="-1"></a>  <span class="do">### when we de-dup, we will keep first violation per supervision episode</span></span>
+<span id="cb191-26"><a href="#cb191-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(no_modification_records_joined<span class="sc">==</span><span class="dv">1</span> <span class="sc">|</span> (supervision_level_phase_begin_date<span class="sc">&lt;</span>violation_date <span class="sc">&amp;</span> supervision_level_is_increase_flag<span class="sc">==</span><span class="dv">1</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb191-27"><a href="#cb191-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unique_id,</span>
+<span id="cb191-28"><a href="#cb191-28" aria-hidden="true" tabindex="-1"></a>                violation_referral_number,</span>
+<span id="cb191-29"><a href="#cb191-29" aria-hidden="true" tabindex="-1"></a>                referral_number,</span>
+<span id="cb191-30"><a href="#cb191-30" aria-hidden="true" tabindex="-1"></a>                unique_supervision_id,</span>
+<span id="cb191-31"><a href="#cb191-31" aria-hidden="true" tabindex="-1"></a>                violation,</span>
+<span id="cb191-32"><a href="#cb191-32" aria-hidden="true" tabindex="-1"></a>                violation_date,</span>
+<span id="cb191-33"><a href="#cb191-33" aria-hidden="true" tabindex="-1"></a>                supervision_begin_date,</span>
+<span id="cb191-34"><a href="#cb191-34" aria-hidden="true" tabindex="-1"></a>                supervision_end_date,</span>
+<span id="cb191-35"><a href="#cb191-35" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase,</span>
+<span id="cb191-36"><a href="#cb191-36" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase_begin_date,</span>
+<span id="cb191-37"><a href="#cb191-37" aria-hidden="true" tabindex="-1"></a>                supervision_level_phase_end_date,</span>
+<span id="cb191-38"><a href="#cb191-38" aria-hidden="true" tabindex="-1"></a>                supervision_level_is_increase_flag) <span class="sc">%&gt;%</span> </span>
+<span id="cb191-39"><a href="#cb191-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb191-40"><a href="#cb191-40" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(unique_supervision_id,</span>
+<span id="cb191-41"><a href="#cb191-41" aria-hidden="true" tabindex="-1"></a>          violation_date) <span class="sc">%&gt;%</span></span>
+<span id="cb191-42"><a href="#cb191-42" aria-hidden="true" tabindex="-1"></a>  <span class="do">### at this point, we only have records that fit our criteria of </span></span>
+<span id="cb191-43"><a href="#cb191-43" aria-hidden="true" tabindex="-1"></a>  <span class="do">### technical violations occurring during the supervision episode</span></span>
+<span id="cb191-44"><a href="#cb191-44" aria-hidden="true" tabindex="-1"></a>  <span class="do">### modifications occurring before the violation</span></span>
+<span id="cb191-45"><a href="#cb191-45" aria-hidden="true" tabindex="-1"></a>  <span class="do">### and only modifications that were increases in intensiveness</span></span>
+<span id="cb191-46"><a href="#cb191-46" aria-hidden="true" tabindex="-1"></a>  <span class="do">### when we de-dup, we will keep first violation per supervision episode</span></span>
+<span id="cb191-47"><a href="#cb191-47" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now count modifications per violations</span></span>
+<span id="cb191-48"><a href="#cb191-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">modification_increase_prior_to_technical_count =</span> <span class="fu">n_distinct</span>(unique_id,</span>
+<span id="cb191-49"><a href="#cb191-49" aria-hidden="true" tabindex="-1"></a>                                                  unique_supervision_id,</span>
+<span id="cb191-50"><a href="#cb191-50" aria-hidden="true" tabindex="-1"></a>                                                  supervision_level_phase,</span>
+<span id="cb191-51"><a href="#cb191-51" aria-hidden="true" tabindex="-1"></a>                                                  supervision_level_phase_begin_date)) <span class="sc">%&gt;%</span> </span>
+<span id="cb191-52"><a href="#cb191-52" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb191-53"><a href="#cb191-53" aria-hidden="true" tabindex="-1"></a>  <span class="do">### for this analysis, keep first violation per supervision episode </span></span>
+<span id="cb191-54"><a href="#cb191-54" aria-hidden="true" tabindex="-1"></a>  <span class="do">### de-dup, keeping first record to preserve violation and linked modifications for supervision period</span></span>
+<span id="cb191-55"><a href="#cb191-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(unique_supervision_id,</span>
+<span id="cb191-56"><a href="#cb191-56" aria-hidden="true" tabindex="-1"></a>          violation_date) <span class="sc">%&gt;%</span></span>
+<span id="cb191-57"><a href="#cb191-57" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_supervision_id,</span>
+<span id="cb191-58"><a href="#cb191-58" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb191-59"><a href="#cb191-59" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unique_supervision_id,</span>
+<span id="cb191-60"><a href="#cb191-60" aria-hidden="true" tabindex="-1"></a>                modification_increase_prior_to_technical_count) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>left_join: added 9 columns (referral_number, unique_supervision_id, supervision_begin_date, supervision_end_date, supervision_level_phase, …)</code></pre>
 </div>
@@ -1627,11 +1645,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell-output cell-output-stderr">
 <pre><code>distinct: removed 1,692 rows (65%), 898 rows remaining</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb206"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb206-1"><a href="#cb206-1" aria-hidden="true" tabindex="-1"></a><span class="do">### join lookup table of modification increases occurring prior to first </span></span>
-<span id="cb206-2"><a href="#cb206-2" aria-hidden="true" tabindex="-1"></a><span class="do">### technical violation per supervision episode to main analytic file</span></span>
-<span id="cb206-3"><a href="#cb206-3" aria-hidden="true" tabindex="-1"></a>supervision_child_join_offenses_violatons_7 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(supervision_child_join_offenses_violatons_6, </span>
-<span id="cb206-4"><a href="#cb206-4" aria-hidden="true" tabindex="-1"></a>                                                         modification_prior_to_technical_violation_count,</span>
-<span id="cb206-5"><a href="#cb206-5" aria-hidden="true" tabindex="-1"></a>                                                         <span class="at">by =</span> <span class="st">"unique_supervision_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb208"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb208-1"><a href="#cb208-1" aria-hidden="true" tabindex="-1"></a><span class="do">### join lookup table of modification increases occurring prior to first </span></span>
+<span id="cb208-2"><a href="#cb208-2" aria-hidden="true" tabindex="-1"></a><span class="do">### technical violation per supervision episode to main analytic file</span></span>
+<span id="cb208-3"><a href="#cb208-3" aria-hidden="true" tabindex="-1"></a>supervision_child_join_offenses_violatons_7 <span class="ot">&lt;-</span> <span class="fu">left_join</span>(supervision_child_join_offenses_violatons_6, </span>
+<span id="cb208-4"><a href="#cb208-4" aria-hidden="true" tabindex="-1"></a>                                                         modification_prior_to_technical_violation_count,</span>
+<span id="cb208-5"><a href="#cb208-5" aria-hidden="true" tabindex="-1"></a>                                                         <span class="at">by =</span> <span class="st">"unique_supervision_id"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>left_join: added one column (modification_increase_prior_to_technical_count)</code></pre>
 </div>
@@ -1653,42 +1671,42 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 </div>
 <p><br><br></p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb213"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb213-1"><a href="#cb213-1" aria-hidden="true" tabindex="-1"></a><span class="do">### select final variables we want for supervision analytic file</span></span>
-<span id="cb213-2"><a href="#cb213-2" aria-hidden="true" tabindex="-1"></a>df_dallas_county_av_supervision_analytic_file <span class="ot">&lt;-</span> supervision_child_join_offenses_violatons_7 <span class="sc">|&gt;</span></span>
-<span id="cb213-3"><a href="#cb213-3" aria-hidden="true" tabindex="-1"></a>  <span class="do">### here we are adding several sample filters based on conversation with Becky and Emily:</span></span>
-<span id="cb213-4"><a href="#cb213-4" aria-hidden="true" tabindex="-1"></a>  <span class="do">### because we are grouping by exit date (as opposed to referral date)</span></span>
-<span id="cb213-5"><a href="#cb213-5" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we keep only completers (those with data for supervision completion)</span></span>
-<span id="cb213-6"><a href="#cb213-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(supervision_outcome)<span class="sc">==</span><span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb213-7"><a href="#cb213-7" aria-hidden="true" tabindex="-1"></a>  <span class="do">### create fiscal year vars for supervision start and end</span></span>
-<span id="cb213-8"><a href="#cb213-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_begin_fy =</span> csgjcr<span class="sc">::</span><span class="fu">csg_fiscal_year</span>(supervision_begin_date,</span>
-<span id="cb213-9"><a href="#cb213-9" aria-hidden="true" tabindex="-1"></a>                                                          <span class="at">fy_start=</span><span class="st">"October"</span>),</span>
-<span id="cb213-10"><a href="#cb213-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">supervision_end_fy =</span> csgjcr<span class="sc">::</span><span class="fu">csg_fiscal_year</span>(supervision_end_date,</span>
-<span id="cb213-11"><a href="#cb213-11" aria-hidden="true" tabindex="-1"></a>                                                          <span class="at">fy_start=</span><span class="st">"October"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb213-12"><a href="#cb213-12" aria-hidden="true" tabindex="-1"></a>  <span class="do">### clean age variables</span></span>
-<span id="cb213-13"><a href="#cb213-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_at_referral_clean =</span> <span class="fu">case_when</span>(</span>
-<span id="cb213-14"><a href="#cb213-14" aria-hidden="true" tabindex="-1"></a>    age_at_referral <span class="sc">&lt;</span> <span class="dv">12</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb213-15"><a href="#cb213-15" aria-hidden="true" tabindex="-1"></a>    age_at_referral<span class="sc">&gt;=</span> <span class="dv">12</span> <span class="sc">&amp;</span>  age_at_referral<span class="sc">&lt;</span> <span class="dv">14</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
-<span id="cb213-16"><a href="#cb213-16" aria-hidden="true" tabindex="-1"></a>    age_at_referral<span class="sc">&gt;=</span> <span class="dv">14</span> <span class="sc">&amp;</span>  age_at_referral<span class="sc">&lt;</span> <span class="dv">16</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
-<span id="cb213-17"><a href="#cb213-17" aria-hidden="true" tabindex="-1"></a>    age_at_referral<span class="sc">&gt;=</span> <span class="dv">16</span> <span class="sc">&amp;</span>  age_at_referral<span class="sc">&lt;</span> <span class="dv">20</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
-<span id="cb213-18"><a href="#cb213-18" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>)),</span>
-<span id="cb213-19"><a href="#cb213-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_at_referral_clean =</span> <span class="fu">factor</span>(age_at_referral_clean,</span>
-<span id="cb213-20"><a href="#cb213-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>),</span>
-<span id="cb213-21"><a href="#cb213-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Less than 12"</span>, </span>
-<span id="cb213-22"><a href="#cb213-22" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"12 to 13"</span>,</span>
-<span id="cb213-23"><a href="#cb213-23" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"14 to 15"</span>,</span>
-<span id="cb213-24"><a href="#cb213-24" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"16 to 20"</span>)),</span>
-<span id="cb213-25"><a href="#cb213-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_at_start_of_supervision_clean =</span> <span class="fu">case_when</span>(</span>
-<span id="cb213-26"><a href="#cb213-26" aria-hidden="true" tabindex="-1"></a>    age_at_start_of_supervision <span class="sc">&lt;</span> <span class="dv">12</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb213-27"><a href="#cb213-27" aria-hidden="true" tabindex="-1"></a>    age_at_start_of_supervision<span class="sc">&gt;=</span> <span class="dv">12</span> <span class="sc">&amp;</span>  age_at_start_of_supervision<span class="sc">&lt;</span> <span class="dv">14</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
-<span id="cb213-28"><a href="#cb213-28" aria-hidden="true" tabindex="-1"></a>    age_at_start_of_supervision<span class="sc">&gt;=</span> <span class="dv">14</span> <span class="sc">&amp;</span>  age_at_start_of_supervision<span class="sc">&lt;</span> <span class="dv">16</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
-<span id="cb213-29"><a href="#cb213-29" aria-hidden="true" tabindex="-1"></a>    age_at_start_of_supervision<span class="sc">&gt;=</span> <span class="dv">16</span> <span class="sc">&amp;</span>  age_at_start_of_supervision<span class="sc">&lt;</span> <span class="dv">20</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
-<span id="cb213-30"><a href="#cb213-30" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>)),</span>
-<span id="cb213-31"><a href="#cb213-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_at_start_of_supervision_clean =</span> <span class="fu">factor</span>(age_at_start_of_supervision_clean,</span>
-<span id="cb213-32"><a href="#cb213-32" aria-hidden="true" tabindex="-1"></a>         <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>),</span>
-<span id="cb213-33"><a href="#cb213-33" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Less than 12"</span>, </span>
-<span id="cb213-34"><a href="#cb213-34" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"12 to 13"</span>,</span>
-<span id="cb213-35"><a href="#cb213-35" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"14 to 15"</span>,</span>
-<span id="cb213-36"><a href="#cb213-36" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"16 to 20"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb215"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb215-1"><a href="#cb215-1" aria-hidden="true" tabindex="-1"></a><span class="do">### select final variables we want for supervision analytic file</span></span>
+<span id="cb215-2"><a href="#cb215-2" aria-hidden="true" tabindex="-1"></a>df_dallas_county_av_supervision_analytic_file <span class="ot">&lt;-</span> supervision_child_join_offenses_violatons_7 <span class="sc">|&gt;</span></span>
+<span id="cb215-3"><a href="#cb215-3" aria-hidden="true" tabindex="-1"></a>  <span class="do">### here we are adding several sample filters based on conversation with Becky and Emily:</span></span>
+<span id="cb215-4"><a href="#cb215-4" aria-hidden="true" tabindex="-1"></a>  <span class="do">### because we are grouping by exit date (as opposed to referral date)</span></span>
+<span id="cb215-5"><a href="#cb215-5" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we keep only completers (those with data for supervision completion)</span></span>
+<span id="cb215-6"><a href="#cb215-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(supervision_outcome)<span class="sc">==</span><span class="cn">TRUE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb215-7"><a href="#cb215-7" aria-hidden="true" tabindex="-1"></a>  <span class="do">### create fiscal year vars for supervision start and end</span></span>
+<span id="cb215-8"><a href="#cb215-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_begin_fy =</span> csgjcr<span class="sc">::</span><span class="fu">csg_fiscal_year</span>(supervision_begin_date,</span>
+<span id="cb215-9"><a href="#cb215-9" aria-hidden="true" tabindex="-1"></a>                                                          <span class="at">fy_start=</span><span class="st">"October"</span>),</span>
+<span id="cb215-10"><a href="#cb215-10" aria-hidden="true" tabindex="-1"></a>         <span class="at">supervision_end_fy =</span> csgjcr<span class="sc">::</span><span class="fu">csg_fiscal_year</span>(supervision_end_date,</span>
+<span id="cb215-11"><a href="#cb215-11" aria-hidden="true" tabindex="-1"></a>                                                          <span class="at">fy_start=</span><span class="st">"October"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb215-12"><a href="#cb215-12" aria-hidden="true" tabindex="-1"></a>  <span class="do">### clean age variables</span></span>
+<span id="cb215-13"><a href="#cb215-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">age_at_referral_clean =</span> <span class="fu">case_when</span>(</span>
+<span id="cb215-14"><a href="#cb215-14" aria-hidden="true" tabindex="-1"></a>    age_at_referral <span class="sc">&lt;</span> <span class="dv">12</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb215-15"><a href="#cb215-15" aria-hidden="true" tabindex="-1"></a>    age_at_referral<span class="sc">&gt;=</span> <span class="dv">12</span> <span class="sc">&amp;</span>  age_at_referral<span class="sc">&lt;</span> <span class="dv">14</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb215-16"><a href="#cb215-16" aria-hidden="true" tabindex="-1"></a>    age_at_referral<span class="sc">&gt;=</span> <span class="dv">14</span> <span class="sc">&amp;</span>  age_at_referral<span class="sc">&lt;</span> <span class="dv">16</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb215-17"><a href="#cb215-17" aria-hidden="true" tabindex="-1"></a>    age_at_referral<span class="sc">&gt;=</span> <span class="dv">16</span> <span class="sc">&amp;</span>  age_at_referral<span class="sc">&lt;</span> <span class="dv">20</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb215-18"><a href="#cb215-18" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>)),</span>
+<span id="cb215-19"><a href="#cb215-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_at_referral_clean =</span> <span class="fu">factor</span>(age_at_referral_clean,</span>
+<span id="cb215-20"><a href="#cb215-20" aria-hidden="true" tabindex="-1"></a>         <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>),</span>
+<span id="cb215-21"><a href="#cb215-21" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Less than 12"</span>, </span>
+<span id="cb215-22"><a href="#cb215-22" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"12 to 13"</span>,</span>
+<span id="cb215-23"><a href="#cb215-23" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"14 to 15"</span>,</span>
+<span id="cb215-24"><a href="#cb215-24" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"16 to 20"</span>)),</span>
+<span id="cb215-25"><a href="#cb215-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_at_start_of_supervision_clean =</span> <span class="fu">case_when</span>(</span>
+<span id="cb215-26"><a href="#cb215-26" aria-hidden="true" tabindex="-1"></a>    age_at_start_of_supervision <span class="sc">&lt;</span> <span class="dv">12</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb215-27"><a href="#cb215-27" aria-hidden="true" tabindex="-1"></a>    age_at_start_of_supervision<span class="sc">&gt;=</span> <span class="dv">12</span> <span class="sc">&amp;</span>  age_at_start_of_supervision<span class="sc">&lt;</span> <span class="dv">14</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb215-28"><a href="#cb215-28" aria-hidden="true" tabindex="-1"></a>    age_at_start_of_supervision<span class="sc">&gt;=</span> <span class="dv">14</span> <span class="sc">&amp;</span>  age_at_start_of_supervision<span class="sc">&lt;</span> <span class="dv">16</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb215-29"><a href="#cb215-29" aria-hidden="true" tabindex="-1"></a>    age_at_start_of_supervision<span class="sc">&gt;=</span> <span class="dv">16</span> <span class="sc">&amp;</span>  age_at_start_of_supervision<span class="sc">&lt;</span> <span class="dv">20</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb215-30"><a href="#cb215-30" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>)),</span>
+<span id="cb215-31"><a href="#cb215-31" aria-hidden="true" tabindex="-1"></a>    <span class="at">age_at_start_of_supervision_clean =</span> <span class="fu">factor</span>(age_at_start_of_supervision_clean,</span>
+<span id="cb215-32"><a href="#cb215-32" aria-hidden="true" tabindex="-1"></a>         <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>),</span>
+<span id="cb215-33"><a href="#cb215-33" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Less than 12"</span>, </span>
+<span id="cb215-34"><a href="#cb215-34" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"12 to 13"</span>,</span>
+<span id="cb215-35"><a href="#cb215-35" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"14 to 15"</span>,</span>
+<span id="cb215-36"><a href="#cb215-36" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"16 to 20"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>filter: removed 775 rows (9%), 7,474 rows remaining</code></pre>
 </div>
@@ -1704,56 +1722,107 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div class="cell-output cell-output-stderr">
 <pre><code>        new variable 'age_at_start_of_supervision_clean' (factor) with 5 unique values and &lt;1% NA</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb219"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb219-1"><a href="#cb219-1" aria-hidden="true" tabindex="-1"></a><span class="co"># %&gt;%</span></span>
-<span id="cb219-2"><a href="#cb219-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::select(unique_supervision_id,</span></span>
-<span id="cb219-3"><a href="#cb219-3" aria-hidden="true" tabindex="-1"></a><span class="co">#                 referral_number,</span></span>
-<span id="cb219-4"><a href="#cb219-4" aria-hidden="true" tabindex="-1"></a><span class="co">#                 unique_youth_id = unique_id, </span></span>
-<span id="cb219-5"><a href="#cb219-5" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_citation_number,</span></span>
-<span id="cb219-6"><a href="#cb219-6" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_description,</span></span>
-<span id="cb219-7"><a href="#cb219-7" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_level,</span></span>
-<span id="cb219-8"><a href="#cb219-8" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_type_grouped,</span></span>
-<span id="cb219-9"><a href="#cb219-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_level_type_combined_grouped,</span></span>
-<span id="cb219-10"><a href="#cb219-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                 supervision_type,</span></span>
-<span id="cb219-11"><a href="#cb219-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                 referral_type,</span></span>
-<span id="cb219-12"><a href="#cb219-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_referral_risk_level,</span></span>
-<span id="cb219-13"><a href="#cb219-13" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_referral_needs_level,</span></span>
-<span id="cb219-14"><a href="#cb219-14" aria-hidden="true" tabindex="-1"></a><span class="co">#                 mental_health_needs,</span></span>
-<span id="cb219-15"><a href="#cb219-15" aria-hidden="true" tabindex="-1"></a><span class="co">#                 mental_health_needs_indicator,</span></span>
-<span id="cb219-16"><a href="#cb219-16" aria-hidden="true" tabindex="-1"></a><span class="co">#                 substance_use_need,</span></span>
-<span id="cb219-17"><a href="#cb219-17" aria-hidden="true" tabindex="-1"></a><span class="co">#                 prior_overall_referral_count,</span></span>
-<span id="cb219-18"><a href="#cb219-18" aria-hidden="true" tabindex="-1"></a><span class="co">#                 prior_felony_referral_count,</span></span>
-<span id="cb219-19"><a href="#cb219-19" aria-hidden="true" tabindex="-1"></a><span class="co">#                 prior_misd_referral_count,</span></span>
-<span id="cb219-20"><a href="#cb219-20" aria-hidden="true" tabindex="-1"></a><span class="co">#                 prior_cins_referral_count,</span></span>
-<span id="cb219-21"><a href="#cb219-21" aria-hidden="true" tabindex="-1"></a><span class="co">#                 supervision_begin_date,</span></span>
-<span id="cb219-22"><a href="#cb219-22" aria-hidden="true" tabindex="-1"></a><span class="co">#                 supervision_end_date,</span></span>
-<span id="cb219-23"><a href="#cb219-23" aria-hidden="true" tabindex="-1"></a><span class="co">#                 technical_violation_flag,</span></span>
-<span id="cb219-24"><a href="#cb219-24" aria-hidden="true" tabindex="-1"></a><span class="co">#                 technical_violation_referral_count,</span></span>
-<span id="cb219-25"><a href="#cb219-25" aria-hidden="true" tabindex="-1"></a><span class="co">#                 new_offense_violation_referral_count,</span></span>
-<span id="cb219-26"><a href="#cb219-26" aria-hidden="true" tabindex="-1"></a><span class="co">#                 overall_violation_referral_count,</span></span>
-<span id="cb219-27"><a href="#cb219-27" aria-hidden="true" tabindex="-1"></a><span class="co">#                 overall_violation_referral_flag,</span></span>
-<span id="cb219-28"><a href="#cb219-28" aria-hidden="true" tabindex="-1"></a><span class="co">#                 supervision_outcome,</span></span>
-<span id="cb219-29"><a href="#cb219-29" aria-hidden="true" tabindex="-1"></a><span class="co">#                 overall_supervision_los_days,</span></span>
-<span id="cb219-30"><a href="#cb219-30" aria-hidden="true" tabindex="-1"></a><span class="co">#                 probation_supervision_los_days,</span></span>
-<span id="cb219-31"><a href="#cb219-31" aria-hidden="true" tabindex="-1"></a><span class="co">#                 detention_supervision_los_days,</span></span>
-<span id="cb219-32"><a href="#cb219-32" aria-hidden="true" tabindex="-1"></a><span class="co">#                 placement_supervision_los_days,</span></span>
-<span id="cb219-33"><a href="#cb219-33" aria-hidden="true" tabindex="-1"></a><span class="co">#                 none_supervision_los_days,</span></span>
-<span id="cb219-34"><a href="#cb219-34" aria-hidden="true" tabindex="-1"></a><span class="co">#                 warrant_supervision_los_days,</span></span>
-<span id="cb219-35"><a href="#cb219-35" aria-hidden="true" tabindex="-1"></a><span class="co">#                 age_at_start_of_supervision,</span></span>
-<span id="cb219-36"><a href="#cb219-36" aria-hidden="true" tabindex="-1"></a><span class="co">#                 gender_clean,</span></span>
-<span id="cb219-37"><a href="#cb219-37" aria-hidden="true" tabindex="-1"></a><span class="co">#                 race_clean)</span></span>
-<span id="cb219-38"><a href="#cb219-38" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb219-39"><a href="#cb219-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb219-40"><a href="#cb219-40" aria-hidden="true" tabindex="-1"></a><span class="do">###############</span></span>
-<span id="cb219-41"><a href="#cb219-41" aria-hidden="true" tabindex="-1"></a><span class="do">### export file</span></span>
-<span id="cb219-42"><a href="#cb219-42" aria-hidden="true" tabindex="-1"></a><span class="do">###############</span></span>
-<span id="cb219-43"><a href="#cb219-43" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb219-44"><a href="#cb219-44" aria-hidden="true" tabindex="-1"></a><span class="do">### set sharepoint path using sp_data_path and file.path function </span></span>
-<span id="cb219-45"><a href="#cb219-45" aria-hidden="true" tabindex="-1"></a>sharepoint_jj_av_dallas_analytic_data <span class="ot">&lt;-</span> <span class="fu">file.path</span>(sp_data_path,<span class="st">"Data/analysis"</span>)</span>
-<span id="cb219-46"><a href="#cb219-46" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb219-47"><a href="#cb219-47" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(df_dallas_county_av_supervision_analytic_file,</span>
-<span id="cb219-48"><a href="#cb219-48" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
-<span id="cb219-49"><a href="#cb219-49" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"df_dallas_county_av_supervision_analytic_file.txt"</span>),</span>
-<span id="cb219-50"><a href="#cb219-50" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb221"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb221-1"><a href="#cb221-1" aria-hidden="true" tabindex="-1"></a><span class="do">####################################################</span></span>
+<span id="cb221-2"><a href="#cb221-2" aria-hidden="true" tabindex="-1"></a><span class="do">### create violation-level analytic file</span></span>
+<span id="cb221-3"><a href="#cb221-3" aria-hidden="true" tabindex="-1"></a><span class="do">### to explore the percentage of violations</span></span>
+<span id="cb221-4"><a href="#cb221-4" aria-hidden="true" tabindex="-1"></a><span class="do">### that are dismissed/withdrawn</span></span>
+<span id="cb221-5"><a href="#cb221-5" aria-hidden="true" tabindex="-1"></a><span class="do">####################################################</span></span>
+<span id="cb221-6"><a href="#cb221-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb221-7"><a href="#cb221-7" aria-hidden="true" tabindex="-1"></a><span class="do">### extract pertinent demo information from df_dallas_county_av_supervision_analytic_file</span></span>
+<span id="cb221-8"><a href="#cb221-8" aria-hidden="true" tabindex="-1"></a>df_dallas_county_av_supervision_analytic_file_demo_only <span class="ot">&lt;-</span> df_dallas_county_av_supervision_analytic_file <span class="sc">|&gt;</span> </span>
+<span id="cb221-9"><a href="#cb221-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(unique_id,</span>
+<span id="cb221-10"><a href="#cb221-10" aria-hidden="true" tabindex="-1"></a>                race_clean,</span>
+<span id="cb221-11"><a href="#cb221-11" aria-hidden="true" tabindex="-1"></a>                gender_clean,</span>
+<span id="cb221-12"><a href="#cb221-12" aria-hidden="true" tabindex="-1"></a>                age_at_start_of_supervision_clean,</span>
+<span id="cb221-13"><a href="#cb221-13" aria-hidden="true" tabindex="-1"></a>                offense_referral_needs_level,</span>
+<span id="cb221-14"><a href="#cb221-14" aria-hidden="true" tabindex="-1"></a>                offense_referral_risk_level)</span>
+<span id="cb221-15"><a href="#cb221-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb221-16"><a href="#cb221-16" aria-hidden="true" tabindex="-1"></a><span class="do">### left join of violations_clean file and supervision_child_join_offenses_5 file </span></span>
+<span id="cb221-17"><a href="#cb221-17" aria-hidden="true" tabindex="-1"></a>df_violations_clean_demo <span class="ot">&lt;-</span> </span>
+<span id="cb221-18"><a href="#cb221-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(violations_clean_de_dup,</span>
+<span id="cb221-19"><a href="#cb221-19" aria-hidden="true" tabindex="-1"></a>            df_dallas_county_av_supervision_analytic_file_demo_only,</span>
+<span id="cb221-20"><a href="#cb221-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>)) <span class="sc">|&gt;</span> </span>
+<span id="cb221-21"><a href="#cb221-21" aria-hidden="true" tabindex="-1"></a>  <span class="do">### double check that we joined demo data to all violation records</span></span>
+<span id="cb221-22"><a href="#cb221-22" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we did</span></span>
+<span id="cb221-23"><a href="#cb221-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(race_clean))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>left_join: added 5 columns (race_clean, gender_clean, age_at_start_of_supervision_clean, offense_referral_needs_level, offense_referral_risk_level)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt; rows only in x     358</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt; rows only in y  (5,845)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt; matched rows     2,966    (includes duplicates)</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt;                 =======</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>           &gt; rows total       3,324</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>filter: removed 358 rows (11%), 2,966 rows remaining</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb229"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb229-1"><a href="#cb229-1" aria-hidden="true" tabindex="-1"></a><span class="co"># %&gt;%</span></span>
+<span id="cb229-2"><a href="#cb229-2" aria-hidden="true" tabindex="-1"></a><span class="co">#   dplyr::select(unique_supervision_id,</span></span>
+<span id="cb229-3"><a href="#cb229-3" aria-hidden="true" tabindex="-1"></a><span class="co">#                 referral_number,</span></span>
+<span id="cb229-4"><a href="#cb229-4" aria-hidden="true" tabindex="-1"></a><span class="co">#                 unique_youth_id = unique_id, </span></span>
+<span id="cb229-5"><a href="#cb229-5" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_citation_number,</span></span>
+<span id="cb229-6"><a href="#cb229-6" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_description,</span></span>
+<span id="cb229-7"><a href="#cb229-7" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_level,</span></span>
+<span id="cb229-8"><a href="#cb229-8" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_type_grouped,</span></span>
+<span id="cb229-9"><a href="#cb229-9" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_level_type_combined_grouped,</span></span>
+<span id="cb229-10"><a href="#cb229-10" aria-hidden="true" tabindex="-1"></a><span class="co">#                 supervision_type,</span></span>
+<span id="cb229-11"><a href="#cb229-11" aria-hidden="true" tabindex="-1"></a><span class="co">#                 referral_type,</span></span>
+<span id="cb229-12"><a href="#cb229-12" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_referral_risk_level,</span></span>
+<span id="cb229-13"><a href="#cb229-13" aria-hidden="true" tabindex="-1"></a><span class="co">#                 offense_referral_needs_level,</span></span>
+<span id="cb229-14"><a href="#cb229-14" aria-hidden="true" tabindex="-1"></a><span class="co">#                 mental_health_needs,</span></span>
+<span id="cb229-15"><a href="#cb229-15" aria-hidden="true" tabindex="-1"></a><span class="co">#                 mental_health_needs_indicator,</span></span>
+<span id="cb229-16"><a href="#cb229-16" aria-hidden="true" tabindex="-1"></a><span class="co">#                 substance_use_need,</span></span>
+<span id="cb229-17"><a href="#cb229-17" aria-hidden="true" tabindex="-1"></a><span class="co">#                 prior_overall_referral_count,</span></span>
+<span id="cb229-18"><a href="#cb229-18" aria-hidden="true" tabindex="-1"></a><span class="co">#                 prior_felony_referral_count,</span></span>
+<span id="cb229-19"><a href="#cb229-19" aria-hidden="true" tabindex="-1"></a><span class="co">#                 prior_misd_referral_count,</span></span>
+<span id="cb229-20"><a href="#cb229-20" aria-hidden="true" tabindex="-1"></a><span class="co">#                 prior_cins_referral_count,</span></span>
+<span id="cb229-21"><a href="#cb229-21" aria-hidden="true" tabindex="-1"></a><span class="co">#                 supervision_begin_date,</span></span>
+<span id="cb229-22"><a href="#cb229-22" aria-hidden="true" tabindex="-1"></a><span class="co">#                 supervision_end_date,</span></span>
+<span id="cb229-23"><a href="#cb229-23" aria-hidden="true" tabindex="-1"></a><span class="co">#                 technical_violation_flag,</span></span>
+<span id="cb229-24"><a href="#cb229-24" aria-hidden="true" tabindex="-1"></a><span class="co">#                 technical_violation_referral_count,</span></span>
+<span id="cb229-25"><a href="#cb229-25" aria-hidden="true" tabindex="-1"></a><span class="co">#                 new_offense_violation_referral_count,</span></span>
+<span id="cb229-26"><a href="#cb229-26" aria-hidden="true" tabindex="-1"></a><span class="co">#                 overall_violation_referral_count,</span></span>
+<span id="cb229-27"><a href="#cb229-27" aria-hidden="true" tabindex="-1"></a><span class="co">#                 overall_violation_referral_flag,</span></span>
+<span id="cb229-28"><a href="#cb229-28" aria-hidden="true" tabindex="-1"></a><span class="co">#                 supervision_outcome,</span></span>
+<span id="cb229-29"><a href="#cb229-29" aria-hidden="true" tabindex="-1"></a><span class="co">#                 overall_supervision_los_days,</span></span>
+<span id="cb229-30"><a href="#cb229-30" aria-hidden="true" tabindex="-1"></a><span class="co">#                 probation_supervision_los_days,</span></span>
+<span id="cb229-31"><a href="#cb229-31" aria-hidden="true" tabindex="-1"></a><span class="co">#                 detention_supervision_los_days,</span></span>
+<span id="cb229-32"><a href="#cb229-32" aria-hidden="true" tabindex="-1"></a><span class="co">#                 placement_supervision_los_days,</span></span>
+<span id="cb229-33"><a href="#cb229-33" aria-hidden="true" tabindex="-1"></a><span class="co">#                 none_supervision_los_days,</span></span>
+<span id="cb229-34"><a href="#cb229-34" aria-hidden="true" tabindex="-1"></a><span class="co">#                 warrant_supervision_los_days,</span></span>
+<span id="cb229-35"><a href="#cb229-35" aria-hidden="true" tabindex="-1"></a><span class="co">#                 age_at_start_of_supervision,</span></span>
+<span id="cb229-36"><a href="#cb229-36" aria-hidden="true" tabindex="-1"></a><span class="co">#                 gender_clean,</span></span>
+<span id="cb229-37"><a href="#cb229-37" aria-hidden="true" tabindex="-1"></a><span class="co">#                 race_clean)</span></span>
+<span id="cb229-38"><a href="#cb229-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-39"><a href="#cb229-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-40"><a href="#cb229-40" aria-hidden="true" tabindex="-1"></a><span class="do">###############</span></span>
+<span id="cb229-41"><a href="#cb229-41" aria-hidden="true" tabindex="-1"></a><span class="do">### export file</span></span>
+<span id="cb229-42"><a href="#cb229-42" aria-hidden="true" tabindex="-1"></a><span class="do">###############</span></span>
+<span id="cb229-43"><a href="#cb229-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-44"><a href="#cb229-44" aria-hidden="true" tabindex="-1"></a><span class="do">### set sharepoint path using sp_data_path and file.path function </span></span>
+<span id="cb229-45"><a href="#cb229-45" aria-hidden="true" tabindex="-1"></a>sharepoint_jj_av_dallas_analytic_data <span class="ot">&lt;-</span> <span class="fu">file.path</span>(sp_data_path,<span class="st">"Data/analysis"</span>)</span>
+<span id="cb229-46"><a href="#cb229-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-47"><a href="#cb229-47" aria-hidden="true" tabindex="-1"></a><span class="do">### write out main analytic file</span></span>
+<span id="cb229-48"><a href="#cb229-48" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(df_dallas_county_av_supervision_analytic_file,</span>
+<span id="cb229-49"><a href="#cb229-49" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
+<span id="cb229-50"><a href="#cb229-50" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"df_dallas_county_av_supervision_analytic_file.txt"</span>),</span>
+<span id="cb229-51"><a href="#cb229-51" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span>
+<span id="cb229-52"><a href="#cb229-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb229-53"><a href="#cb229-53" aria-hidden="true" tabindex="-1"></a><span class="do">### write out violations file</span></span>
+<span id="cb229-54"><a href="#cb229-54" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(df_violations_clean_demo,</span>
+<span id="cb229-55"><a href="#cb229-55" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
+<span id="cb229-56"><a href="#cb229-56" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"df_violations_clean_demo.txt"</span>),</span>
+<span id="cb229-57"><a href="#cb229-57" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
