@@ -1061,5 +1061,11 @@ write_delim(df_violations_clean_demo,
                       "df_violations_clean_demo.txt"),
                       delim = "|")
 
+### write out clean offense file
+write_delim(offenses_clean,
+            file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "offenses_clean.txt"),
+                      delim = "|")
+
 ```
 
