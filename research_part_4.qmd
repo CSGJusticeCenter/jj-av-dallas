@@ -13,25 +13,25 @@ format: html
 
 **Double check following coding/grouping of technical violations with team:**
 
-* "100a  Violation Probation - General" = "General Violation"
+* "General Violation" = "100a  Violation Probation - General" 
 
-* "5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)" = "Violation Related to Placement"
+* "Violation Related to Placement" = "5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)" 
 
-* "5100d  Viol Prob - Runaway From Home/Placement" = "Runaway",
+* "Runaway" = "5100d  Viol Prob - Runaway From Home/Placement" 
 
-* "5100e  Viol Prob - Failure to Report to Probation Officer (2)" = "Failure to Report to PO",
+* "Failure to Report to PO" = "5100e  Viol Prob - Failure to Report to Probation Officer (2)" 
 
-* "5100i - Viol Prob - Violating School Rules" = "Violation of School Rules",
+* "Violation of School Rules" = "5100i - Viol Prob - Violating School Rules" 
 
-* "5100f  Viol Prob - Curfew Violation (3)" = "Curfew Violation",
+* "Curfew Violation" = "5100f  Viol Prob - Curfew Violation (3)" 
 
-* "5100l Viol Prob - Failure to Participate in Order Program (11)" = "Failure to Participate in Program",
+* "Failure to Participate in Program" = "5100l Viol Prob - Failure to Participate in Order Program (11)" 
 
-* "5100h  Viol Prob - Truancy - Not attending each Class each Day (4)","5103c  Truancy 3 Days" = "Curfew Violation",
+* "Truancy" = "5100h  Viol Prob - Truancy - Not attending each Class each Day (4)","5103c  Truancy 3 Days"
 
-* "5100b  Absenting Self From Court Order Placement (2,6)","5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)","5100k  Viol Prob - Failure to Pay Probation Fees (9)","xxx - Converted Data") = "Other",
+* "Other" = "5100b  Absenting Self From Court Order Placement (2,6)","5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)","5100k  Viol Prob - Failure to Pay Probation Fees (9)","xxx - Converted Data")
 
-* "No Violation/Modification Needed" = "No Violation" (*I have filtered these out from the first section*)
+* "No Violation" = "No Violation/Modification Needed" (*I have filtered these out from the first section*)
 
 <br>
 
@@ -133,7 +133,7 @@ df_technical_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dall
              violation=="5100f  Viol Prob - Curfew Violation (3)" ~ "Curfew Violation",
              violation=="5100l Viol Prob - Failure to Participate in Order Program (11)" ~ "Failure to Participate in Program",
              violation%in%c("5100h  Viol Prob - Truancy - Not attending each Class each Day (4)",
-                            "5103c  Truancy 3 Days") ~ "Curfew Violation",
+                            "5103c  Truancy 3 Days") ~ "Truancy",
              violation%in%c("5100b  Absenting Self From Court Order Placement (2,6)",
                              "5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
                              "5100k  Viol Prob - Failure to Pay Probation Fees (9)",

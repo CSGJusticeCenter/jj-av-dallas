@@ -19,6 +19,7 @@ format: html
 
 
 **3.** 
+
 * In Dallas, probation can file a violation to get a kid into a 30 day residential program. The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
 
 
@@ -29,8 +30,10 @@ format: html
 
 * "Probation" = "ADJUDICATED PLACED ON PROBATION", "CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PROBATION)") 
 
+* "30 Day Residential Program" = "DISMISSED OR WITHDRAWN BY DEPARTMENT"
+
 * "Dismissed/Withdrawn" = "COMPLAINT DISMISSED BY COURT", "DISMISSED OR WITHDRAWN BY DEPARTMENT", "DISMISSED WITHOUT PROSECUTION",
-                            "DISMISSED WITHOUT PROSECUTION - PA", "NO CASE FILED BY DA NO JD ACTION", "NO INTAKE, NO PROBABLE CAUSE - * * "DECLINED BY PROSECUTOR", "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT", "NO INTAKE, PROBABLE CAUSE - PROSECUTOR", "NONSUIT", "NONSUIT (PA)"
+                            "DISMISSED WITHOUT PROSECUTION - PA", "NO CASE FILED BY DA NO JD ACTION", "NO INTAKE, NO PROBABLE CAUSE - DECLINED BY PROSECUTOR", "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT", "NO INTAKE, PROBABLE CAUSE - PROSECUTOR", "NONSUIT", "NONSUIT (PA)"
                             
 * "Other" = "CONSOLIDATED IN ANOTHER CASE/REFERRAL", "CONSOLIDATED BY DEPARTMENT", "FILED AS A MOTION TO MODIFY","FILED AS MOTION TO MODIFY", "MOD/VOP Disposed by Intake (PA)","NO INTAKE, DISPOSED BY INTAKE","TAKEN INTO CONSIDERATION","SUPERVISORY CAUTION BY DEPARTMENT", "TAKEN INTO CONSIDERATION (PA Complaint)", "TRANSFER OF DISPOSITION BY COURT"
                             
@@ -140,7 +143,7 @@ df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_a
              violation=="5100f  Viol Prob - Curfew Violation (3)" ~ "Curfew Violation",
              violation=="5100l Viol Prob - Failure to Participate in Order Program (11)" ~ "Failure to Participate in Program",
              violation%in%c("5100h  Viol Prob - Truancy - Not attending each Class each Day (4)",
-                            "5103c  Truancy 3 Days") ~ "Curfew Violation",
+                            "5103c  Truancy 3 Days") ~ "Truancy",
              violation%in%c("5100b  Absenting Self From Court Order Placement (2,6)",
                              "5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
                              "5100k  Viol Prob - Failure to Pay Probation Fees (9)",
