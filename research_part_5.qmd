@@ -15,6 +15,12 @@ format: html
 
 * What is the average length of time a supervision episode is extended as the result of a technical violation? How does this vary across race/ethnicity, sex, and risk level? 
 
+**Looks like we have duplicates based on the demo merge (multiple age groups, multiple risk/needs scores)...is this true for other joins, as well?**
+
+**TO DO: CLEAN UP DEMO JOIN + DECIDE WHICH VALUES TO KEEP (PERHAPS BY CLOSEST DATE AND/OR NON-MISSINGNESS?)**
+
+**Also: Should we (1) group by fiscal year of supervision end or (2) remove the later fiscal years?**
+
 
 **3.** 
 * In Dallas, probation can file a violation to get a kid into a 30 day residential program. The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
@@ -630,7 +636,368 @@ kable(df_technical_violations_per_year_table,
 
 What is the average length of time a supervision episode is extended as the result of a technical violation? How does this vary across race/ethnicity, sex, and risk level? 
 
-**Question:** Does this need to be linked to a technical violation by timing or by violation disposition? If by disposition, we'd need to clean dispositions differently (to look at all dispositions, not just most serious...)
+**Questions:** Does this need to be linked to a technical violation by timing or by violation disposition? If by disposition, we'd need to clean dispositions differently (to look at all dispositions, not just most serious...)
+
+**Looks like we have duplicates based on the demo merge (multiple age groups, multiple risk/needs scores)...is this true for other joins, as well?**
+
+**TO DO: CLEAN UP DEMO JOIN + DECIDE WHICH VALUES TO KEEP (PERHAPS BY CLOSEST DATE AND/OR NON-MISSINGNESS?)**
+
+**Also: Should we (1) group by fiscal year of supervision end or (2) remove the later fiscal years?**
+
+**Temporary Business Rule (to double check w/ team):** If supervision extension occurs within 15 days of a technical violation disposition date, then we are considering the supervision extension to be a result of the violation. Does this make sense?
+
+**Current N with this business rule:** 1,032 (compare to disposition counts above)
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### read in supervision extensions file that we want to merge to violations file for this section
+### i created this file specifically for this purpose in the analytic file prep file
+supervision_extension_for_join_to_violations_clean <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "supervision_extension_for_join_to_violations_clean.txt"),
+                      delim = "|")
+
+### join two files to explore supervision extensions that occur within 
+### we can only join on youth ID
+### referral IDs in these two files refer to different referrals (one a violation referral and one the original referral)
+df_technical_violations_supervision_extension <- left_join(df_technical_violations_dispo_clean_demo,
+                                                       supervision_extension_for_join_to_violations_clean,
+                                                       by = c("unique_id")) |> 
+  mutate(youth_violation_id = paste0(unique_id,
+                                     violation_referral_number)) |> 
+  ### now calculate time from violation disposition date to supervision extension start date
+  ### with preliminary business rules: if extension occurs within 15 days of violation disposition date
+  ### we are considering the two to be linked and thus, I am keeping those records in this file
+  ### all other records will be dropped -- we only want to calculate length of extension for those
+  ### records that fit this criteria
+  mutate(violation_disposition_date = ymd(as_date(violation_disposition_date)),
+         supervision_extension_begin_date = ymd(as_date(supervision_extension_begin_date))) |> 
+  mutate(time_from_dispo_to_extension_start = as.numeric(difftime(supervision_extension_begin_date,
+                                                            violation_disposition_date,
+                                                                    units="days"))) |> 
+  filter(time_from_dispo_to_extension_start>-5,
+         time_from_dispo_to_extension_start<=15) |>
+  ### remove pure duplicates
+  distinct() 
+
+```
+
+
+## Table 7. By FY: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all filed violations where the most serious violation was a technical violation. FY represents fiscal year of violation file date.
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- df_technical_violations_supervision_extension %>% 
+  filter(violation_filed_date_fy>=2016) %>% 
+  dplyr::group_by(violation_filed_date_fy) %>% 
+  dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Violation` = violation_filed_date_fy) %>% 
+  mutate(`FY of Violation` = as.character(`FY of Violation`))
+
+### overall
+df_technical_violations_overall <- df_technical_violations_supervision_extension %>% 
+  filter(violation_filed_date_fy>=2016) %>% 
+   dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`FY of Violation` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(9, bold = TRUE)
+```
+
+<br>
+
+## Table 8. By Race/Ethnicity: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all filed violations where the most serious violation was a technical violation. FY represents fiscal year of violation file date.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- df_technical_violations_supervision_extension %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean) 
+
+### overall
+df_technical_violations_overall <- df_technical_violations_supervision_extension %>% 
+   dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(4, bold = TRUE)
+
+```
+
+<br>
+
+## Table 9. By Gender: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all filed violations where the most serious violation was a technical violation. FY represents fiscal year of violation file date.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- df_technical_violations_supervision_extension %>% 
+  dplyr::group_by(gender_clean) %>% 
+  dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean) 
+
+### overall
+df_technical_violations_overall <- df_technical_violations_supervision_extension %>% 
+   dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Gender` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(2, bold = TRUE)
+
+```
+
+<br>
+
+## Table 10. By Age: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all filed violations where the most serious violation was a technical violation. FY represents fiscal year of violation file date.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### turn age into a factor
+df_technical_violations_supervision_extension %<>%
+ mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 15",
+                    "16 to 20")))
+
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- df_technical_violations_supervision_extension %>% 
+  dplyr::group_by(age_at_start_of_supervision_clean) %>% 
+  dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age` = age_at_start_of_supervision_clean) 
+
+### overall
+df_technical_violations_overall <- df_technical_violations_supervision_extension %>% 
+   dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Age` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+## Table 11. By Risk Level: Average Length of Supervision Extension
+
+**Note:** This is the "listed risk level at the time of referral disposition" for the new offense
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- df_technical_violations_supervision_extension %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level) 
+
+### overall
+df_technical_violations_overall <- df_technical_violations_supervision_extension %>% 
+   dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br>
+
+## Table 12. By Needs Level: Average Length of Supervision Extension
+
+**Note:** This is the "listed needs level at the time of referral disposition" for the new offense
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- df_technical_violations_supervision_extension %>% 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+  dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level) 
+
+### overall
+df_technical_violations_overall <- df_technical_violations_supervision_extension %>% 
+   dplyr::summarise(`All Technical Violations w/ Supervision Extensions (N)` = n_distinct(youth_violation_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
 
 <br><br>
 
+# 3. Use of 30-day Residential Program
+
+In Dallas, probation can file a violation to get a kid into a 30 day residential program. The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
+
+<br><br>

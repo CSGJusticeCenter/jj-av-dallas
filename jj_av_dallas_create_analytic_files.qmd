@@ -175,6 +175,40 @@ supervision_extension_clean <- supervision_extension %>%
            .keep_all = TRUE)
 
 
+### by unique_id and referral_number -- take first and last extension date 
+### and count number of unique extension records per unique_id and referral_number
+supervision_extension_for_join_to_violations_clean <- supervision_extension %>% 
+  distinct(unique_id,
+           referral_number,
+           extension_begin_date,
+           extension_end_date,
+           .keep_all=TRUE) %>% ### 0 records dropped 
+  ### clean dates and create years for potential grouping in future trend analysis
+  mutate(supervision_begin_date = ymd(as_date(supervision_begin_date)),
+         supervision_end_date = ymd(as_date(supervision_end_date)),
+         extension_begin_date = ymd(as_date(extension_begin_date)),
+         extension_end_date = ymd(as_date(extension_end_date)),
+         supervision_extension_in_days = as.numeric(difftime(extension_end_date,
+                                                            extension_begin_date,
+                                                                    units="days")),
+         unique_supervision_id = paste0(unique_id,
+                                        referral_number,
+                                        supervision_begin_date)) %>% 
+  ### rename columns with duplicate names across files to indicate where data initially came from 
+  dplyr::rename(supervision_extension_supervision_type = supervision_type,
+                supervision_extension_begin_date = extension_begin_date,
+                supervision_extension_end_date = extension_end_date,
+                supervision_extension_overall_begin_date = supervision_begin_date,
+                supervision_extension_overall_end_date = supervision_end_date) %>% 
+  dplyr::select(unique_id,
+                referral_number,
+                unique_supervision_id,
+                supervision_extension_begin_date,
+                supervision_extension_end_date,
+                supervision_extension_overall_begin_date,
+                supervision_extension_overall_end_date,
+                supervision_extension_in_days) 
+
 #############################################
 ### clean and de-dup supervision_level dataframe
 #############################################
@@ -1065,6 +1099,12 @@ write_delim(df_violations_clean_demo,
 write_delim(offenses_clean,
             file.path(sharepoint_jj_av_dallas_analytic_data,
                       "offenses_clean.txt"),
+                      delim = "|")
+
+### write out supervision_extension_for_join_to_violations_clean file
+write_delim(supervision_extension_for_join_to_violations_clean,
+            file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "supervision_extension_for_join_to_violations_clean.txt"),
                       delim = "|")
 
 ```
