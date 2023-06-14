@@ -32,10 +32,9 @@ format: html
 
 * "30 Day Residential Program" = "DISMISSED OR WITHDRAWN BY DEPARTMENT"
 
-* "Dismissed/Withdrawn" = "COMPLAINT DISMISSED BY COURT", "DISMISSED OR WITHDRAWN BY DEPARTMENT", "DISMISSED WITHOUT PROSECUTION",
-                            "DISMISSED WITHOUT PROSECUTION - PA", "NO CASE FILED BY DA NO JD ACTION", "NO INTAKE, NO PROBABLE CAUSE - DECLINED BY PROSECUTOR", "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT", "NO INTAKE, PROBABLE CAUSE - PROSECUTOR", "NONSUIT", "NONSUIT (PA)"
+* "Dismissed/Withdrawn" = "COMPLAINT DISMISSED BY COURT", "DISMISSED WITHOUT PROSECUTION","DISMISSED WITHOUT PROSECUTION - PA", "NO CASE FILED BY DA NO JD ACTION", "NO INTAKE, NO PROBABLE CAUSE - DECLINED BY PROSECUTOR", "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT", "NO INTAKE, PROBABLE CAUSE - PROSECUTOR", "NONSUIT", "NONSUIT (PA)","NO INTAKE, DISPOSED BY INTAKE"
                             
-* "Other" = "CONSOLIDATED IN ANOTHER CASE/REFERRAL", "CONSOLIDATED BY DEPARTMENT", "FILED AS A MOTION TO MODIFY","FILED AS MOTION TO MODIFY", "MOD/VOP Disposed by Intake (PA)","NO INTAKE, DISPOSED BY INTAKE","TAKEN INTO CONSIDERATION","SUPERVISORY CAUTION BY DEPARTMENT", "TAKEN INTO CONSIDERATION (PA Complaint)", "TRANSFER OF DISPOSITION BY COURT"
+* "Other" = "CONSOLIDATED IN ANOTHER CASE/REFERRAL", "CONSOLIDATED BY DEPARTMENT", "FILED AS A MOTION TO MODIFY","FILED AS MOTION TO MODIFY", "MOD/VOP Disposed by Intake (PA)","TAKEN INTO CONSIDERATION","SUPERVISORY CAUTION BY DEPARTMENT", "TAKEN INTO CONSIDERATION (PA Complaint)", "TRANSFER OF DISPOSITION BY COURT"
                             
 * "Placement" = "CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PLACEMENT)", "MODIFICATION PLACEMENT","MODIFIED TO PLACEMENT-DETERMINATE SENTENCE PROB", "PROBATION/PLACEMENT"
                             
@@ -136,7 +135,7 @@ df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_a
   mutate(violation_type_cleaned = 
            case_when(
              violation=="100a  Violation Probation - General" ~ "General Violation",
-             violation%in%c("5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)") ~ "Violation Related to Placement",
+             violation%in%c("5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)","5100b  Absenting Self From Court Order Placement (2,6)") ~ "Violation Related to Placement",
              violation=="5100d  Viol Prob - Runaway From Home/Placement" ~ "Runaway",
              violation=="5100e  Viol Prob - Failure to Report to Probation Officer (2)" ~ "Failure to Report to PO",
              violation=="5100i - Viol Prob - Violating School Rules" ~ "Violation of School Rules",
@@ -144,8 +143,7 @@ df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_a
              violation=="5100l Viol Prob - Failure to Participate in Order Program (11)" ~ "Failure to Participate in Program",
              violation%in%c("5100h  Viol Prob - Truancy - Not attending each Class each Day (4)",
                             "5103c  Truancy 3 Days") ~ "Truancy",
-             violation%in%c("5100b  Absenting Self From Court Order Placement (2,6)",
-                             "5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
+             violation%in%c("5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
                              "5100k  Viol Prob - Failure to Pay Probation Fees (9)",
                             "xxx - Converted Data") ~ "Other",
              violation=="No Violation/Modification Needed" ~ "No Violation",             
@@ -165,13 +163,13 @@ df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_a
                             "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT",
                             "NO INTAKE, PROBABLE CAUSE - PROSECUTOR",
                             "NONSUIT",
-                            "NONSUIT (PA)") ~ "Dismissed/Withdrawn",
+                            "NONSUIT (PA)",
+                            "NO INTAKE, DISPOSED BY INTAKE") ~ "Dismissed/Withdrawn",
              violation_disposition%in%c("CONSOLIDATED IN ANOTHER CASE/REFERRAL",
                             "CONSOLIDATED BY DEPARTMENT",
                             "FILED AS A MOTION TO MODIFY",
                             "FILED AS MOTION TO MODIFY",
                             "MOD/VOP Disposed by Intake (PA)",
-                            "NO INTAKE, DISPOSED BY INTAKE",
                             "TAKEN INTO CONSIDERATION",
                             "SUPERVISORY CAUTION BY DEPARTMENT",
                             "TAKEN INTO CONSIDERATION (PA Complaint)",
@@ -1044,16 +1042,15 @@ df_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dallas_analyti
   mutate(violation_type_cleaned = 
            case_when(
              violation=="100a  Violation Probation - General" ~ "General Violation",
-             violation%in%c("5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)") ~ "Violation Related to Placement",
+             violation%in%c("5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)","5100b  Absenting Self From Court Order Placement (2,6)") ~ "Violation Related to Placement",
              violation=="5100d  Viol Prob - Runaway From Home/Placement" ~ "Runaway",
              violation=="5100e  Viol Prob - Failure to Report to Probation Officer (2)" ~ "Failure to Report to PO",
              violation=="5100i - Viol Prob - Violating School Rules" ~ "Violation of School Rules",
              violation=="5100f  Viol Prob - Curfew Violation (3)" ~ "Curfew Violation",
              violation=="5100l Viol Prob - Failure to Participate in Order Program (11)" ~ "Failure to Participate in Program",
              violation%in%c("5100h  Viol Prob - Truancy - Not attending each Class each Day (4)",
-                            "5103c  Truancy 3 Days") ~ "Curfew Violation",
-             violation%in%c("5100b  Absenting Self From Court Order Placement (2,6)",
-                             "5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
+                            "5103c  Truancy 3 Days") ~ "Truancy",
+             violation%in%c("5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
                              "5100k  Viol Prob - Failure to Pay Probation Fees (9)",
                             "xxx - Converted Data") ~ "Other",
              violation=="No Violation/Modification Needed" ~ "No Violation",             
