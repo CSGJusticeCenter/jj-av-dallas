@@ -1037,6 +1037,15 @@ df_violations_clean_demo <-
   filter(!is.na(race_clean))
 
 
+### left join of violations_clean file and supervision_child_join_offenses_5 file 
+supervision_extension_demo_analysis_clean <- 
+  left_join(supervision_extension_for_join_to_violations_clean,
+            df_dallas_county_av_supervision_analytic_file_demo_only,
+            by = c("unique_id")) |> 
+  ### double check that we joined demo data to all violation records
+  ### we did
+  filter(!is.na(race_clean))
+
 # %>%
 #   dplyr::select(unique_supervision_id,
 #                 referral_number,
@@ -1102,9 +1111,9 @@ write_delim(offenses_clean,
                       delim = "|")
 
 ### write out supervision_extension_for_join_to_violations_clean file
-write_delim(supervision_extension_for_join_to_violations_clean,
+write_delim(supervision_extension_demo_analysis_clean,
             file.path(sharepoint_jj_av_dallas_analytic_data,
-                      "supervision_extension_for_join_to_violations_clean.txt"),
+                      "supervision_extension_demo_analysis_clean.txt"),
                       delim = "|")
 
 ```

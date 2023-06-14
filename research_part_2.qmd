@@ -558,11 +558,11 @@ kable(df_technical_violations_needs_table,
 
 **NOTE/To Discuss:** Only about 2% of all violations fit this criteria -- not sure if it warrants analysis (especially anything disaggregated). For now, I am exploring violations with dispositions of "DISMISSED OR WITHDRAWN BY DEPARTMENT" -- which I believe indicates a sanction to the 30 day residential program (where if a kid is successful, the violation is dismissed). If we want to use this analysis, we should (1) confirm this interpretation with Dallas and (2) ask whether this disposition is only for youth who are successful in the program and if so, if there is a way to flag youth who are not successful. 
 
-Is this worth further analysis/exploration? 
+For additional analysis of violations referred to the 30 day residential program, see analysis for question 3 in part 5 (What happens to youth as the result of a technical violation?)
 
 <br>
 
-## Table 11. By FY: Percentage of Technical Violations Dismissed/Withdrawn
+## Table 11. By FY: Percentage of Technical Violations Dismissed/Withdrawn by Department
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### import violations file so that denominator is all violations (grouped)
