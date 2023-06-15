@@ -184,10 +184,45 @@ df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_a
                             "TJJD INDETERMINATE COMMITMENT") ~ "Commitment",  
              violation_disposition%in%c("PROBATION EXTENDED") ~ "Probation Extension",  
              violation_disposition%in%c("PROBATION MODIFIED") ~ "Probation Modified",   
-             TRUE ~ as.character(NA))) 
+             TRUE ~ as.character(NA))) %>% 
+  mutate(offense_referral_risk_level = 
+           case_when(
+             offense_referral_risk_level=="Low Risk" ~ 1,
+             offense_referral_risk_level%in%c("Medium-Low Risk",
+                             "Medium-High Risk",
+                             "Moderate Risk") ~ 2,
+             offense_referral_risk_level=="High Risk" ~ 3,             
+             offense_referral_risk_level=="Unknown" ~ 4,
+             offense_referral_risk_level=="Not Administered" ~ 5,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_risk_level = factor(offense_referral_risk_level,
+         levels = c(1,2,3,4,5),
+         labels =  c("Low Risk", 
+                     "Moderate Risk", 
+                     "High Risk",
+                     "Unknown",
+                     "Not Administered")),
+         offense_referral_needs_level = 
+           case_when(
+             offense_referral_needs_level=="Low Needs" ~ 1,
+             offense_referral_needs_level=="Moderate Needs" ~ 2,
+             offense_referral_needs_level=="High Needs" ~ 3,             
+             offense_referral_needs_level=="Unknown" ~ 4,
+             offense_referral_needs_level=="Not Administered" ~ 5,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_needs_level = factor(offense_referral_needs_level,
+         levels = c(1,2,3,4,5),
+         labels = c("Low Needs", 
+                    "Moderate Needs", 
+                    "High Needs",
+                    "Unknown",
+                    "Not Administered")))
 
 ```
 
+<br>
 
 # 1. Technical Violation Disposition Outcomes
 
@@ -421,8 +456,6 @@ kable(df_technical_violations_per_year_table,
 
 ## Table 4. By Age: Technical Violation Disposition Outcomes
 
-**TO DO:** Fix age variable -- by linking pertinent referral to each violation.
-
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### turn age into a factor
 df_technical_violations_dispo_clean_demo %<>%
@@ -505,8 +538,6 @@ kable(df_technical_violations_per_year_table,
 
 **Note:** This is the "listed risk level at the time of referral disposition"
 
-**TO DO:** Double check risk level -- by linking pertinent referral to each violation.
-
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### unique violation grouped
 df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
@@ -580,8 +611,6 @@ kable(df_technical_violations_per_year_table,
 ## Table 6. By Needs Level: Technical Violation Disposition Outcomes
 
 **Note:** This is the "listed needs level at the time of referral disposition"
-
-**TO DO:** Double check needs level -- by linking pertinent referral to each violation.
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### unique violation grouped
@@ -661,9 +690,6 @@ What is the average length of time a supervision episode is extended as the resu
 
 **Business Rule:** We are only looking at violations filed in fiscal years 2016-2020 (to align with our sample window on the front end and ensure there is sufficient time at the end of sample for extension to actually occur).
 
-**Looks like we have duplicates based on the demo merge (multiple age groups, multiple risk/needs scores)...is this true for other joins, as well?**
-
-**TO DO: CLEAN UP DEMO JOIN + DECIDE WHICH VALUES TO KEEP (PERHAPS BY CLOSEST DATE AND/OR NON-MISSINGNESS?)**
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ### read in supervision extensions file that we want to merge to violations file for this section
@@ -706,7 +732,6 @@ supervision_extension_demo_analysis_clean <- read_delim(file.path(sharepoint_jj_
 ## Table 7. By FY: Average Length of Supervision Extension
 
 **NOTE:** The base sample and denominator for this analysis is all supervision extensions (one supervision episode could have more than one extension) regardless of associated violation type. FY represents fiscal year of supervision extension.
-
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### mean, median, min, and max of supervision_extension_in_days
@@ -1021,6 +1046,8 @@ In Dallas, probation can file a violation to get a kid into a 30 day residential
 
 **Business Rule:** I am exploring violations with dispositions of "DISMISSED OR WITHDRAWN BY DEPARTMENT" -- which indicates a sanction to the 30 day residential program (where if a kid is successful, the violation is dismissed). We should (1) confirm this interpretation with Dallas and (2) ask whether this disposition is only for youth who are successful in the program and if so, if there is a way to flag youth who are not successful. In addition, we are only looking at violations filed in fiscal years 2016 and on.
 
+<br>
+
 ## Table 13. By FY: Percentage of Technical Violations Disposed to Residential Program
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
@@ -1092,7 +1119,7 @@ kable(df_dismissed_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(9, bold = TRUE)
+  row_spec(8, bold = TRUE)
 ```
 
 <br>

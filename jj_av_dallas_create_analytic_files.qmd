@@ -775,14 +775,41 @@ supervision_child_join_offenses_violatons_6 <-
          ### flag records with no joining violation information using violation_referral_number
          no_violation_records_joined = ifelse(is.na(violation_referral_number==TRUE),
                                        1,0),
+         ### flag records with joining violation information using dates
+         violation_records_are_joined = ifelse(violation_date>=supervision_begin_date & violation_date<=supervision_end_date_missing_include,
+                                       1,0),
          ### create date field for technical violations only
          ### we'll use this when keeping the first technical violation per referral
          technical_violation_filed_date = ifelse(violation_severity_factor=="Technical Violation",
                                                  violation_filed_date,
                                                  NA),
          technical_violation_filed_date = ymd(as_date(technical_violation_filed_date))) %>% 
-  ### we only want to keep either (1) supervision records with no violations or (2) supervision records with violation records when those violations occurred during the period of supervision  
-  filter(no_violation_records_joined==1 | (violation_date>=supervision_begin_date & violation_date<=supervision_end_date_missing_include)) %>% 
+        ### finally, create a flag for violation records that join 
+        ### (i.e., youth has violation records), but
+        ### do not have violations that fall within the given supervision period (for these records, we
+        ### want to remove their violation data from the analytic file, 
+        ### but ultimately keep all other data)
+  mutate(has_violation_data_but_not_in_window_flag = ifelse(no_violation_records_joined==0 & (violation_date<supervision_begin_date | violation_date>supervision_end_date_missing_include),
+                                                            1,0)) |> 
+   ### recode all violation file values to NA if has_violation_data_but_not_in_window_flag==1
+   ### this ensures that we do not accidentally use violation data for youth
+   ### who only had violation that did not occur during the supervision periods in our sample (e.g., they had violations associated with supervision periods that occurred before the sample window)
+  mutate(across(violation_referral_number:other_violation_count,
+                ~ if_else(has_violation_data_but_not_in_window_flag==1,
+                          NA, .))) %>%
+  ### we only want to keep either (1) supervision records with no violations, (2) violation records that join (i.e., youth has violation records), but do not have violations that fall within the given supervision period, or (3) supervision records with violation records when those violations occurred during the period of supervision  
+  filter(no_violation_records_joined==1 | has_violation_data_but_not_in_window_flag==1 | (violation_date>=supervision_begin_date & violation_date<=supervision_end_date_missing_include)) %>% 
+  group_by(unique_supervision_id) %>% 
+  ### now create these flags at the supervision episode level
+  ### so that we can drop records from supervision episodes with joined violation records that fit criteria #2 above (e.g., youth has both historic and current violation records that joined. because we won't entirely drop the youth/supervision episode if we remove the historic records, we should drop the historic records and only keep violations which occurred during pertinent supervision episode)
+  mutate(no_violation_records_joined_supervision_level = max(no_violation_records_joined),
+         has_violation_data_but_not_in_window_flag_supervision_level = max(has_violation_data_but_not_in_window_flag),
+         violation_records_are_joined_supervision_level = max(violation_records_are_joined)) |> 
+  ungroup() |> 
+  ### now create flag and filter on it -- based on above logic/rationale
+  mutate(has_joined_violation_data_drop_record = ifelse(violation_records_are_joined_supervision_level==1 & has_violation_data_but_not_in_window_flag==1,
+                                                        1,0)) |> 
+  filter(has_joined_violation_data_drop_record==0) |> 
   group_by(unique_supervision_id) %>% 
   ### count of referrals linked to any violation (using no_violation_records_joined), technical violations, and new offense violations
   mutate(overall_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0],
@@ -792,18 +819,7 @@ supervision_child_join_offenses_violatons_6 <-
          new_offense_violation_referral_count = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity_factor=="New Offense"],
                                                            na.rm = TRUE),
          min_technical_violation_date = min(technical_violation_filed_date,
-                                            na.rm = TRUE)
-         # technical_violation_referral_count_in_2017 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2017],
-         #                                                 na.rm = TRUE),
-         # technical_violation_referral_count_in_2018 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2018],
-         #                                                 na.rm = TRUE),
-         # technical_violation_referral_count_in_2019 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2019],
-         #                                                 na.rm = TRUE),
-         # technical_violation_referral_count_in_2020 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2020],
-         #                                                 na.rm = TRUE),
-         # technical_violation_referral_count_in_2021 = n_distinct(violation_referral_number[no_violation_records_joined==0 & violation_severity=="Technical Violation" & violation_date_year==2021],
-         #                                                 na.rm = TRUE)
-         ) %>% 
+                                            na.rm = TRUE)) %>% 
   ungroup() %>% 
   ### now de-dup by supervision record to get same row count as before join 
   ### first arrange by unique_supervision_id and violation date to keep first
@@ -924,6 +940,7 @@ modification_prior_to_technical_violation_count <-
   ### we only want to keep either (1) violation records with no modifications or (2) supervision records with violation records when those violations occurred during the period of supervision  
   ### we only want records that fit our criteria of:
   ### violations occurring during the supervision episode
+  ### so we are dropping violations here that occurred outside sample window for supervision episodes (FY 2018 through FY 2023)
   filter(no_modification_records_joined==1 | (violation_date>=supervision_begin_date & violation_date<=supervision_end_date_missing_include)) %>% 
   ### only technical violations
   filter(violation_severity_factor=="Technical Violation") %>% 
@@ -976,7 +993,7 @@ supervision_child_join_offenses_violatons_7 <- left_join(supervision_child_join_
 
 ```{r warning=FALSE}
 ### select final variables we want for supervision analytic file
-df_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses_violatons_7 |>
+df_dallas_county_av_supervision_analytic_file_completers_only <- supervision_child_join_offenses_violatons_7 |>
   ### here we are adding several sample filters based on conversation with Becky and Emily:
   ### because we are grouping by exit date (as opposed to referral date)
   ### we keep only completers (those with data for supervision completion)
@@ -1011,89 +1028,122 @@ df_dallas_county_av_supervision_analytic_file <- supervision_child_join_offenses
                     "12 to 13",
                     "14 to 15",
                     "16 to 20")))
+```
 
+```{r }
 ####################################################
-### create violation-level analytic file
-### to explore the percentage of violations
-### that are dismissed/withdrawn
+### create violation-level and supervision extension-level analytic files
+### for analysis where unit of analysis is either violations or extensions
 ####################################################
+
+### select final variables we want for supervision analytic file
+df_dallas_county_av_supervision_analytic_file_all <- supervision_child_join_offenses_violatons_7 |>
+  ### create fiscal year vars for supervision start and end
+  mutate(supervision_begin_fy = csgjcr::csg_fiscal_year(supervision_begin_date,
+                                                          fy_start="October"),
+         supervision_end_fy = csgjcr::csg_fiscal_year(supervision_end_date,
+                                                          fy_start="October")) |> 
+  ### clean age variables
+  mutate(age_at_referral_clean = case_when(
+    age_at_referral < 12 ~ 1,
+    age_at_referral>= 12 &  age_at_referral< 14 ~ 2,
+    age_at_referral>= 14 &  age_at_referral< 16 ~ 3,
+    age_at_referral>= 16 &  age_at_referral< 20 ~ 4,
+    TRUE ~ as.numeric(NA)),
+    age_at_referral_clean = factor(age_at_referral_clean,
+         levels = c(1,2,3,4),
+         labels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 15",
+                    "16 to 20")),
+    age_at_start_of_supervision_clean = case_when(
+    age_at_start_of_supervision < 12 ~ 1,
+    age_at_start_of_supervision>= 12 &  age_at_start_of_supervision< 14 ~ 2,
+    age_at_start_of_supervision>= 14 &  age_at_start_of_supervision< 16 ~ 3,
+    age_at_start_of_supervision>= 16 &  age_at_start_of_supervision< 20 ~ 4,
+    TRUE ~ as.numeric(NA)),
+    age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
+         levels = c(1,2,3,4),
+         labels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 15",
+                    "16 to 20")))
 
 ### extract pertinent demo information from df_dallas_county_av_supervision_analytic_file
-df_dallas_county_av_supervision_analytic_file_demo_only <- df_dallas_county_av_supervision_analytic_file |> 
+### we'll use this file to join demo info onto our violation and extension-level analytic files 
+df_dallas_county_av_supervision_analytic_file_demo_only <- df_dallas_county_av_supervision_analytic_file_all |> 
   dplyr::select(unique_id,
+                referral_number,
                 race_clean,
                 gender_clean,
                 age_at_start_of_supervision_clean,
                 offense_referral_needs_level,
-                offense_referral_risk_level)
+                offense_referral_risk_level,
+                supervision_begin_date,
+                supervision_end_date) 
 
-### left join of violations_clean file and supervision_child_join_offenses_5 file 
+### this demo only file still has some duplicates (~500 youth have multiple records)
+### for youth with multiple referrals
+### we cannot simply de-dup because some variables, like age and risk/needs scores,
+### are likely to change between records and we ultimately want to join the most pertinent/
+### proximate record
+
+### left join of violations_clean_de_dup file and df_dallas_county_av_supervision_analytic_file_demo_only file 
+### because the referral number in the violations file refers to the new referral
+### while the referral number in the overall analytic file refers to the original 
+### referral, we can only join on youth ID
+### and then use dates to link one demo record to each violation record
 df_violations_clean_demo <- 
   left_join(violations_clean_de_dup,
             df_dallas_county_av_supervision_analytic_file_demo_only,
-            by = c("unique_id")) |> 
+            by = "unique_id") |> 
+  ### this is a many to many join so there are now lots of records (all violations joining to all demo records)
+  ### first create fake end date for records where the end date is blank; since this indicates that supervision was ongoing at time of data pull, we still want to include violations that occurred so changing NA to '2030-01-01' in new variable for the following filter
+  mutate(supervision_end_date_missing_include = ifelse(is.na(supervision_end_date)==TRUE,
+                                       ymd(as_date("2030-01-01")),
+                                       ymd(as_date(supervision_end_date))),
+         supervision_end_date_missing_include = ymd(as_date(supervision_end_date_missing_include)),
+         supervision_begin_date = ymd(as_date(supervision_begin_date)),
+         violation_date = ymd(as_date(violation_date))) %>% 
+  ### now we need to filter on date -- only keeping demo records where the violation_date>=supervision_begin_date & violation_date<=supervision_end_date
+  ### we are also only keeping violations that occurred during sample window for supervision episodes (FY 2018 through FY 2023)
+  filter(violation_date>=supervision_begin_date & violation_date<=supervision_end_date_missing_include) |> 
   ### double check that we joined demo data to all violation records
-  ### we did
-  filter(!is.na(race_clean))
+  ### no records dropped so we did
+  filter(!is.na(race_clean)) |> 
+  ### now de-dup by violation to double check record count
+  distinct(unique_violation_referral_id,
+           .keep_all = TRUE)
 
 
 ### left join of violations_clean file and supervision_child_join_offenses_5 file 
 supervision_extension_demo_analysis_clean <- 
   left_join(supervision_extension_for_join_to_violations_clean,
             df_dallas_county_av_supervision_analytic_file_demo_only,
-            by = c("unique_id")) |> 
+            by = c("unique_id","referral_number")) |> 
   ### double check that we joined demo data to all violation records
   ### we did
-  filter(!is.na(race_clean))
-
-# %>%
-#   dplyr::select(unique_supervision_id,
-#                 referral_number,
-#                 unique_youth_id = unique_id, 
-#                 offense_citation_number,
-#                 offense_description,
-#                 offense_level,
-#                 offense_type_grouped,
-#                 offense_level_type_combined_grouped,
-#                 supervision_type,
-#                 referral_type,
-#                 offense_referral_risk_level,
-#                 offense_referral_needs_level,
-#                 mental_health_needs,
-#                 mental_health_needs_indicator,
-#                 substance_use_need,
-#                 prior_overall_referral_count,
-#                 prior_felony_referral_count,
-#                 prior_misd_referral_count,
-#                 prior_cins_referral_count,
-#                 supervision_begin_date,
-#                 supervision_end_date,
-#                 technical_violation_flag,
-#                 technical_violation_referral_count,
-#                 new_offense_violation_referral_count,
-#                 overall_violation_referral_count,
-#                 overall_violation_referral_flag,
-#                 supervision_outcome,
-#                 overall_supervision_los_days,
-#                 probation_supervision_los_days,
-#                 detention_supervision_los_days,
-#                 placement_supervision_los_days,
-#                 none_supervision_los_days,
-#                 warrant_supervision_los_days,
-#                 age_at_start_of_supervision,
-#                 gender_clean,
-#                 race_clean)
+  filter(!is.na(race_clean)) |> 
+  ### now de-dup by extension to double check record count
+  mutate(unique_supervision_extension = paste0(unique_supervision_id,
+                                               supervision_extension_begin_date)) |> 
+  ### for the remaining duplicates, arrange by extension record
+  ### keeping demo data associated with original entry (earliest supervision_begin_date)
+  arrange(unique_supervision_extension,
+          supervision_begin_date) |> 
+  distinct(unique_supervision_extension,
+           .keep_all = TRUE) ### count of records now equals that of supervision_extension_for_join_to_violations_clean
 
 
-###############
-### export file
-###############
+#########################
+### export analytic files
+#########################
 
 ### set sharepoint path using sp_data_path and file.path function 
 sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
 
 ### write out main analytic file
-write_delim(df_dallas_county_av_supervision_analytic_file,
+write_delim(df_dallas_county_av_supervision_analytic_file_completers_only,
             file.path(sharepoint_jj_av_dallas_analytic_data,
                       "df_dallas_county_av_supervision_analytic_file.txt"),
                       delim = "|")
