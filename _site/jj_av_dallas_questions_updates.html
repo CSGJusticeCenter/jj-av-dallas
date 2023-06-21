@@ -189,7 +189,53 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p><strong>Dallas County Data Questions and Responses:</strong></p>
+<p><strong>Dallas County Data Questions and Responses (June 2023):</strong></p>
+<p>We are curious to explore the proportion of violations filed by a PO that were then rejected by a supervisor. In our last conversation, you noted that all of the technical violation records without a referral number indicate that a PO filed the violation, but that it was rejected by a supervisor. In the violations data, we found that only about 2% of all violations fit this criteria. Does that seem correct to you all?</p>
+<ul>
+<li><p>Lots of informal rejection is possible – will follow up with wordsmithing assistance. This reflects what is in the data system, but may not speak to the real trend.</p></li>
+<li><p>POs will likely only formally file a violation if they feel confident.</p></li>
+<li><p>PO has to get permission from supervisor before filing a violation so there should be very few rejected violations</p></li>
+<li><p><strong><em>TO DO: </em></strong> Send file of rejected violations to Rhonda Kerl?</p></li>
+</ul>
+<p><br></p>
+<p>To look into technical violations leading to placement in the 30 day residential program (where if youth are successful, the violation is dismissed), we are using the violation disposition of “DISMISSED OR WITHDRAWN BY DEPARTMENT”. Just double checking, is this the correct violation disposition code to use? Is this disposition code only for youth who are successful in the program? If so, is there is a way to flag youth who are not successful?</p>
+<ul>
+<li><p>Yes, this is successful. If youth did not successfully complete, we won’t see violation disposition, but instead should use placement file:</p></li>
+<li><p>Placement == emergency shelter (on VOP)</p></li>
+<li><p>Placement outcome == violation of court order</p></li>
+<li><p>Completed == successful outcome; anything other than completed == not successful outcome</p></li>
+<li><p>Also – CAI program is 21 days</p></li>
+<li><p><strong><em>TO DO: </em></strong> Explore Christian’s strategy for flagging referral to CAI program that would capture both successful and unsuccessful completers. If things look right, use this flag instead and then re-run all pertinent analysis</p></li>
+</ul>
+<p><br></p>
+<p>Have there been any changes in the use of the 30 day residential program over time? Was it used less in 2020/2021 as a result of COVID? If so, have things changed back in more recent months?</p>
+<ul>
+<li>CAI program (21 day program) – yes, things changed. Youth were served in detention center in more isolated settings (more 1-on-1 meetings, no group meetings). Hill center moved to more isolated programming, as well. Some youth were discharged on a quicker timetable than usual. 2-year period.</li>
+</ul>
+<p><br></p>
+<p>How should we interpret violations coded as new offenses in the violations file, but coded as VOPs in the offenses file? Were these new offenses that were never formally referred/filed and simply documented as VOPs?</p>
+<ul>
+<li><p>VOP1 – not enough evidence or judge wants to keep youth on original felony charge (if new offense is just a low-level misdemeanor)</p></li>
+<li><p>DA chose to file VOP as opposed to new offense. Example: If a kid is in on a felony but violated on a new offense that is lower level DA may choose to file VOP to keep felony as primary offense. If file new offense the lower offense would override the original felony. Kids have to have felony to be eligible for commitment.</p></li>
+<li><p><strong><em>TO DO: </em></strong> Look into how often this happens. If often enough, we may not want to analyze new offenses by offense type (b/c we don’t have a representative sample). We’ll potentially need to exclude analysis.</p></li>
+</ul>
+<p><br></p>
+<p>We are hoping to calculate the average length of time that a supervision episode is extended as the result of a technical violation. If we just use the supervision extension file that you provided (and don’t join it with the violations file), is it a fairly safe assumption that the vast majority of supervision extensions we see are linked to a violation? Or are there other common non-violation reasons for supervision extensions?</p>
+<ul>
+<li><p>Extension can be the result of agreed order, TV, or new offense.</p></li>
+<li><p>Agreed order is usually used to extend for custody or to complete treatment/program or condition. Match extension file to violation file on dates.</p></li>
+<li><p>Join on extension begin date and violation disposition date:</p></li>
+<li><p>Within 3-5 days</p></li>
+<li><p>Where violation disposition is modification? Can we use this? Do we have all dispositions for violations?</p></li>
+<li><p><strong><em>TO DO: </em></strong> Change business rules to align with this new approach (-1 day or +3 days) and then re-run all pertinent analysis</p></li>
+</ul>
+<p><br></p>
+<p>We are currently exploring dispositions in the offenses file. Is it safe to assume that the most serious disposition is always linked to the most serious offense (i.e.&nbsp;DOI is “Primary”)? Or could the most serious disposition appear with the record of “Secondary” or “Dismissed” offense?</p>
+<ul>
+<li>We already have first disposition for the referral – Christian already filtered on this. We don’t have any subsequent tacked on dispositions.</li>
+</ul>
+<p><br><br></p>
+<p><strong>Dallas County Data Questions and Responses (April 2023):</strong></p>
 <ul>
 <li><p>In the supervision file there appears to be a small number of (around 170) supervision records that have duplicate referral IDs. They seem to have different start dates. How should we interpret these?</p></li>
 <li><p>Response from Dallas: Transferring out of jurisdiction is a common reason. Deferred prosecution to failure to comply to pre-adjudication processing is another. Most duplicates should be turned into 1 record. <em>Internal question:</em> Should we drop deferred prosecution? VOP isn’t possible.</p></li>
