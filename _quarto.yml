@@ -24,7 +24,11 @@ website:
       - text: "Questions and Updates"
         href: jj_av_dallas_questions_updates.html
       - text: "Analytic File Prep"
-        href: jj_av_dallas_create_analytic_files.html
+        menu:
+          - text: "Analytic File Code"
+            href: jj_av_dallas_create_analytic_files.html
+          - text: "Business Rules"
+            href: jj_av_dallas_business_rules.html
       - text: "Sample Descriptives"
         menu:
           - text: "Basic Descriptive Statistics"
