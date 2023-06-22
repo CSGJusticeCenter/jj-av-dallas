@@ -485,7 +485,19 @@ prior_offenses_clean_de_dup <- offenses_clean_de_dup %>%
 
 ### business rule: need to de-dup violations file -- keeping one unique_id and referral_id -- with most serious violation kept (new offense over technical over other) per referral id
 
-### HERE: create separate dataframe for records with no referral number (PO filed, but supervisor rejected?)
+### explore violations 
+violations_explore <- violations |> 
+  mutate(cai_21_day_dispo = ifelse(disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT",
+                                   1,0)) |> 
+  group_by(violation_referral_number) |> 
+  mutate(total_violations = n(),
+         cai_21_dispo_flag = max(cai_21_day_dispo, na.rm = TRUE)) |> 
+  ungroup()
+
+### explore placements 
+placements_explore <- placements |> 
+  filter(placement_type=="Emergency Shelter",
+         offense_type=="VOP")
 
 violations_clean_de_dup <- violations %>% 
   filter(!is.na(violation_date)) %>% ### just double checking since we'll need violation_date for later joins; no records dropped
@@ -1115,12 +1127,25 @@ df_violations_clean_demo <-
   distinct(unique_violation_referral_id,
            .keep_all = TRUE)
 
+### the following syntax is updated based on dallas county feedback during 6/21 meeting
 
-### left join of violations_clean file and supervision_child_join_offenses_5 file 
-supervision_extension_demo_analysis_clean <- 
+### BUSINESS RULE: Join extension and violations file on extension begin date and violation disposition date where dates are -1 day or +3 days within each other) (time from violation_disposition_date to supervision_extension_begin_date)
+### according to dallas county -- dates should typically match exactly, but we're adding a buffer just in case
+
+### left join of supervision_extension_for_join_to_violations_clean file and df_dallas_county_av_supervision_analytic_file_demo_only file 
+supervision_extension_demo_violations_analysis_clean <- 
   left_join(supervision_extension_for_join_to_violations_clean,
-            df_dallas_county_av_supervision_analytic_file_demo_only,
-            by = c("unique_id","referral_number")) |> 
+            df_violations_clean_demo,
+            by = c("unique_id")) |> 
+   ### clean dates and create years for potential grouping in future trend analysis
+  mutate(supervision_extension_begin_date = ymd(as_date(supervision_extension_begin_date)),
+         violation_disposition_date = ymd(as_date(violation_disposition_date)),
+         time_from_violation_dispo_to_extension_days = as.numeric(difftime(supervision_extension_begin_date,
+                                                            violation_disposition_date,
+                                                                    units="days"))) |> 
+  ### we are only keeping joins where the time from violation_disposition_date to supervision_extension_begin_date
+  filter(time_from_violation_dispo_to_extension_days>-1,
+         time_from_violation_dispo_to_extension_days<=3) |> 
   ### double check that we joined demo data to all violation records
   ### we did
   filter(!is.na(race_clean)) |> 
@@ -1132,7 +1157,7 @@ supervision_extension_demo_analysis_clean <-
   arrange(unique_supervision_extension,
           supervision_begin_date) |> 
   distinct(unique_supervision_extension,
-           .keep_all = TRUE) ### count of records now equals that of supervision_extension_for_join_to_violations_clean
+           .keep_all = TRUE) ### our final file size is now smaller b/c we have (in theory) dropped all agreed order supervision extensions (and are only left with extensions resulting from technical or new offense violations) (1528/1814 = 84%)
 
 
 #########################
@@ -1161,7 +1186,7 @@ write_delim(offenses_clean,
                       delim = "|")
 
 ### write out supervision_extension_for_join_to_violations_clean file
-write_delim(supervision_extension_demo_analysis_clean,
+write_delim(supervision_extension_demo_violations_analysis_clean,
             file.path(sharepoint_jj_av_dallas_analytic_data,
                       "supervision_extension_demo_analysis_clean.txt"),
                       delim = "|")

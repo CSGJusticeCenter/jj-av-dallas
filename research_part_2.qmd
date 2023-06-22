@@ -579,6 +579,29 @@ df_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dallas_analyti
          violation_dismissed_withdrawn_flag = ifelse(violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT",
                                                      1,0)) 
 
+# ### create file for dallas county with only violations for violations rejected by supervisor (as defined by dallas county criteria)
+# df_violations_rejected_by_supervisor <- violations |>
+#   filter(is.na(violation_referral_number)==TRUE)
+# 
+# ### set sharepoint path using sp_data_path and file.path function
+# sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
+# 
+# ### write out main analytic file
+# write.xlsx(df_violations_rejected_by_supervisor,
+#             file.path(sharepoint_jj_av_dallas_analytic_data,
+#                       "violations_rejected_by_supervisor_send_to_dallas_county.xlsx"))
+
+### read in violations file
+df_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "df_violations_clean_demo.txt"),
+                      delim = "|") |> 
+  mutate(youth_violation_id = paste0(unique_id,
+                                    violation_referral_number),
+         violation_filed_date_fy = csgjcr::csg_fiscal_year(violation_filed_date,
+                                                          fy_start="October"),
+         violation_dismissed_withdrawn_flag = ifelse(violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT",
+                                                     1,0)) 
+
 ### create denominator -- unique referrals for entire sample
 unique_violations_sample_denom <- n_distinct(df_violations_clean_demo$youth_violation_id)
 

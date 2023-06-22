@@ -825,7 +825,7 @@ kable(df_technical_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(4, bold = TRUE)
+  row_spec(6, bold = TRUE)
 
 ```
 
