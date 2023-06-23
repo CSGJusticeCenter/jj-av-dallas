@@ -2074,27 +2074,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb286-8"><a href="#cb286-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(supervision_extension_for_join_to_violations_clean,</span>
 <span id="cb286-9"><a href="#cb286-9" aria-hidden="true" tabindex="-1"></a>            df_violations_clean_demo,</span>
 <span id="cb286-10"><a href="#cb286-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"unique_id"</span>)) <span class="sc">|&gt;</span> </span>
-<span id="cb286-11"><a href="#cb286-11" aria-hidden="true" tabindex="-1"></a>   <span class="do">### clean dates and create years for potential grouping in future trend analysis</span></span>
-<span id="cb286-12"><a href="#cb286-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_extension_begin_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_extension_begin_date)),</span>
-<span id="cb286-13"><a href="#cb286-13" aria-hidden="true" tabindex="-1"></a>         <span class="at">violation_disposition_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(violation_disposition_date)),</span>
-<span id="cb286-14"><a href="#cb286-14" aria-hidden="true" tabindex="-1"></a>         <span class="at">time_from_violation_dispo_to_extension_days =</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(supervision_extension_begin_date,</span>
-<span id="cb286-15"><a href="#cb286-15" aria-hidden="true" tabindex="-1"></a>                                                            violation_disposition_date,</span>
-<span id="cb286-16"><a href="#cb286-16" aria-hidden="true" tabindex="-1"></a>                                                                    <span class="at">units=</span><span class="st">"days"</span>))) <span class="sc">|&gt;</span> </span>
-<span id="cb286-17"><a href="#cb286-17" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we are only keeping joins where the time from violation_disposition_date to supervision_extension_begin_date</span></span>
-<span id="cb286-18"><a href="#cb286-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time_from_violation_dispo_to_extension_days<span class="sc">&gt;-</span><span class="dv">1</span>,</span>
-<span id="cb286-19"><a href="#cb286-19" aria-hidden="true" tabindex="-1"></a>         time_from_violation_dispo_to_extension_days<span class="sc">&lt;=</span><span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb286-20"><a href="#cb286-20" aria-hidden="true" tabindex="-1"></a>  <span class="do">### double check that we joined demo data to all violation records</span></span>
-<span id="cb286-21"><a href="#cb286-21" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we did</span></span>
-<span id="cb286-22"><a href="#cb286-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(race_clean)) <span class="sc">|&gt;</span> </span>
-<span id="cb286-23"><a href="#cb286-23" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now de-dup by extension to double check record count</span></span>
-<span id="cb286-24"><a href="#cb286-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">unique_supervision_extension =</span> <span class="fu">paste0</span>(unique_supervision_id,</span>
-<span id="cb286-25"><a href="#cb286-25" aria-hidden="true" tabindex="-1"></a>                                               supervision_extension_begin_date)) <span class="sc">|&gt;</span> </span>
-<span id="cb286-26"><a href="#cb286-26" aria-hidden="true" tabindex="-1"></a>  <span class="do">### for the remaining duplicates, arrange by extension record</span></span>
-<span id="cb286-27"><a href="#cb286-27" aria-hidden="true" tabindex="-1"></a>  <span class="do">### keeping demo data associated with original entry (earliest supervision_begin_date)</span></span>
-<span id="cb286-28"><a href="#cb286-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(unique_supervision_extension,</span>
-<span id="cb286-29"><a href="#cb286-29" aria-hidden="true" tabindex="-1"></a>          supervision_begin_date) <span class="sc">|&gt;</span> </span>
-<span id="cb286-30"><a href="#cb286-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_supervision_extension,</span>
-<span id="cb286-31"><a href="#cb286-31" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="do">### our final file size is now smaller b/c we have (in theory) dropped all agreed order supervision extensions (and are only left with extensions resulting from technical or new offense violations) (1528/1814 = 84%)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb286-11"><a href="#cb286-11" aria-hidden="true" tabindex="-1"></a>  <span class="do">### filter on technical violations only</span></span>
+<span id="cb286-12"><a href="#cb286-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(violation_severity_factor<span class="sc">==</span><span class="st">"Technical Violation"</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb286-13"><a href="#cb286-13" aria-hidden="true" tabindex="-1"></a>   <span class="do">### clean dates and create years for potential grouping in future trend analysis</span></span>
+<span id="cb286-14"><a href="#cb286-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">supervision_extension_begin_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(supervision_extension_begin_date)),</span>
+<span id="cb286-15"><a href="#cb286-15" aria-hidden="true" tabindex="-1"></a>         <span class="at">violation_disposition_date =</span> <span class="fu">ymd</span>(<span class="fu">as_date</span>(violation_disposition_date)),</span>
+<span id="cb286-16"><a href="#cb286-16" aria-hidden="true" tabindex="-1"></a>         <span class="at">time_from_violation_dispo_to_extension_days =</span> <span class="fu">as.numeric</span>(<span class="fu">difftime</span>(supervision_extension_begin_date,</span>
+<span id="cb286-17"><a href="#cb286-17" aria-hidden="true" tabindex="-1"></a>                                                            violation_disposition_date,</span>
+<span id="cb286-18"><a href="#cb286-18" aria-hidden="true" tabindex="-1"></a>                                                                    <span class="at">units=</span><span class="st">"days"</span>))) <span class="sc">|&gt;</span> </span>
+<span id="cb286-19"><a href="#cb286-19" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we are only keeping joins where the time from violation_disposition_date to supervision_extension_begin_date</span></span>
+<span id="cb286-20"><a href="#cb286-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(time_from_violation_dispo_to_extension_days<span class="sc">&gt;-</span><span class="dv">1</span>,</span>
+<span id="cb286-21"><a href="#cb286-21" aria-hidden="true" tabindex="-1"></a>         time_from_violation_dispo_to_extension_days<span class="sc">&lt;=</span><span class="dv">3</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb286-22"><a href="#cb286-22" aria-hidden="true" tabindex="-1"></a>  <span class="do">### double check that we joined demo data to all violation records</span></span>
+<span id="cb286-23"><a href="#cb286-23" aria-hidden="true" tabindex="-1"></a>  <span class="do">### we did</span></span>
+<span id="cb286-24"><a href="#cb286-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(race_clean)) <span class="sc">|&gt;</span> </span>
+<span id="cb286-25"><a href="#cb286-25" aria-hidden="true" tabindex="-1"></a>  <span class="do">### now de-dup by extension to double check record count</span></span>
+<span id="cb286-26"><a href="#cb286-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">unique_supervision_extension =</span> <span class="fu">paste0</span>(unique_supervision_id,</span>
+<span id="cb286-27"><a href="#cb286-27" aria-hidden="true" tabindex="-1"></a>                                               supervision_extension_begin_date)) <span class="sc">|&gt;</span> </span>
+<span id="cb286-28"><a href="#cb286-28" aria-hidden="true" tabindex="-1"></a>  <span class="do">### for the remaining duplicates, arrange by extension record</span></span>
+<span id="cb286-29"><a href="#cb286-29" aria-hidden="true" tabindex="-1"></a>  <span class="do">### keeping demo data associated with original entry (earliest supervision_begin_date)</span></span>
+<span id="cb286-30"><a href="#cb286-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(unique_supervision_extension,</span>
+<span id="cb286-31"><a href="#cb286-31" aria-hidden="true" tabindex="-1"></a>          supervision_begin_date) <span class="sc">|&gt;</span> </span>
+<span id="cb286-32"><a href="#cb286-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(unique_supervision_extension,</span>
+<span id="cb286-33"><a href="#cb286-33" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="do">### our final file size is now smaller b/c we have (in theory) dropped all agreed order supervision extensions (and are only left with extensions resulting from technical or new offense violations) (1528/1814 = 84%)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>left_join: added 32 columns (referral_number.x, violation_referral_number, violation, violation_date, violation_filed_date, …)</code></pre>
 </div>
@@ -2114,50 +2116,53 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <pre><code>           &gt; rows total       4,037</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>mutate: new variable 'time_from_violation_dispo_to_extension_days' (double) with 1,134 unique values and 3% NA</code></pre>
+<pre><code>filter: removed 1,104 rows (27%), 2,933 rows remaining</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>filter: removed 2,485 rows (62%), 1,552 rows remaining</code></pre>
+<pre><code>mutate: new variable 'time_from_violation_dispo_to_extension_days' (double) with 1,028 unique values and 0% NA</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>filter: removed 1,887 rows (64%), 1,046 rows remaining</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
 <pre><code>filter: no rows removed</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>mutate: new variable 'unique_supervision_extension' (character) with 1,528 unique values and 0% NA</code></pre>
+<pre><code>mutate: new variable 'unique_supervision_extension' (character) with 1,042 unique values and 0% NA</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>distinct: removed 24 rows (2%), 1,528 rows remaining</code></pre>
+<pre><code>distinct: removed 4 rows (&lt;1%), 1,042 rows remaining</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb298"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb298-1"><a href="#cb298-1" aria-hidden="true" tabindex="-1"></a><span class="do">#########################</span></span>
-<span id="cb298-2"><a href="#cb298-2" aria-hidden="true" tabindex="-1"></a><span class="do">### export analytic files</span></span>
-<span id="cb298-3"><a href="#cb298-3" aria-hidden="true" tabindex="-1"></a><span class="do">#########################</span></span>
-<span id="cb298-4"><a href="#cb298-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb298-5"><a href="#cb298-5" aria-hidden="true" tabindex="-1"></a><span class="do">### set sharepoint path using sp_data_path and file.path function </span></span>
-<span id="cb298-6"><a href="#cb298-6" aria-hidden="true" tabindex="-1"></a>sharepoint_jj_av_dallas_analytic_data <span class="ot">&lt;-</span> <span class="fu">file.path</span>(sp_data_path,<span class="st">"Data/analysis"</span>)</span>
-<span id="cb298-7"><a href="#cb298-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb298-8"><a href="#cb298-8" aria-hidden="true" tabindex="-1"></a><span class="do">### write out main analytic file</span></span>
-<span id="cb298-9"><a href="#cb298-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(df_dallas_county_av_supervision_analytic_file_completers_only,</span>
-<span id="cb298-10"><a href="#cb298-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
-<span id="cb298-11"><a href="#cb298-11" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"df_dallas_county_av_supervision_analytic_file.txt"</span>),</span>
-<span id="cb298-12"><a href="#cb298-12" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span>
-<span id="cb298-13"><a href="#cb298-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb298-14"><a href="#cb298-14" aria-hidden="true" tabindex="-1"></a><span class="do">### write out violations file</span></span>
-<span id="cb298-15"><a href="#cb298-15" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(df_violations_clean_demo,</span>
-<span id="cb298-16"><a href="#cb298-16" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
-<span id="cb298-17"><a href="#cb298-17" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"df_violations_clean_demo.txt"</span>),</span>
-<span id="cb298-18"><a href="#cb298-18" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span>
-<span id="cb298-19"><a href="#cb298-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb298-20"><a href="#cb298-20" aria-hidden="true" tabindex="-1"></a><span class="do">### write out clean offense file</span></span>
-<span id="cb298-21"><a href="#cb298-21" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(offenses_clean,</span>
-<span id="cb298-22"><a href="#cb298-22" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
-<span id="cb298-23"><a href="#cb298-23" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"offenses_clean.txt"</span>),</span>
-<span id="cb298-24"><a href="#cb298-24" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span>
-<span id="cb298-25"><a href="#cb298-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb298-26"><a href="#cb298-26" aria-hidden="true" tabindex="-1"></a><span class="do">### write out supervision_extension_for_join_to_violations_clean file</span></span>
-<span id="cb298-27"><a href="#cb298-27" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(supervision_extension_demo_violations_analysis_clean,</span>
-<span id="cb298-28"><a href="#cb298-28" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
-<span id="cb298-29"><a href="#cb298-29" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"supervision_extension_demo_analysis_clean.txt"</span>),</span>
-<span id="cb298-30"><a href="#cb298-30" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb299"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb299-1"><a href="#cb299-1" aria-hidden="true" tabindex="-1"></a><span class="do">#########################</span></span>
+<span id="cb299-2"><a href="#cb299-2" aria-hidden="true" tabindex="-1"></a><span class="do">### export analytic files</span></span>
+<span id="cb299-3"><a href="#cb299-3" aria-hidden="true" tabindex="-1"></a><span class="do">#########################</span></span>
+<span id="cb299-4"><a href="#cb299-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb299-5"><a href="#cb299-5" aria-hidden="true" tabindex="-1"></a><span class="do">### set sharepoint path using sp_data_path and file.path function </span></span>
+<span id="cb299-6"><a href="#cb299-6" aria-hidden="true" tabindex="-1"></a>sharepoint_jj_av_dallas_analytic_data <span class="ot">&lt;-</span> <span class="fu">file.path</span>(sp_data_path,<span class="st">"Data/analysis"</span>)</span>
+<span id="cb299-7"><a href="#cb299-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb299-8"><a href="#cb299-8" aria-hidden="true" tabindex="-1"></a><span class="do">### write out main analytic file</span></span>
+<span id="cb299-9"><a href="#cb299-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(df_dallas_county_av_supervision_analytic_file_completers_only,</span>
+<span id="cb299-10"><a href="#cb299-10" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
+<span id="cb299-11"><a href="#cb299-11" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"df_dallas_county_av_supervision_analytic_file.txt"</span>),</span>
+<span id="cb299-12"><a href="#cb299-12" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span>
+<span id="cb299-13"><a href="#cb299-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb299-14"><a href="#cb299-14" aria-hidden="true" tabindex="-1"></a><span class="do">### write out violations file</span></span>
+<span id="cb299-15"><a href="#cb299-15" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(df_violations_clean_demo,</span>
+<span id="cb299-16"><a href="#cb299-16" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
+<span id="cb299-17"><a href="#cb299-17" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"df_violations_clean_demo.txt"</span>),</span>
+<span id="cb299-18"><a href="#cb299-18" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span>
+<span id="cb299-19"><a href="#cb299-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb299-20"><a href="#cb299-20" aria-hidden="true" tabindex="-1"></a><span class="do">### write out clean offense file</span></span>
+<span id="cb299-21"><a href="#cb299-21" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(offenses_clean,</span>
+<span id="cb299-22"><a href="#cb299-22" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
+<span id="cb299-23"><a href="#cb299-23" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"offenses_clean.txt"</span>),</span>
+<span id="cb299-24"><a href="#cb299-24" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span>
+<span id="cb299-25"><a href="#cb299-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb299-26"><a href="#cb299-26" aria-hidden="true" tabindex="-1"></a><span class="do">### write out supervision_extension_for_join_to_violations_clean file</span></span>
+<span id="cb299-27"><a href="#cb299-27" aria-hidden="true" tabindex="-1"></a><span class="fu">write_delim</span>(supervision_extension_demo_violations_analysis_clean,</span>
+<span id="cb299-28"><a href="#cb299-28" aria-hidden="true" tabindex="-1"></a>            <span class="fu">file.path</span>(sharepoint_jj_av_dallas_analytic_data,</span>
+<span id="cb299-29"><a href="#cb299-29" aria-hidden="true" tabindex="-1"></a>                      <span class="st">"supervision_extension_demo_analysis_clean.txt"</span>),</span>
+<span id="cb299-30"><a href="#cb299-30" aria-hidden="true" tabindex="-1"></a>                      <span class="at">delim =</span> <span class="st">"|"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

@@ -1137,6 +1137,8 @@ supervision_extension_demo_violations_analysis_clean <-
   left_join(supervision_extension_for_join_to_violations_clean,
             df_violations_clean_demo,
             by = c("unique_id")) |> 
+  ### filter on technical violations only
+  filter(violation_severity_factor=="Technical Violation") |> 
    ### clean dates and create years for potential grouping in future trend analysis
   mutate(supervision_extension_begin_date = ymd(as_date(supervision_extension_begin_date)),
          violation_disposition_date = ymd(as_date(violation_disposition_date)),
