@@ -877,7 +877,7 @@ kable(df_technical_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(2, bold = TRUE)
+  row_spec(3, bold = TRUE)
 
 ```
 
@@ -1202,7 +1202,7 @@ kable(df_dismissed_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(2, bold = TRUE)
+  row_spec(3, bold = TRUE)
 ```
 
 <br>
@@ -1370,7 +1370,7 @@ kable(df_dismissed_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(10, bold = TRUE)
+  row_spec(11, bold = TRUE)
 ```
 
 <br><br>

@@ -33,7 +33,7 @@ sp_data_path <- csg_get_project_path("jj-av-dallas")
 
 ```
 
-```{r include=FALSE,message=FALSE,warning=FALSE}
+```{r include=FALSE, message=FALSE, warning=FALSE}
 ###############################
 ### import dallas analytic file
 ###############################
@@ -45,7 +45,7 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
                       "df_dallas_county_av_supervision_analytic_file.txt"),
                       delim = "|") |> 
   ### remove FY 2023 Completion (year is incomplete based on timing of data pull) 
-  filter(supervision_end_fy!=2023) |> 
+  filter(supervision_end_fy!=2023) |>
   ### de-dup by unique_supervision_id for mean calculations
   distinct(unique_supervision_id,
            .keep_all = TRUE) %>% 
@@ -84,7 +84,9 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
                     "Moderate Needs", 
                     "High Needs",
                     "Unknown",
-                    "Not Administered")))
+                    "Not Administered"))) |> 
+  ### remove instances where LOS is less than 0, as well 
+  filter(supervision_start_first_tech_violation_first_overall>0 | is.na(supervision_start_first_tech_violation_first_overall)==TRUE)
 
 ```
 
