@@ -170,22 +170,26 @@ df_technical_violations_race <- df_dallas_county_av_supervision_analytic_file %>
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (RRI to White youth)` = round((n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`)/0.1184573, digits = 1),
             `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
-                                                                       accuracy = .1)) %>% 
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (RRI to White youth)` = round((n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`)/0.0261708,digits = 1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean)
 
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
-   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
             `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
             `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
+            `Supervision Episodes, with at least one technical violations (RRI to White youth)` = NA,
             `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
-                                                                       accuracy = .1)) %>% 
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one new offense violation (RRI to White youth)` = NA) %>% 
   mutate(`Race/Ethnicity` = "Overall")
 
 ### combine tables for kable
