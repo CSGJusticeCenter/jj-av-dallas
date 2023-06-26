@@ -43,7 +43,14 @@ sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
 
 df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
                       "df_dallas_county_av_supervision_analytic_file.txt"),
-                      delim = "|") %>% 
+                      delim = "|") |> 
+  ### remove FY 2023 Completion (year is incomplete based on timing of data pull) 
+  filter(supervision_end_fy!=2023) |> 
+  ### de-dup by unique_supervision_id for mean calculations
+  distinct(unique_supervision_id,
+           .keep_all = TRUE) %>% 
+  ### convert inf to NA
+  mutate_all(.,.funs = function(x){ifelse(is.infinite(x),NA,x)}) |>  
   mutate(offense_referral_risk_level = 
            case_when(
              offense_referral_risk_level=="Low Risk" ~ 1,
@@ -77,12 +84,7 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
                     "Moderate Needs", 
                     "High Needs",
                     "Unknown",
-                    "Not Administered"))) |> 
-  ### de-dup by unique_supervision_id for mean calculations
-  distinct(unique_supervision_id,
-           .keep_all = TRUE) %>% 
-  ### convert inf to NA
-  mutate_all(.,.funs = function(x){ifelse(is.infinite(x),NA,x)})
+                    "Not Administered")))
 
 ```
 
@@ -132,7 +134,7 @@ kable(df_time_to_technical_fy_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(7, bold = TRUE)
+  row_spec(6, bold = TRUE)
 ```
 
 <br>
@@ -221,8 +223,8 @@ df_dallas_county_av_supervision_analytic_file %<>%
  mutate(age_at_referral_clean = factor(age_at_referral_clean,
          levels = c("Less than 12", 
                     "12 to 13",
-                    "14 to 15",
-                    "16 to 20")))
+                    "14 to 16",
+                    "17+")))
 
 ### average time to first technical violation
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
@@ -381,7 +383,7 @@ kable(df_time_to_technical_fy_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(7, bold = TRUE)
+  row_spec(6, bold = TRUE)
 ```
 
 <br>
@@ -470,8 +472,8 @@ df_dallas_county_av_supervision_analytic_file %<>%
  mutate(age_at_referral_clean = factor(age_at_referral_clean,
          levels = c("Less than 12", 
                     "12 to 13",
-                    "14 to 15",
-                    "16 to 20")))
+                    "14 to 16",
+                    "17+")))
 
 ### average time to first technical violation
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
@@ -589,4 +591,3 @@ kable(df_time_to_technical_fy_table,
 ```
 
 <br><br>
-

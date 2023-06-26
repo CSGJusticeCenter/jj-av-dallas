@@ -125,7 +125,9 @@ df_technical_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dall
                     "Moderate Needs", 
                     "High Needs",
                     "Unknown",
-                    "Not Administered")))
+                    "Not Administered"))) |> 
+  ### remove FY 2023 (year is incomplete based on timing of data pull) 
+  filter(violation_filed_date_fy!=2023)
 
 
 ```
@@ -144,21 +146,21 @@ df_technical_violations_per_year <- df_technical_violations_clean_demo %>%
   filter(violation_filed_date_fy>=2016) %>% 
   dplyr::group_by(violation_filed_date_fy) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`FY of Violation` = violation_filed_date_fy) %>% 
@@ -168,21 +170,21 @@ df_technical_violations_per_year <- df_technical_violations_clean_demo %>%
 df_technical_violations_overall <- df_technical_violations_clean_demo %>% 
   filter(violation_filed_date_fy>=2016) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`FY of Violation` = "Overall")
 
@@ -198,7 +200,7 @@ kable(df_technical_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(9, bold = TRUE)
+  row_spec(8, bold = TRUE)
 ```
 
 <br>
@@ -212,21 +214,21 @@ kable(df_technical_violations_per_year_table,
 df_technical_violations_per_year <- df_technical_violations_clean_demo %>% 
   dplyr::group_by(race_clean) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean) 
@@ -234,21 +236,21 @@ df_technical_violations_per_year <- df_technical_violations_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_clean_demo %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Race/Ethnicity` = "Overall")
 
@@ -278,21 +280,21 @@ kable(df_technical_violations_per_year_table,
 df_technical_violations_per_year <- df_technical_violations_clean_demo %>% 
   dplyr::group_by(gender_clean) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean) 
@@ -300,21 +302,21 @@ df_technical_violations_per_year <- df_technical_violations_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_clean_demo %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Gender` = "Overall")
 
@@ -343,28 +345,28 @@ df_technical_violations_clean_demo %<>%
  mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
          levels = c("Less than 12", 
                     "12 to 13",
-                    "14 to 15",
-                    "16 to 20")))
+                    "14 to 16",
+                    "17+")))
  
 ### unique violation grouped
 df_technical_violations_per_year <- df_technical_violations_clean_demo %>% 
   dplyr::group_by(age_at_start_of_supervision_clean) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Age` = age_at_start_of_supervision_clean) 
@@ -372,21 +374,21 @@ df_technical_violations_per_year <- df_technical_violations_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_clean_demo %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Age` = "Overall")
 
@@ -416,21 +418,21 @@ kable(df_technical_violations_per_year_table,
 df_technical_violations_per_year <- df_technical_violations_clean_demo %>% 
   dplyr::group_by(offense_referral_risk_level) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level) 
@@ -438,21 +440,21 @@ df_technical_violations_per_year <- df_technical_violations_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_clean_demo %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Risk Level` = "Overall")
 
@@ -482,21 +484,21 @@ kable(df_technical_violations_per_year_table,
 df_technical_violations_per_year <- df_technical_violations_clean_demo %>% 
   dplyr::group_by(offense_referral_needs_level) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level) 
@@ -504,21 +506,21 @@ df_technical_violations_per_year <- df_technical_violations_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_clean_demo %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                   `General Violation (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `General Violation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Curfew Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Participate in Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Failure to Report to PO (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation Related to Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Runaway (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Runaway (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Violation of School Rules (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Violation of School Rules (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other Violations (%)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
+                   `Other Violations (row %)` = scales::percent(n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Needs Level` = "Overall")
 

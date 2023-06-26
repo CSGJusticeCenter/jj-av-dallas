@@ -218,7 +218,9 @@ df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_a
                     "Moderate Needs", 
                     "High Needs",
                     "Unknown",
-                    "Not Administered")))
+                    "Not Administered"))) |> 
+  ### remove FY 2023 (year is incomplete based on timing of data pull) 
+  filter(violation_filed_date_fy!=2023)
 
 ```
 
@@ -238,25 +240,25 @@ df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>%
   filter(violation_filed_date_fy>=2016) %>% 
   dplyr::group_by(violation_filed_date_fy) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`FY of Violation` = violation_filed_date_fy) %>% 
@@ -266,25 +268,25 @@ df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>%
 df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
   filter(violation_filed_date_fy>=2016) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`FY of Violation` = "Overall")
 
@@ -300,7 +302,7 @@ kable(df_technical_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(9, bold = TRUE)
+  row_spec(8, bold = TRUE)
 ```
 
 
@@ -315,25 +317,25 @@ kable(df_technical_violations_per_year_table,
 df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
   dplyr::group_by(race_clean) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean)
@@ -341,25 +343,25 @@ df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
    dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Race/Ethnicity` = "Overall")
 
@@ -389,25 +391,25 @@ kable(df_technical_violations_per_year_table,
 df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
   dplyr::group_by(gender_clean) %>% 
    dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>%  
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean)
@@ -415,25 +417,25 @@ df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
    dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Gender` = "Overall")
 
@@ -462,32 +464,32 @@ df_technical_violations_dispo_clean_demo %<>%
  mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
          levels = c("Less than 12", 
                     "12 to 13",
-                    "14 to 15",
-                    "16 to 20")))
+                    "14 to 16",
+                    "17+")))
 
 ### unique violation grouped
 df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
   dplyr::group_by(age_at_start_of_supervision_clean) %>% 
    dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Age` = age_at_start_of_supervision_clean)
@@ -495,25 +497,25 @@ df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Age` = "Overall")
 
@@ -543,25 +545,25 @@ kable(df_technical_violations_per_year_table,
 df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
   dplyr::group_by(offense_referral_risk_level) %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level)
@@ -569,25 +571,25 @@ df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
    dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Risk Level` = "Overall")
 
@@ -617,25 +619,25 @@ kable(df_technical_violations_per_year_table,
 df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
   dplyr::group_by(offense_referral_needs_level) %>% 
    dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level)
@@ -643,25 +645,25 @@ df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>%
 ### overall
 df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
-                    `21 Day Residential Program (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Extension (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Probation Modified (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Placement (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Commitment (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Other (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Dismissed/Withdrawn (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `No Disposition (%)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
                                                                        accuracy = .1),
-                   `Missing Disposition Data (%)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Needs Level` = "Overall")
 
@@ -700,7 +702,7 @@ supervision_extension_demo_analysis_clean <- read_delim(file.path(sharepoint_jj_
   mutate(supervision_extension_begin_fy = csgjcr::csg_fiscal_year(supervision_extension_begin_date,
                                                           fy_start="October")) |> 
   filter(supervision_extension_begin_fy>=2016,
-         supervision_extension_begin_fy<=2020)
+         supervision_extension_begin_fy<=2020) 
 
 # ### join two files to explore supervision extensions that occur within 
 # ### we can only join on youth ID
@@ -891,8 +893,8 @@ supervision_extension_demo_analysis_clean %<>%
  mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
          levels = c("Less than 12", 
                     "12 to 13",
-                    "14 to 15",
-                    "16 to 20")))
+                    "14 to 16",
+                    "17+")))
 
 ### mean, median, min, and max of supervision_extension_in_days
 df_technical_violations_per_year <- supervision_extension_demo_analysis_clean %>% 
@@ -1080,7 +1082,9 @@ df_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dallas_analyti
                              "5100k  Viol Prob - Failure to Pay Probation Fees (9)",
                             "xxx - Converted Data") ~ "Other",
              violation=="No Violation/Modification Needed" ~ "No Violation",             
-             TRUE ~ as.character(NA))) 
+             TRUE ~ as.character(NA))) |> 
+  ### remove FY 2023 (year is incomplete based on timing of data pull) 
+  filter(violation_filed_date_fy!=2023)
 
 ### create denominator -- unique referrals for entire sample
 unique_violations_sample_denom <- n_distinct(df_violations_clean_demo$youth_violation_id)
@@ -1089,9 +1093,9 @@ unique_violations_sample_denom <- n_distinct(df_violations_clean_demo$youth_viol
 df_dismissed_violations_per_year <- df_violations_clean_demo %>% 
   dplyr::group_by(violation_filed_date_fy) %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`FY of Filing` = violation_filed_date_fy) %>% 
@@ -1100,9 +1104,9 @@ df_dismissed_violations_per_year <- df_violations_clean_demo %>%
 ### overall
 df_violations_overall <- df_violations_clean_demo %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`FY of Filing` = "Overall")
 
@@ -1130,9 +1134,9 @@ kable(df_dismissed_violations_per_year_table,
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(race_clean) %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean) 
@@ -1140,9 +1144,9 @@ df_dismissed_violations_per_year <- df_violations_clean_demo |>
 ### overall
 df_violations_overall <- df_violations_clean_demo %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Race/Ethnicity` = "Overall")
 
@@ -1170,9 +1174,9 @@ kable(df_dismissed_violations_per_year_table,
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(gender_clean) %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean) 
@@ -1180,9 +1184,9 @@ df_dismissed_violations_per_year <- df_violations_clean_demo |>
 ### overall
 df_violations_overall <- df_violations_clean_demo %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Gender` = "Overall")
 
@@ -1211,16 +1215,16 @@ df_violations_clean_demo %<>%
  mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
          levels = c("Less than 12", 
                     "12 to 13",
-                    "14 to 15",
-                    "16 to 20")))
+                    "14 to 16",
+                    "17+")))
 
 ### unique youth and referrals per FY
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(age_at_start_of_supervision_clean) %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Age` = age_at_start_of_supervision_clean) 
@@ -1228,9 +1232,9 @@ df_dismissed_violations_per_year <- df_violations_clean_demo |>
 ### overall
 df_violations_overall <- df_violations_clean_demo %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Age` = "Overall")
 
@@ -1258,9 +1262,9 @@ kable(df_dismissed_violations_per_year_table,
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(offense_referral_risk_level) %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level) 
@@ -1268,9 +1272,9 @@ df_dismissed_violations_per_year <- df_violations_clean_demo |>
 ### overall
 df_violations_overall <- df_violations_clean_demo %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Risk Level` = "Overall")
 
@@ -1298,9 +1302,9 @@ kable(df_dismissed_violations_per_year_table,
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(offense_referral_needs_level) %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level) 
@@ -1308,9 +1312,9 @@ df_dismissed_violations_per_year <- df_violations_clean_demo |>
 ### overall
 df_violations_overall <- df_violations_clean_demo %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Needs Level` = "Overall")
 
@@ -1338,9 +1342,9 @@ kable(df_dismissed_violations_per_year_table,
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(violation_type_cleaned) %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Violation Type` = violation_type_cleaned) 
@@ -1348,9 +1352,9 @@ df_dismissed_violations_per_year <- df_violations_clean_demo |>
 ### overall
 df_violations_overall <- df_violations_clean_demo %>% 
   dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dismissed_withdrawn_flag==1]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
             `All Technical Violations (N)` = n_distinct(youth_violation_id),
-              `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dismissed_withdrawn_flag==1]),
-            `Technical Violations Disposed to 21 Day Program (%)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Violation Type` = "Overall")
 
@@ -1368,6 +1372,5 @@ kable(df_dismissed_violations_per_year_table,
                  row_label_position = "l") %>% 
   row_spec(10, bold = TRUE)
 ```
-
 
 <br><br>

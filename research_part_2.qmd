@@ -84,7 +84,9 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
                     "Moderate Needs", 
                     "High Needs",
                     "Unknown",
-                    "Not Administered")))
+                    "Not Administered"))) |> 
+  ### remove FY 2023 Completion (year is incomplete based on timing of data pull) 
+  filter(supervision_end_fy!=2023)
 
 ```
 
@@ -115,11 +117,11 @@ df_technical_violations_per_year <- df_dallas_county_av_supervision_analytic_fil
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
@@ -130,11 +132,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`FY of Completion` = "Overall")
 
@@ -150,7 +152,7 @@ kable(df_technical_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(7, bold = TRUE)
+  row_spec(6, bold = TRUE)
 ```
 
 <br>
@@ -164,11 +166,11 @@ df_technical_violations_race <- df_dallas_county_av_supervision_analytic_file %>
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean)
@@ -178,11 +180,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
    dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Race/Ethnicity` = "Overall")
 
@@ -215,11 +217,11 @@ df_technical_violations_risk <- df_dallas_county_av_supervision_analytic_file %>
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level)
@@ -229,11 +231,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
    dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Risk Level` = "Overall")
 
@@ -265,11 +267,11 @@ df_technical_violations_needs <- df_dallas_county_av_supervision_analytic_file %
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level)
@@ -279,11 +281,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
    dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one technical violations (%)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one technical violations (row %)` = scales::percent(n_distinct(unique_supervision_id[technical_violation_flag==1])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1),
-            `Supervision Episodes, with at least one new offense violation (%)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one new offense violation (row %)` = scales::percent(n_distinct(unique_supervision_id[new_offense_violation_count>0 & !is.na(new_offense_violation_count)])/`Unique Supervision Episodes (N)`,
                                                                        accuracy = .1)) %>% 
   mutate(`Needs Level` = "Overall")
 
@@ -323,7 +325,7 @@ df_technical_violation_sample_race <- df_dallas_county_av_supervision_analytic_f
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean)
@@ -334,7 +336,7 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom,
                                                                        accuracy = .1)) %>%
   mutate(`Race/Ethnicity` = "Overall")
 
@@ -366,8 +368,8 @@ df_dallas_county_av_supervision_analytic_file %<>%
  mutate(age_at_referral_clean = factor(age_at_referral_clean,
          levels = c("Less than 12", 
                     "12 to 13",
-                    "14 to 15",
-                    "16 to 20")))
+                    "14 to 16",
+                    "17+")))
  
 ### unique youth, referrals, and supervision episodes
 df_technical_violation_sample_age <- df_dallas_county_av_supervision_analytic_file %>% 
@@ -377,7 +379,7 @@ df_technical_violation_sample_age <- df_dallas_county_av_supervision_analytic_fi
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_age,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_age,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Age at Referral` = age_at_referral_clean)
@@ -389,7 +391,7 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_age,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_age,
                                                                        accuracy = .1)) %>%
   mutate(`Age at Referral` = "Overall")
 
@@ -425,7 +427,7 @@ df_technical_violation_sample_gender <- df_dallas_county_av_supervision_analytic
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_gender,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_gender,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean)
@@ -437,7 +439,7 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_gender,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_gender,
                                                                        accuracy = .1)) %>%
   mutate(`Gender` = "Overall")
 
@@ -457,7 +459,6 @@ kable(df_technical_violation_sample_gender_table,
   row_spec(3, bold = TRUE)
 ```
 
-
 <br>
 
 ## Table 9. By Risk Level: At least one Technical Violation
@@ -475,7 +476,7 @@ df_technical_violations_risk <- df_dallas_county_av_supervision_analytic_file %>
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_risk_needs,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_risk_needs,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level)
@@ -486,7 +487,7 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_risk_needs,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_risk_needs,
                                                                        accuracy = .1)) %>% 
   mutate(`Risk Level` = "Overall")
 
@@ -519,7 +520,7 @@ df_technical_violations_needs <- df_dallas_county_av_supervision_analytic_file %
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_risk_needs,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_risk_needs,
                                                                        accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level)
@@ -530,7 +531,7 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
             `Unique Referrals (N)` = n_distinct(unique_referral_id),
             `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
-            `Supervision Episodes, Percent of Sample (%)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_risk_needs,
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_at_least_technical_denom_risk_needs,
                                                                        accuracy = .1)) %>% 
   mutate(`Needs Level` = "Overall")
 
@@ -549,7 +550,6 @@ kable(df_technical_violations_needs_table,
   row_spec(6, bold = TRUE)
 ```
 
-
 <br><br>
 
 # 3. Supervisor/Prosecutor Rejections 
@@ -557,6 +557,5 @@ kable(df_technical_violations_needs_table,
 **Business Rule:** According to Dallas County, all of the technical violation records without a referral number indicate that a PO filed the violation, but that it was rejected by a supervisor.
 
 **NOTE:** Only about 2% of all violations fit this criteria -- not sure if it warrants analysis (especially anything disaggregated). The Dallas team mentioned several factors to consider regarding rejections in general as well as the small percentage of violations that appear in our sample. A fair amount of informal rejection is possible (possible violations are rejected/not approved before any data would be entered or a violation would actually be filed). PO has to get permission from supervisor before filing a violation so there should be very few rejected violations (i.e., PO's will likely only formally file a violation if they feel confident it will be approved by a supervisor).Thus, 2% really only reflects what is in the data system but likely does not speak to the real trend.
-
 
 <br><br>
