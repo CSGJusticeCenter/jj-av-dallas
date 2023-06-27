@@ -99,33 +99,29 @@ df_technical_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dall
                              "Medium-High Risk",
                              "Moderate Risk") ~ 2,
              offense_referral_risk_level=="High Risk" ~ 3,             
-             offense_referral_risk_level=="Unknown" ~ 4,
-             offense_referral_risk_level=="Not Administered" ~ 5,
+             offense_referral_risk_level%in%c("Unknown/Not Administered") ~ 4,
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
          offense_referral_risk_level = factor(offense_referral_risk_level,
-         levels = c(1,2,3,4,5),
+         levels = c(1,2,3,4),
          labels =  c("Low Risk", 
                      "Moderate Risk", 
                      "High Risk",
-                     "Unknown",
-                     "Not Administered")),
+                     "Unknown/Not Administered")),
          offense_referral_needs_level = 
            case_when(
              offense_referral_needs_level=="Low Needs" ~ 1,
              offense_referral_needs_level=="Moderate Needs" ~ 2,
              offense_referral_needs_level=="High Needs" ~ 3,             
-             offense_referral_needs_level=="Unknown" ~ 4,
-             offense_referral_needs_level=="Not Administered" ~ 5,
+             offense_referral_needs_level%in%c("Unknown/Not Administered") ~ 4,
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
          offense_referral_needs_level = factor(offense_referral_needs_level,
-         levels = c(1,2,3,4,5),
+         levels = c(1,2,3,4),
          labels = c("Low Needs", 
                     "Moderate Needs", 
                     "High Needs",
-                    "Unknown",
-                    "Not Administered"))) |> 
+                    "Unknown/Not Administered"))) |> 
   ### remove FY 2023 (year is incomplete based on timing of data pull) 
   filter(violation_filed_date_fy!=2023)
 
@@ -470,7 +466,7 @@ kable(df_technical_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br>
@@ -536,7 +532,7 @@ kable(df_technical_violations_per_year_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>

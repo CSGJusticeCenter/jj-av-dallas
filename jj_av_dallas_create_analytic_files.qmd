@@ -433,33 +433,29 @@ offenses_clean <- offenses %>%
                              "Medium-High Risk",
                              "Moderate Risk") ~ 2,
              risk_level=="High Risk" ~ 3,             
-             risk_level=="Unknown" ~ 4,
-             risk_level=="Not Administered" ~ 5,
+             risk_level%in%c("Unknown","Not Administered") ~ 4,
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
          risk_level = factor(risk_level,
-         levels = c(1,2,3,4,5),
+         levels = c(1,2,3,4),
          labels =  c("Low Risk", 
                      "Moderate Risk", 
                      "High Risk",
-                     "Unknown",
-                     "Not Administered")),
+                     "Unknown/Not Administered")),
          needs_level = 
            case_when(
              needs_level=="Low Needs" ~ 1,
              needs_level=="Moderate Needs" ~ 2,
              needs_level=="High Needs" ~ 3,             
-             needs_level=="Unknown" ~ 4,
-             needs_level=="Not Administered" ~ 5,
+             needs_level%in%c("Unknown","Not Administered") ~ 4,
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
          needs_level = factor(needs_level,
-         levels = c(1,2,3,4,5),
+         levels = c(1,2,3,4),
          labels = c("Low Needs", 
                     "Moderate Needs", 
                     "High Needs",
-                    "Unknown",
-                    "Not Administered")))
+                    "Unknown/Not Administered")))
     
 ### de-duplicate in two steps here:
 ### first use doi=="primary" (this is the primary offense at disposition)

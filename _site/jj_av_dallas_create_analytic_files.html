@@ -835,33 +835,29 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <span id="cb70-103"><a href="#cb70-103" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"Medium-High Risk"</span>,</span>
 <span id="cb70-104"><a href="#cb70-104" aria-hidden="true" tabindex="-1"></a>                             <span class="st">"Moderate Risk"</span>) <span class="sc">~</span> <span class="dv">2</span>,</span>
 <span id="cb70-105"><a href="#cb70-105" aria-hidden="true" tabindex="-1"></a>             risk_level<span class="sc">==</span><span class="st">"High Risk"</span> <span class="sc">~</span> <span class="dv">3</span>,             </span>
-<span id="cb70-106"><a href="#cb70-106" aria-hidden="true" tabindex="-1"></a>             risk_level<span class="sc">==</span><span class="st">"Unknown"</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
-<span id="cb70-107"><a href="#cb70-107" aria-hidden="true" tabindex="-1"></a>             risk_level<span class="sc">==</span><span class="st">"Not Administered"</span> <span class="sc">~</span> <span class="dv">5</span>,</span>
-<span id="cb70-108"><a href="#cb70-108" aria-hidden="true" tabindex="-1"></a>             <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>)),</span>
-<span id="cb70-109"><a href="#cb70-109" aria-hidden="true" tabindex="-1"></a>         <span class="do">### use factor function to assign labels to values</span></span>
-<span id="cb70-110"><a href="#cb70-110" aria-hidden="true" tabindex="-1"></a>         <span class="at">risk_level =</span> <span class="fu">factor</span>(risk_level,</span>
-<span id="cb70-111"><a href="#cb70-111" aria-hidden="true" tabindex="-1"></a>         <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>),</span>
-<span id="cb70-112"><a href="#cb70-112" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span>  <span class="fu">c</span>(<span class="st">"Low Risk"</span>, </span>
-<span id="cb70-113"><a href="#cb70-113" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Moderate Risk"</span>, </span>
-<span id="cb70-114"><a href="#cb70-114" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"High Risk"</span>,</span>
-<span id="cb70-115"><a href="#cb70-115" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Unknown"</span>,</span>
-<span id="cb70-116"><a href="#cb70-116" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Not Administered"</span>)),</span>
-<span id="cb70-117"><a href="#cb70-117" aria-hidden="true" tabindex="-1"></a>         <span class="at">needs_level =</span> </span>
-<span id="cb70-118"><a href="#cb70-118" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(</span>
-<span id="cb70-119"><a href="#cb70-119" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">==</span><span class="st">"Low Needs"</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
-<span id="cb70-120"><a href="#cb70-120" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">==</span><span class="st">"Moderate Needs"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
-<span id="cb70-121"><a href="#cb70-121" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">==</span><span class="st">"High Needs"</span> <span class="sc">~</span> <span class="dv">3</span>,             </span>
-<span id="cb70-122"><a href="#cb70-122" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">==</span><span class="st">"Unknown"</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
-<span id="cb70-123"><a href="#cb70-123" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">==</span><span class="st">"Not Administered"</span> <span class="sc">~</span> <span class="dv">5</span>,</span>
-<span id="cb70-124"><a href="#cb70-124" aria-hidden="true" tabindex="-1"></a>             <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>)),</span>
-<span id="cb70-125"><a href="#cb70-125" aria-hidden="true" tabindex="-1"></a>         <span class="do">### use factor function to assign labels to values</span></span>
-<span id="cb70-126"><a href="#cb70-126" aria-hidden="true" tabindex="-1"></a>         <span class="at">needs_level =</span> <span class="fu">factor</span>(needs_level,</span>
-<span id="cb70-127"><a href="#cb70-127" aria-hidden="true" tabindex="-1"></a>         <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>,<span class="dv">5</span>),</span>
-<span id="cb70-128"><a href="#cb70-128" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Low Needs"</span>, </span>
-<span id="cb70-129"><a href="#cb70-129" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Moderate Needs"</span>, </span>
-<span id="cb70-130"><a href="#cb70-130" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"High Needs"</span>,</span>
-<span id="cb70-131"><a href="#cb70-131" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Unknown"</span>,</span>
-<span id="cb70-132"><a href="#cb70-132" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Not Administered"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb70-106"><a href="#cb70-106" aria-hidden="true" tabindex="-1"></a>             risk_level<span class="sc">%in%</span><span class="fu">c</span>(<span class="st">"Unknown"</span>,<span class="st">"Not Administered"</span>) <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb70-107"><a href="#cb70-107" aria-hidden="true" tabindex="-1"></a>             <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>)),</span>
+<span id="cb70-108"><a href="#cb70-108" aria-hidden="true" tabindex="-1"></a>         <span class="do">### use factor function to assign labels to values</span></span>
+<span id="cb70-109"><a href="#cb70-109" aria-hidden="true" tabindex="-1"></a>         <span class="at">risk_level =</span> <span class="fu">factor</span>(risk_level,</span>
+<span id="cb70-110"><a href="#cb70-110" aria-hidden="true" tabindex="-1"></a>         <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>),</span>
+<span id="cb70-111"><a href="#cb70-111" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span>  <span class="fu">c</span>(<span class="st">"Low Risk"</span>, </span>
+<span id="cb70-112"><a href="#cb70-112" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Moderate Risk"</span>, </span>
+<span id="cb70-113"><a href="#cb70-113" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"High Risk"</span>,</span>
+<span id="cb70-114"><a href="#cb70-114" aria-hidden="true" tabindex="-1"></a>                     <span class="st">"Unknown/Not Administered"</span>)),</span>
+<span id="cb70-115"><a href="#cb70-115" aria-hidden="true" tabindex="-1"></a>         <span class="at">needs_level =</span> </span>
+<span id="cb70-116"><a href="#cb70-116" aria-hidden="true" tabindex="-1"></a>           <span class="fu">case_when</span>(</span>
+<span id="cb70-117"><a href="#cb70-117" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">==</span><span class="st">"Low Needs"</span> <span class="sc">~</span> <span class="dv">1</span>,</span>
+<span id="cb70-118"><a href="#cb70-118" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">==</span><span class="st">"Moderate Needs"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb70-119"><a href="#cb70-119" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">==</span><span class="st">"High Needs"</span> <span class="sc">~</span> <span class="dv">3</span>,             </span>
+<span id="cb70-120"><a href="#cb70-120" aria-hidden="true" tabindex="-1"></a>             needs_level<span class="sc">%in%</span><span class="fu">c</span>(<span class="st">"Unknown"</span>,<span class="st">"Not Administered"</span>) <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb70-121"><a href="#cb70-121" aria-hidden="true" tabindex="-1"></a>             <span class="cn">TRUE</span> <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="cn">NA</span>)),</span>
+<span id="cb70-122"><a href="#cb70-122" aria-hidden="true" tabindex="-1"></a>         <span class="do">### use factor function to assign labels to values</span></span>
+<span id="cb70-123"><a href="#cb70-123" aria-hidden="true" tabindex="-1"></a>         <span class="at">needs_level =</span> <span class="fu">factor</span>(needs_level,</span>
+<span id="cb70-124"><a href="#cb70-124" aria-hidden="true" tabindex="-1"></a>         <span class="at">levels =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>,<span class="dv">4</span>),</span>
+<span id="cb70-125"><a href="#cb70-125" aria-hidden="true" tabindex="-1"></a>         <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"Low Needs"</span>, </span>
+<span id="cb70-126"><a href="#cb70-126" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Moderate Needs"</span>, </span>
+<span id="cb70-127"><a href="#cb70-127" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"High Needs"</span>,</span>
+<span id="cb70-128"><a href="#cb70-128" aria-hidden="true" tabindex="-1"></a>                    <span class="st">"Unknown/Not Administered"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>distinct: no rows removed</code></pre>
 </div>

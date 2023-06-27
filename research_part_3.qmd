@@ -58,33 +58,29 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
                              "Medium-High Risk",
                              "Moderate Risk") ~ 2,
              offense_referral_risk_level=="High Risk" ~ 3,             
-             offense_referral_risk_level=="Unknown" ~ 4,
-             offense_referral_risk_level=="Not Administered" ~ 5,
+             offense_referral_risk_level%in%c("Unknown/Not Administered") ~ 4,
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
          offense_referral_risk_level = factor(offense_referral_risk_level,
-         levels = c(1,2,3,4,5),
+         levels = c(1,2,3,4),
          labels =  c("Low Risk", 
                      "Moderate Risk", 
                      "High Risk",
-                     "Unknown",
-                     "Not Administered")),
+                     "Unknown/Not Administered")),
          offense_referral_needs_level = 
            case_when(
              offense_referral_needs_level=="Low Needs" ~ 1,
              offense_referral_needs_level=="Moderate Needs" ~ 2,
              offense_referral_needs_level=="High Needs" ~ 3,             
-             offense_referral_needs_level=="Unknown" ~ 4,
-             offense_referral_needs_level=="Not Administered" ~ 5,
+             offense_referral_needs_level%in%c("Unknown/Not Administered") ~ 4,
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
          offense_referral_needs_level = factor(offense_referral_needs_level,
-         levels = c(1,2,3,4,5),
+         levels = c(1,2,3,4),
          labels = c("Low Needs", 
                     "Moderate Needs", 
                     "High Needs",
-                    "Unknown",
-                    "Not Administered"))) |> 
+                    "Unknown/Not Administered"))) |> 
   ### remove instances where LOS is less than 0, as well 
   filter(supervision_start_first_tech_violation_first_overall>0 | is.na(supervision_start_first_tech_violation_first_overall)==TRUE)
 
@@ -98,7 +94,7 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
 
 * **CURRENTLY** using `supervision_start_first_tech_violation_first_overall` (from `violation_filed_date`) if we are only looking at first technical violations that were also first overall violations (QUESTION: use with `violation_technical_flag` filter?) 
 
-* we could also instead use `supervision_start_first_tech_violation_any` (from `min_technical_violation_date`) to explore first technical violations even if following new offense violation (i.e., the first technical violation for an episode even if it occurs after a separate new offense violation)
+* Alternatively, we could also instead use `supervision_start_first_tech_violation_any` (from `min_technical_violation_date`) to explore first technical violations even if following new offense violation (i.e., the first technical violation for an episode even if it occurs after a separate new offense violation)
 
 <br>
 
@@ -147,18 +143,18 @@ kable(df_time_to_technical_fy_table,
 ### average time to first technical violation
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
   dplyr::group_by(race_clean) %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean) 
 
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   mutate(`Race/Ethnicity` = "Overall")
 
@@ -185,18 +181,18 @@ kable(df_time_to_technical_fy_table,
 ### average time to first technical violation
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
   dplyr::group_by(gender_clean) %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean) 
 
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   mutate(`Gender` = "Overall")
 
@@ -232,9 +228,9 @@ df_dallas_county_av_supervision_analytic_file %<>%
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
   filter(!is.na(age_at_referral_clean)) |> 
   dplyr::group_by(age_at_referral_clean) %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Age at Referral` = age_at_referral_clean) 
@@ -242,9 +238,9 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
     filter(!is.na(age_at_referral_clean)) |> 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   mutate(`Age at Referral` = "Overall")
 
@@ -273,18 +269,18 @@ kable(df_time_to_technical_fy_table,
 ### average time to first technical violation
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
   dplyr::group_by(offense_referral_risk_level) %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level) 
 
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   mutate(`Risk Level` = "Overall")
 
@@ -300,7 +296,7 @@ kable(df_time_to_technical_fy_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br>
@@ -313,18 +309,18 @@ kable(df_time_to_technical_fy_table,
 ### average time to first technical violation
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
   dplyr::group_by(offense_referral_needs_level) %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level) 
 
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
-  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_any,
+  dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
-                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_any,
+                   `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE)) %>% 
   mutate(`Needs Level` = "Overall")
 
@@ -340,7 +336,7 @@ kable(df_time_to_technical_fy_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>
@@ -360,6 +356,10 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
                                                                           na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
@@ -370,7 +370,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   mutate(`FY of Completion` = "Overall")
 
 ### combine tables for kable
@@ -399,7 +403,11 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean) 
 
@@ -408,7 +416,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   mutate(`Race/Ethnicity` = "Overall")
 
 ### combine tables for kable
@@ -437,7 +449,11 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean) 
 
@@ -446,6 +462,10 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
                                                                           na.rm = TRUE)) %>% 
   mutate(`Gender` = "Overall")
 
@@ -484,7 +504,11 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   ungroup() %>% 
   dplyr::rename(`Age at Referral` = age_at_referral_clean) 
 
@@ -494,7 +518,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   mutate(`Age at Referral` = "Overall")
 
 ### combine tables for kable
@@ -525,7 +553,11 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level) 
 
@@ -534,7 +566,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   mutate(`Risk Level` = "Overall")
 
 ### combine tables for kable
@@ -549,7 +585,7 @@ kable(df_time_to_technical_fy_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br>
@@ -565,7 +601,11 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level) 
 
@@ -574,7 +614,11 @@ df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file
   dplyr::summarise(`Average Number of Technical Violations (Mean)` = mean(technical_violation_referral_count,
                                                                           na.rm = TRUE),
                    `Average Number of Technical Violations (Median)` = median(technical_violation_referral_count,
-                                                                          na.rm = TRUE)) %>% 
+                                                                          na.rm = TRUE),
+                   `Min Number of Technical Violations` = min(technical_violation_referral_count,
+                                                                          na.rm = TRUE),
+                   `Max Number of Technical Violations` = max(technical_violation_referral_count,
+                                                                          na.rm = TRUE)) %>%
   mutate(`Needs Level` = "Overall")
 
 ### combine tables for kable
@@ -589,7 +633,7 @@ kable(df_time_to_technical_fy_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>

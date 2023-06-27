@@ -57,33 +57,29 @@ df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint
                              "Medium-High Risk",
                              "Moderate Risk") ~ 2,
              offense_referral_risk_level=="High Risk" ~ 3,             
-             offense_referral_risk_level=="Unknown" ~ 4,
-             offense_referral_risk_level=="Not Administered" ~ 5,
+             offense_referral_risk_level%in%c("Unknown/Not Administered") ~ 4,
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
          offense_referral_risk_level = factor(offense_referral_risk_level,
-         levels = c(1,2,3,4,5),
+         levels = c(1,2,3,4),
          labels =  c("Low Risk", 
                      "Moderate Risk", 
                      "High Risk",
-                     "Unknown",
-                     "Not Administered")),
+                     "Unknown/Not Administered")),
          offense_referral_needs_level = 
            case_when(
              offense_referral_needs_level=="Low Needs" ~ 1,
              offense_referral_needs_level=="Moderate Needs" ~ 2,
              offense_referral_needs_level=="High Needs" ~ 3,             
-             offense_referral_needs_level=="Unknown" ~ 4,
-             offense_referral_needs_level=="Not Administered" ~ 5,
+             offense_referral_needs_level%in%c("Unknown/Not Administered") ~ 4,
              TRUE ~ as.numeric(NA)),
          ### use factor function to assign labels to values
          offense_referral_needs_level = factor(offense_referral_needs_level,
-         levels = c(1,2,3,4,5),
+         levels = c(1,2,3,4),
          labels = c("Low Needs", 
                     "Moderate Needs", 
                     "High Needs",
-                    "Unknown",
-                    "Not Administered"))) |> 
+                    "Unknown/Not Administered"))) |> 
   ### remove FY 2023 Completion (year is incomplete based on timing of data pull) 
   filter(supervision_end_fy!=2023)
 
@@ -403,7 +399,7 @@ kable(df_modifications_extensions_risk_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>
@@ -453,7 +449,7 @@ kable(df_modifications_extensions_needs_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>
@@ -484,9 +480,17 @@ df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_fi
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
@@ -494,14 +498,22 @@ df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_fi
 
 ### overall
 df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
-  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
                    `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`FY of Completion` = "Overall")
 
@@ -533,9 +545,17 @@ df_modifications_mean_median_race <- df_dallas_county_av_supervision_analytic_fi
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean) 
@@ -547,9 +567,17 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Race/Ethnicity` = "Overall")
 
@@ -581,9 +609,17 @@ df_modifications_mean_median_gender <- df_dallas_county_av_supervision_analytic_
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean) 
@@ -595,9 +631,17 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Gender` = "Overall")
 
@@ -637,9 +681,17 @@ df_modifications_mean_median_age <- df_dallas_county_av_supervision_analytic_fil
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Age` = age_at_referral_clean) 
@@ -652,9 +704,17 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Age` = "Overall")
 
@@ -686,10 +746,18 @@ df_modifications_mean_median_risk <- df_dallas_county_av_supervision_analytic_fi
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>%  
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level) 
 
@@ -700,9 +768,17 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Risk Level` = "Overall")
 
@@ -718,7 +794,7 @@ kable(df_modifications_mean_median_risk_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>
@@ -734,9 +810,17 @@ df_modifications_mean_median_needs <- df_dallas_county_av_supervision_analytic_f
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level) 
@@ -748,9 +832,17 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
                                                                  na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
                    `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Needs Level` = "Overall")
 
@@ -766,14 +858,16 @@ kable(df_modifications_mean_median_needs_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>
 
 # Average Number of Modifications Prior to First Technical Violation
 
-**NOTE:** The following tables are limited to youth with a technical violation. The current analysis includes any upward modification of supervision level intensiveness (moving to a more intensive supervision level) that occurs prior to the date of violation. In some instances, we may be inadvertently counting modifications linked to the violation (e.g., when the modification occurred one day before the violation, it's very possible they are linked to the same event).
+**NOTE:** The following tables are limited to youth with a technical violation. The current analysis includes any upward modification of supervision level intensiveness (moving to a more intensive supervision level) that occurs prior to the first date of violation. In some instances, we may be inadvertently counting modifications linked to the violation (e.g., when the modification occurred one day before the violation, it's very possible they are linked to the same event).
+
+**Question:** Should I drop supervision extensions linked to new offense violations? 
 
 <br>
 
@@ -807,6 +901,10 @@ df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_fi
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
@@ -820,7 +918,11 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE)) %>%  
   mutate(`FY of Completion` = "Overall")
 
 ### combine tables for kable
@@ -852,6 +954,10 @@ df_modifications_mean_median_race <- df_dallas_county_av_supervision_analytic_fi
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean) 
@@ -864,6 +970,10 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Race/Ethnicity` = "Overall")
 
@@ -896,6 +1006,10 @@ df_modifications_mean_median_gender <- df_dallas_county_av_supervision_analytic_
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean) 
@@ -908,6 +1022,10 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Gender` = "Overall")
 
@@ -948,6 +1066,10 @@ df_modifications_mean_median_age <- df_dallas_county_av_supervision_analytic_fil
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Age` = age_at_referral_clean) 
@@ -961,7 +1083,11 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE)) %>%  
   mutate(`Age` = "Overall")
 
 ### combine tables for kable
@@ -993,6 +1119,10 @@ df_modifications_mean_median_risk <- df_dallas_county_av_supervision_analytic_fi
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level) 
@@ -1005,6 +1135,10 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Risk Level` = "Overall")
 
@@ -1020,7 +1154,7 @@ kable(df_modifications_mean_median_risk_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>
@@ -1037,6 +1171,10 @@ df_modifications_mean_median_needs <- df_dallas_county_av_supervision_analytic_f
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level) 
@@ -1049,6 +1187,10 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
                    `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE),
                    `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
                                                                  na.rm = TRUE)) %>% 
   mutate(`Needs Level` = "Overall")
 
@@ -1064,7 +1206,7 @@ kable(df_modifications_mean_median_needs_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(6, bold = TRUE)
+  row_spec(5, bold = TRUE)
 ```
 
 <br><br>
