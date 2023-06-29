@@ -30,9 +30,9 @@ format: html
 
 * "Probation" = "ADJUDICATED PLACED ON PROBATION", "CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PROBATION)") 
 
-* "21 Day Residential Program" = "DISMISSED OR WITHDRAWN BY DEPARTMENT"
+* "21 Day Residential Program" = "DISMISSED OR WITHDRAWN BY DEPARTMENT" **AND** placement type = "Emergency Shelter" **AND** placement offense = "VOP" **AND** placement end date = violation disposition date
 
-* "Dismissed/Withdrawn" = "COMPLAINT DISMISSED BY COURT", "DISMISSED WITHOUT PROSECUTION","DISMISSED WITHOUT PROSECUTION - PA", "NO CASE FILED BY DA NO JD ACTION", "NO INTAKE, NO PROBABLE CAUSE - DECLINED BY PROSECUTOR", "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT", "NO INTAKE, PROBABLE CAUSE - PROSECUTOR", "NONSUIT", "NONSUIT (PA)","NO INTAKE, DISPOSED BY INTAKE"
+* "Dismissed/Withdrawn" = "COMPLAINT DISMISSED BY COURT", "DISMISSED WITHOUT PROSECUTION","DISMISSED WITHOUT PROSECUTION - PA", "NO CASE FILED BY DA NO JD ACTION", "NO INTAKE, NO PROBABLE CAUSE - DECLINED BY PROSECUTOR", "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT", "NO INTAKE, PROBABLE CAUSE - PROSECUTOR", "NONSUIT", "NONSUIT (PA)","NO INTAKE, DISPOSED BY INTAKE", "DISMISSED OR WITHDRAWN BY DEPARTMENT" (non-21 day program instances only)
                             
 * "Other" = "CONSOLIDATED IN ANOTHER CASE/REFERRAL", "CONSOLIDATED BY DEPARTMENT", "FILED AS A MOTION TO MODIFY","FILED AS MOTION TO MODIFY", "MOD/VOP Disposed by Intake (PA)","TAKEN INTO CONSIDERATION","SUPERVISORY CAUTION BY DEPARTMENT", "TAKEN INTO CONSIDERATION (PA Complaint)", "TRANSFER OF DISPOSITION BY COURT"
                             
@@ -145,12 +145,18 @@ df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_a
              violation=="No Violation/Modification Needed" ~ "No Violation",             
              TRUE ~ as.character(NA))) |> 
     filter(violation_type_cleaned!="No Violation") |> 
+  ### re-code disposition of "DISMISSED OR WITHDRAWN BY DEPARTMENT" as "CAI" when cai flag is 1
+  ### otherwise, we will group it with the other dismissed/withdrawn category
+    mutate(violation_disposition = case_when(
+      violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT" & cai_program_flag==1 ~ "CAI",
+      violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT" & is.na(cai_program_flag)==TRUE ~ "DISMISSED OR WITHDRAWN BY DEPARTMENT",
+      TRUE ~ as.character(violation_disposition))) |> 
     mutate(violation_dispo_clean = 
            case_when(
              violation_disposition=="ADJUDICATED - NO DISPOSITION" ~ "No Disposition",
              violation_disposition%in%c("ADJUDICATED PLACED ON PROBATION",
                             "CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PROBATION)") ~ "Probation",
-             violation_disposition%in%c("DISMISSED OR WITHDRAWN BY DEPARTMENT") ~ "21 Day Residential Program",
+             violation_disposition=="CAI" ~ "21 Day Residential Program",
              violation_disposition%in%c("COMPLAINT DISMISSED BY COURT",
                             "DISMISSED WITHOUT PROSECUTION",
                             "DISMISSED WITHOUT PROSECUTION - PA",
@@ -160,7 +166,8 @@ df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_a
                             "NO INTAKE, PROBABLE CAUSE - PROSECUTOR",
                             "NONSUIT",
                             "NONSUIT (PA)",
-                            "NO INTAKE, DISPOSED BY INTAKE") ~ "Dismissed/Withdrawn",
+                            "NO INTAKE, DISPOSED BY INTAKE",
+                            "DISMISSED OR WITHDRAWN BY DEPARTMENT") ~ "Dismissed/Withdrawn",
              violation_disposition%in%c("CONSOLIDATED IN ANOTHER CASE/REFERRAL",
                             "CONSOLIDATED BY DEPARTMENT",
                             "FILED AS A MOTION TO MODIFY",
@@ -1035,15 +1042,22 @@ kable(df_technical_violations_per_year_table,
 
 # 3. Use of 21-day CAI Residential Program 
 
-In Dallas, probation can file a violation to get a kid into a 21 day residential program called CAI ("Community Alternative Initiative"?). The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
+In Dallas, probation can file a violation to get a kid into a 21 day residential program called CAI ("Community Alternative Initiative"?). The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? For now, I am excluding the following CAI tables until the following questions are addressed by Dallas County.
 
-**Business Rule:** I am exploring violations with dispositions of "DISMISSED OR WITHDRAWN BY DEPARTMENT" -- which indicates a sanction to the 21 CAI day residential program (where if a kid is successful, the violation is dismissed). We are only looking at violations filed in fiscal years 2016 and on. The Dallas County team confirmed that we are only capturing successful completers of the 21-day CAI program with our current coding. I looked into several options for using the placement data that Christian suggested (where placement == emergency shelter and offense == VOP) to be able to flag all youth referred to the program regardless of outcome. However, joining violations data to placement seems like too big a challenge (there are not obvious matching date variables, etc.) so I think the files will have to remain separate. We could just calculate the % of emergency shelters that are not completers and use that for context when presenting our numbers. The N size for program participation from the placement file is much smaller (N=240 versus N=551 from violations file). Not sure why this would be the case, but only about 5% of the CAI records in the placement file appear to have an unsuccessful outcome. So while we don't capture all youth referred to CAI in the following analysis, we can feel confident that we do include the vast majority. 
+**Outstanding Questions for Dallas County:**  
+
+In the violations file, about 600 technical violation referrals have a disposition of ““DISMISSED OR WITHDRAWN BY DEPARTMENT”. In the placements file, about 140 referrals have placement types of “Emergency Shelter” and offense descriptions of “VIOL OF COURT ORDER  - TECHNICAL”. After joining the placements file (with the aforementioned filters) to the violations file by referral ID and date (placement end date = violation disposition date), about 70 technical violation referrals remain.
+
+*	1. How should we interpret the violation dispositions of ““DISMISSED OR WITHDRAWN BY DEPARTMENT” without any “emergency shelter” placement records? Are these potentially supervisor rejections?
+
+*	2. How should we interpret the placement records with “Emergency Shelter” and “VIOL OF COURT ORDER  - TECHNICAL”, but that don’t join to the violations file? What are other examples of “Emergency Shelter” placements that are linked to a technical violation? 
+
 
 <br>
 
 ## Table 13. By FY: Percentage of Technical Violations Disposed to Residential Program
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
+```{r include=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
 ### import violations file so that denominator is all violations (grouped)
 ### and not just all referrals with a violation
 
@@ -1151,7 +1165,7 @@ kable(df_dismissed_violations_per_year_table,
 
 ## Table 14. By Race/Ethnicity: Percentage of Technical Violations Disposed to Residential Program
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
+```{r include=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
 ### unique youth and referrals per FY
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(race_clean) %>% 
@@ -1191,7 +1205,7 @@ kable(df_dismissed_violations_per_year_table,
 
 ## Table 15. By Gender: Percentage of Technical Violations Disposed to Residential Program
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
+```{r include=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
 ### unique youth and referrals per FY
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(gender_clean) %>% 
@@ -1231,7 +1245,7 @@ kable(df_dismissed_violations_per_year_table,
 
 ## Table 16. By Age: Percentage of Technical Violations Disposed to Residential Program
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
+```{r include=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
 ### turn age into a factor
 df_violations_clean_demo %<>%
  mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
@@ -1279,7 +1293,7 @@ kable(df_dismissed_violations_per_year_table,
 
 ## Table 17. By Risk Level: Percentage of Technical Violations Disposed to Residential Program
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
+```{r include=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
 ### unique youth and referrals per FY
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(offense_referral_risk_level) %>% 
@@ -1319,7 +1333,7 @@ kable(df_dismissed_violations_per_year_table,
 
 ## Table 18. By Risk Level: Percentage of Technical Violations Disposed to Residential Program
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
+```{r include=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
 ### unique youth and referrals per FY
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(offense_referral_needs_level) %>% 
@@ -1359,7 +1373,7 @@ kable(df_dismissed_violations_per_year_table,
 
 ## Table 19. By Violation Type: Percentage of Technical Violations Disposed to Residential Program
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
+```{r include=FALSE,eval=FALSE,message=FALSE,warning=FALSE}
 ### unique youth and referrals per FY
 df_dismissed_violations_per_year <- df_violations_clean_demo |> 
   dplyr::group_by(violation_type_cleaned) %>% 

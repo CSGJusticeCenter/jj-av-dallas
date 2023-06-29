@@ -863,15 +863,13 @@ kable(df_modifications_mean_median_needs_table,
 
 <br><br>
 
-# Average Number of Modifications Prior to First Technical Violation
+# % of Episodes with Supervision Modifications Prior to First Technical Violation
 
-**NOTE:** The following tables are limited to youth with a technical violation. The current analysis includes any upward modification of supervision level intensiveness (moving to a more intensive supervision level) that occurs prior to the first date of violation. In some instances, we may be inadvertently counting modifications linked to the violation (e.g., when the modification occurred one day before the violation, it's very possible they are linked to the same event).
-
-**Question:** Should I drop supervision extensions linked to new offense violations? 
+**NOTE:** The following tables are limited to youth with a technical violation. The current analysis includes any upward modification of supervision level intensiveness (moving to a more intensive supervision level) that occurs prior to the first date of violation *AND* that is not linked to a new offense violation (definition of linked is that the modification occurs between 1 day prior to violation disposition or up to 3 days following violation disposition). Further, I only considered modifications that occurred two or more days prior to the filing date of the first technical violation for a given supervision episode as having occurred before a violation (and as likely unrelated to the violation).
 
 <br>
 
-## Table 13. By FY: Average Number of Supervision Modifications and Extensions per Supervision Episode
+## Table 13. By FY: % of Episodes with Supervision Modifications Prior to First Technical Violation
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### using modification_increase_prior_to_technical_count in this section
@@ -897,15 +895,7 @@ df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_fi
   dplyr::group_by(supervision_end_fy) %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
   mutate(`FY of Completion` = as.character(`FY of Completion`))
@@ -914,15 +904,7 @@ df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_fi
 df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>%  
+                                                                       accuracy = .1)) %>%  
   mutate(`FY of Completion` = "Overall")
 
 ### combine tables for kable
@@ -942,7 +924,7 @@ kable(df_modifications_mean_median_year_table,
 
 <br><br>
 
-## Table 14. By Race/Ethnicity: Average Number of Supervision Modifications and Extensions per Supervision Episode
+## Table 14. By Race/Ethnicity: % of Episodes with Supervision Modifications Prior to First Technical Violation
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### mean and median modifications and extensions
@@ -950,15 +932,7 @@ df_modifications_mean_median_race <- df_dallas_county_av_supervision_analytic_fi
   dplyr::group_by(race_clean) %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean) 
 
@@ -966,15 +940,7 @@ df_modifications_mean_median_race <- df_dallas_county_av_supervision_analytic_fi
 df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>%  
   mutate(`Race/Ethnicity` = "Overall")
 
 ### combine tables for kable
@@ -994,7 +960,7 @@ kable(df_modifications_mean_median_race_table,
 
 <br><br>
 
-## Table 15. By Gender: Average Number of Supervision Modifications and Extensions per Supervision Episode
+## Table 15. By Gender: % of Episodes with Supervision Modifications Prior to First Technical Violation
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### mean and median modifications and extensions
@@ -1002,15 +968,7 @@ df_modifications_mean_median_gender <- df_dallas_county_av_supervision_analytic_
   dplyr::group_by(gender_clean) %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Gender` = gender_clean) 
 
@@ -1018,15 +976,7 @@ df_modifications_mean_median_gender <- df_dallas_county_av_supervision_analytic_
 df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   mutate(`Gender` = "Overall")
 
 ### combine tables for kable
@@ -1046,7 +996,7 @@ kable(df_modifications_mean_median_gender_table,
 
 <br><br>
 
-## Table 16. By Age: Average Number of Supervision Modifications and Extensions per Supervision Episode
+## Table 16. By Age: % of Episodes with Supervision Modifications Prior to First Technical Violation
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %<>%
@@ -1062,15 +1012,7 @@ df_modifications_mean_median_age <- df_dallas_county_av_supervision_analytic_fil
   dplyr::group_by(age_at_referral_clean) %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Age` = age_at_referral_clean) 
 
@@ -1079,15 +1021,7 @@ df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic
   filter(!is.na(age_at_referral_clean)) |> 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>%  
+                                                                       accuracy = .1)) %>%  
   mutate(`Age` = "Overall")
 
 ### combine tables for kable
@@ -1107,7 +1041,7 @@ kable(df_modifications_mean_median_age_table,
 
 <br><br>
 
-## Table 17. By Risk Level: Average Number of Supervision Modifications and Extensions per Supervision Episode
+## Table 17. By Risk Level: % of Episodes with Supervision Modifications Prior to First Technical Violation
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### mean and median modifications and extensions
@@ -1115,15 +1049,7 @@ df_modifications_mean_median_risk <- df_dallas_county_av_supervision_analytic_fi
   dplyr::group_by(offense_referral_risk_level) %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Risk Level` = offense_referral_risk_level) 
 
@@ -1131,15 +1057,7 @@ df_modifications_mean_median_risk <- df_dallas_county_av_supervision_analytic_fi
 df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   mutate(`Risk Level` = "Overall")
 
 ### combine tables for kable
@@ -1159,7 +1077,7 @@ kable(df_modifications_mean_median_risk_table,
 
 <br><br>
 
-## Table 18. By Needs Level: Average Number of Supervision Modifications and Extensions per Supervision Episode
+## Table 18. By Needs Level: % of Episodes with Supervision Modifications Prior to First Technical Violation
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### mean and median modifications and extensions
@@ -1167,15 +1085,7 @@ df_modifications_mean_median_needs <- df_dallas_county_av_supervision_analytic_f
   dplyr::group_by(offense_referral_needs_level) %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   ungroup() %>% 
   dplyr::rename(`Needs Level` = offense_referral_needs_level) 
 
@@ -1183,15 +1093,7 @@ df_modifications_mean_median_needs <- df_dallas_county_av_supervision_analytic_f
 df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
   dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_supervision_id),
                    `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_supervision_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
-                                                                       accuracy = .1),
-                   `Mean Number of Prior Supervision Level Modifications` = mean(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Median Number of Prior Supervision Level Modifications` = median(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Min Number of Prior Supervision Level Modifications` = min(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE),
-                   `Max Number of Prior Supervision Level Modifications` = max(modification_increase_prior_to_technical_count_average,
-                                                                 na.rm = TRUE)) %>% 
+                                                                       accuracy = .1)) %>% 
   mutate(`Needs Level` = "Overall")
 
 ### combine tables for kable
