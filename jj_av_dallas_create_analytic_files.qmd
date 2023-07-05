@@ -504,8 +504,7 @@ violations_explore <- violations |>
 
 ### explore placements 
 placements_explore <- placements |> 
-  filter(placement_type=="Emergency Shelter",
-         offense_type=="VOP") |> 
+  filter(placement_type=="Emergency Shelter") |> 
   mutate(placement_date_to_join = ymd(as_date(placement_end_date)),
          placement_begin_date = ymd(as_date(placement_begin_date)),
          placement_end_date = ymd(as_date(placement_end_date))) |> 
@@ -516,15 +515,16 @@ placements_explore <- placements |>
 # ### join
 # violations_placements_cai_enrollment <- inner_join(placements_explore,
 #                                            violations_explore,
-#                                            by = c("unique_id",
-#                                                   "placement_referral_number" = "violation_referral_number",
-#                                                   "placement_date_to_join" = "disposition_date")) |> 
+#                                            by = c("unique_id")) |>
+#     ### from christian: "Offenses.DispositionDate between Placements.BeginDate and Placements.EndDate (still convert to date format)"
+#   filter(disposition_date>=placement_begin_date,
+#          disposition_date<=placement_end_date) |> 
 #   ### create a flag for cai program -- these are the technical violations we are considering
 #   ### as referred/enrolled in 21-day cai program
 #   mutate(cai_program_flag = 1,
-#          unique_violation_referral_id = paste0(unique_id,placement_referral_number)) |> 
+#          unique_violation_referral_id = paste0(unique_id,placement_referral_number)) |>
 #   dplyr::select(unique_violation_referral_id,
-#                 cai_program_flag) |> 
+#                 cai_program_flag) |>
 #   distinct(unique_violation_referral_id,.keep_all=TRUE)
 
 
@@ -538,12 +538,16 @@ offenses_explore <- offenses_clean |>
 ### using dallas county business rules for joining columns
 offenses_violations_cai_program_enroll <- inner_join(offenses_explore,
                                            placements_explore,
-                                           by = c("unique_id","disposition_date_to_join"="placement_date_to_join")) |> 
+                                           by = c("unique_id")) |> 
+  ### from christian: "Offenses.DispositionDate between Placements.BeginDate and Placements.EndDate (still convert to date format)"
+  filter(disposition_date_to_join>=placement_begin_date,
+         disposition_date_to_join<=placement_end_date) |> 
   ### create a flag for cai program -- these are the technical violations we are considering
   ### as referred/enrolled in 21-day cai program
   mutate(cai_program_flag = 1) |> 
   dplyr::select(referral_number,
-                cai_program_flag) 
+                cai_program_flag) |> 
+  distinct()
 
 # ### now double check that offenses appear in violations file, too
 # ### they do
@@ -560,7 +564,8 @@ offenses_violations_cai_program_enroll <- inner_join(offenses_explore,
 #   distinct(unique_violation_referral_id,.keep_all=TRUE)
 
 #####################################################
-### 
+### clean and de-duplicate violations file 
+### for violations-level analysis
 #####################################################
 violations_clean_de_dup <- violations %>% 
   filter(!is.na(violation_date)) %>% ### just double checking since we'll need violation_date for later joins; no records dropped

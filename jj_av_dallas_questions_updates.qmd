@@ -3,6 +3,51 @@ title: "JJ AV Dallas County Data Questions/Updates"
 format: html
 ---
 
+**Data Visualizations**
+
+*1. Overall:* 
+
+a. Universe of kids on probation and risk level distribution over time 
+
+b. Universe of kids and age, under 12, 12, 13, rest 
+
+c. Race distribution and RRI 
+
+d. Length of supervision episode overall and by risk
+
+*2. Modifications:*
+
+a. Modifications and extension rates by year
+
+b. Modification/extension rates by race/ethnicity, gender, age , and risk (or make qualitatively)
+
+c. Modifications prior to technical by year 
+
+*3. Who Receives Technical Violations:*
+
+a. Technical violation rates by year
+b. TV rates by gender, race, risk—by episode
+
+*4. When and How do Youth Receive Technical Violations:*
+
+a Overall time and by risk level 
+
+*5. Why do Youth Receive Technical Violations:*
+
+a. Breakdown of reasons over time
+
+b. Make qualitative points for girls, younger, and lower risk 
+
+*6. What happens as a result of TVs:*
+
+a. Youth in community outcomes by years/youth returning from placement
+
+b. Outcomes by risk 
+
+c. Length of extensions by risk/overall 
+
+<br><br>
+
 **Dallas County Data Questions and Responses (June 27, 2023):**
 
 * Re-bucket youngest age categories to align with dept: youthful offenders 10-13 [holdoff on this until we talk to policy team]
