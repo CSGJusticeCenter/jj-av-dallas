@@ -38,7 +38,7 @@ format: html
 ```{r include=FALSE}
 ### call libraries
 library(easypackages)
-libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog")
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog","ggtext","ggpattern")
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
@@ -57,8 +57,8 @@ sp_data_path <- csg_get_project_path("jj-av-dallas")
 ### set sharepoint path using sp_data_path and file.path function 
 sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
 
-### viz output path
-# sp_viz_output_path <- paste(sp_data_path, "/Output/r_output_presentation")
+## viz output path
+sp_viz_output_path <- paste0(sp_data_path,"/output/r_output_presentation")
 
 ```
 
@@ -199,6 +199,82 @@ kable(df_technical_violations_per_year_table,
   row_spec(8, bold = TRUE)
 ```
 
+```{r }
+### unique youth, referrals, and supervision episodes
+df_technical_violations_risk_viz <- df_technical_violations_clean_demo |> 
+  filter(violation_filed_date_fy>=2016) %>% 
+  dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                   `General Violation` = n_distinct(youth_violation_id[violation_type_cleaned=="General Violation"])/`All Technical Violations (N)`,
+                   `Curfew Violations` = n_distinct(youth_violation_id[violation_type_cleaned=="Curfew Violation"])/`All Technical Violations (N)`,
+                   `Failure to Participate in Program` = n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/`All Technical Violations (N)`,
+                   `Failure to Report to PO` = n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Report to PO"])/`All Technical Violations (N)`,
+                   `Violation Related to Placement` = n_distinct(youth_violation_id[violation_type_cleaned=="Violation Related to Placement"])/`All Technical Violations (N)`,
+                   `Runaway` = n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/`All Technical Violations (N)`,
+                   `Violation of School Rules` = n_distinct(youth_violation_id[violation_type_cleaned=="Violation of School Rules"])/`All Technical Violations (N)`,
+                   `Other Violations` = n_distinct(youth_violation_id[violation_type_cleaned=="Other"])/`All Technical Violations (N)`) |>  
+  ungroup() |> 
+  pivot_longer(!`All Technical Violations (N)`, names_to = "complaint_type", values_to = "percent") |> 
+  arrange(desc(percent))
+
+### plot
+### bar plot
+ggplot(data = df_technical_violations_risk_viz,
+       aes(x = reorder(complaint_type,-percent),
+           y = percent,
+           fill = complaint_type)) + 
+  geom_bar(stat = "identity",  
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), 
+                                max(.3))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 6,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size = 16),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 16),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_31_technical_violation_reasons.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
 <br>
 
 ## Table 2. By Race/Ethnicity: Most Common Reasons for Technical Violations
@@ -331,6 +407,93 @@ kable(df_technical_violations_per_year_table,
   row_spec(3, bold = TRUE)
 ```
 
+```{r }
+
+### unique complaints split out
+df_technical_violations_clean_demo_age_to_join_counts <- df_technical_violations_clean_demo %>% 
+  dplyr::summarise(`Male` = n_distinct(youth_violation_id[gender_clean=="Male"]),
+                   `Female` = n_distinct(youth_violation_id[gender_clean=="Female"])) |> 
+  mutate(group = "counts") |> 
+  pivot_longer(!group, names_to = "gender_clean", values_to = "count") |> 
+  dplyr::select(-group)
+
+### unique violation grouped
+df_technical_violations_per_year_viz <- df_technical_violations_clean_demo %>% 
+  dplyr::group_by(gender_clean) %>% 
+   dplyr::summarise(`Runaway Violation` = n_distinct(youth_violation_id[violation_type_cleaned=="Runaway"])/n_distinct(youth_violation_id),
+                   `All Other Violations` = n_distinct(youth_violation_id[violation_type_cleaned!="Runaway"])/n_distinct(youth_violation_id),) |>  
+  ungroup() %>% 
+  pivot_longer(!gender_clean, names_to = "complaint_type", values_to = "percent") |> 
+  arrange(desc(percent)) |> 
+  left_join(df_technical_violations_clean_demo_age_to_join_counts,
+            by = "gender_clean") %>% 
+  mutate(
+    gender_clean_n = paste0(
+      "<span style = 'font-size:14pt'>", gender_clean, "</span><br>",
+      "<span style = 'font-size:10pt'><em>", "N = ", scales::comma(count, 1), "</em></span>")) |> 
+  mutate(offense_type = factor(complaint_type,
+                                levels = c("Runaway Violation",
+                                           "All Other Violations"))) |> 
+  arrange(offense_type)
+
+### plot
+ggplot(data = df_technical_violations_per_year_viz, aes(y = percent, x = gender_clean_n, fill = forcats::fct_rev(offense_type))) + 
+  geom_bar(stat = "identity", color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+   geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 5,
+    fill = "white",
+    colour = "gray40",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("gray","#2F7084")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  labs(x = NULL, y = NULL,
+       fill = "Technical Violation Reason",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size=14),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 14),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_32_technical_violation_reasons_gender_runaway.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+
+```
+
 <br>
 
 ## Table 4. By Age (at start of supervision): Most Common Reasons for Technical Violations
@@ -401,6 +564,100 @@ kable(df_technical_violations_per_year_table,
                                        "responsive"), 
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE)
+```
+
+```{r }
+
+### unique complaints split out
+df_technical_violations_clean_demo_age_to_join_counts <- df_technical_violations_clean_demo %>% 
+  dplyr::summarise(`Less than 12` = n_distinct(youth_violation_id[age_at_start_of_supervision_clean=="Less than 12"]),
+                   `12 to 13` = n_distinct(youth_violation_id[age_at_start_of_supervision_clean=="12 to 13"]),
+                   `14 to 16` = n_distinct(youth_violation_id[age_at_start_of_supervision_clean=="14 to 16"]),
+                   `17+` = n_distinct(youth_violation_id[age_at_start_of_supervision_clean=="17+"])) |> 
+  mutate(group = "counts") |> 
+  pivot_longer(!group, names_to = "age_at_start_of_supervision_clean", values_to = "count") |> 
+  dplyr::select(-group)
+
+### unique violation grouped
+df_technical_violations_per_year_viz <- df_technical_violations_clean_demo %>% 
+  dplyr::group_by(age_at_start_of_supervision_clean) %>% 
+   dplyr::summarise(`Failure to Participate\nin Program` = n_distinct(youth_violation_id[violation_type_cleaned=="Failure to Participate in Program"])/n_distinct(youth_violation_id),
+                   `All Other Violations` = n_distinct(youth_violation_id[violation_type_cleaned!="Failure to Participate in Program"])/n_distinct(youth_violation_id),) |>  
+  ungroup() %>% 
+  pivot_longer(!age_at_start_of_supervision_clean, names_to = "complaint_type", values_to = "percent") |> 
+  arrange(desc(percent)) |> 
+  left_join(df_technical_violations_clean_demo_age_to_join_counts,
+            by = "age_at_start_of_supervision_clean") %>% 
+  mutate(
+    age_at_start_of_supervision_clean_n = paste0(
+      "<span style = 'font-size:14pt'>", age_at_start_of_supervision_clean, "</span><br>",
+      "<span style = 'font-size:10pt'><em>", "N = ", scales::comma(count, 1), "</em></span>")) |> 
+  mutate(offense_type = factor(complaint_type,
+                                levels = c("Failure to Participate\nin Program",
+                                           "All Other Violations"))) |> 
+  mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 16",
+                    "17+"))) |> 
+  arrange(age_at_start_of_supervision_clean,offense_type) |> 
+  filter(age_at_start_of_supervision_clean!="Less than 12")
+
+### plot
+ggplot(data = df_technical_violations_per_year_viz, aes(y = percent, x = age_at_start_of_supervision_clean_n, fill = forcats::fct_rev(offense_type))) + 
+  geom_bar(stat = "identity", color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+   geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 5,
+    fill = "white",
+    colour = "gray40",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("gray","#2F7084")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  labs(x = NULL, y = NULL,
+       fill = "Technical Violation Reason",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size=14),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 14),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_32_technical_violation_reasons_age_program.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>

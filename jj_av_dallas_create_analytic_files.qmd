@@ -96,6 +96,10 @@ supervision_clean <- supervision %>%
          overall_supervision_los_days = as.numeric(difftime(supervision_end_date,
                                                             supervision_begin_date,
                                                                     units="days"))) %>% 
+    group_by(unique_id,
+           referral_number) |> 
+  mutate(overall_supervision_los_days_min_max = sum(overall_supervision_los_days)) |> 
+  ungroup() |> 
   ### create unique referral ID possible filtering, joining, or counting
   mutate(unique_referral_id = paste0(unique_id,
                                      referral_number),
@@ -210,10 +214,6 @@ supervision_extension_for_join_to_violations_clean <- supervision_extension %>%
                 supervision_extension_in_days) 
 
 
-#################################################
-### Code review w/ Becky left off here
-################################################
-
 #############################################
 ### clean and de-dup supervision_level dataframe
 #############################################
@@ -264,7 +264,8 @@ supervision_level_clean <- supervision_level %>%
   arrange(unique_id,
           referral_number,
           supervision_level_phase_begin_date) %>%
-  group_by(unique_id) %>%
+  group_by(unique_id,
+           referral_number) %>%
   mutate(next_supervision_level = dplyr::lead(supervision_level_phase_severity,
                                                    1,
                                                    default=NA)) %>%
@@ -642,56 +643,6 @@ violations_clean_de_dup <- violations %>%
             by =c("violation_referral_number"="referral_number"))
 ```
 
-<br>
-
-# Supervision File  
-
-**Data Elements:** 
-
-* Unique ID
-
-* Complaint Number
-
-* Charge Disposed to Supervision
-
-* Supervision Type
-
-* Supervision Risk Level
-
-* Mental Health Need
-
-* Substance Use Need
-
-* Prior Referrals
-
-* Supervision Start Date
-
-* Supervision End Date
-
-* TV
-
-* Number of TV During Supervision
-
-* Number of New Referrals
-
-* New Referral
-
-* Supervision Outcome
-
-* Supervision Length of Stay
-
-* Probation Extended Due to TV
-
-* Sent to Residential Placement Due to TV
-
-* Committed Due to TV
-
-* Age at Start of Supervision
-
-* Sex
-
-* Race / Ethnicity
-
 <br><br>
 
 ## Join 1. Join of `supervision_clean` and `child_clean`
@@ -699,6 +650,11 @@ violations_clean_de_dup <- violations %>%
 Create file that is unique by referral and supervision period
 
 ```{r warning=FALSE}
+
+#################################################
+### Code review w/ Becky left off here
+################################################
+
 ### left join of child file to supervision file in order to see if there is much missingness
 ### i.e. are there supervision records without demo records? 
 supervision_child_join_1 <- 

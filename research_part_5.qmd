@@ -47,7 +47,7 @@ format: html
 ```{r include=FALSE}
 ### call libraries
 library(easypackages)
-libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog")
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog","ggtext","ggpattern")
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
@@ -63,8 +63,8 @@ theme_set(theme_minimal())
 ### data path
 sp_data_path <- csg_get_project_path("jj-av-dallas")
 
-### viz output path
-# sp_viz_output_path <- paste(sp_data_path, "/Output/r_output_presentation")
+## viz output path
+sp_viz_output_path <- paste0(sp_data_path,"/output/r_output_presentation")
 
 ```
 
@@ -304,6 +304,222 @@ kable(df_technical_violations_per_year_table,
                  row_label_position = "l") %>% 
   row_spec(8, bold = TRUE)
 ```
+
+
+```{r }
+### unique complaints split out
+df_complaints_youth_intake_decision_offense_viz_overall_count <- df_technical_violations_dispo_clean_demo %>% 
+  # dplyr::filter(dai!="Court Order Violation") |> 
+  dplyr::summarise(`2016` = n_distinct(youth_violation_id[violation_filed_date_fy==2016]),
+                   `2017` = n_distinct(youth_violation_id[violation_filed_date_fy==2017]),
+                   `2018` = n_distinct(youth_violation_id[violation_filed_date_fy==2018]),
+                   `2019` = n_distinct(youth_violation_id[violation_filed_date_fy==2019]),
+                   `2020` = n_distinct(youth_violation_id[violation_filed_date_fy==2020]),
+                   `2021` = n_distinct(youth_violation_id[violation_filed_date_fy==2021]),
+                   `2022` = n_distinct(youth_violation_id[violation_filed_date_fy==2022])) |> 
+  mutate(group = "counts") |> 
+  pivot_longer(!group, names_to = "violation_filed_date_fy", values_to = "count") |> 
+  dplyr::select(-group) |> 
+  mutate(violation_filed_date_fy = as.numeric(violation_filed_date_fy))
+
+### unique violation grouped
+df_technical_violations_per_year_viz <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::group_by(violation_filed_date_fy) %>% 
+   dplyr::summarise(`21 Day CAI Program` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/n_distinct(youth_violation_id)
+                   #  ,
+                   # `All Other Outcomes` = n_distinct(youth_violation_id[violation_dispo_clean!="21 Day Residential Program"])/n_distinct(youth_violation_id)
+                   ) |>  
+  ungroup() %>% 
+  pivot_longer(!violation_filed_date_fy, names_to = "complaint_type", values_to = "percent") |> 
+  mutate(group = "dallas")
+  # arrange(desc(percent)) |> 
+  # left_join(df_complaints_youth_intake_decision_offense_viz_overall_count,
+  #           by = "violation_filed_date_fy") %>% 
+  # mutate(
+  #   violation_filed_date_fy_n = paste0(
+  #     "<span style = 'font-size:14pt'>", violation_filed_date_fy, "</span><br>",
+  #     "<span style = 'font-size:10pt'><em>", "N = ", scales::comma(count, 1), "</em></span>")) |> 
+  # mutate(offense_type = factor(complaint_type,
+  #                               levels = c("21 Day CAI Program",
+  #                                          "All Other Outcomes"))) |> 
+  # arrange(offense_type)
+
+###geom_line 
+ggplot(data = df_technical_violations_per_year_viz, aes(x = violation_filed_date_fy, y = percent
+                                                            ,
+                                                            color = group,
+                                                            group = group
+                                                            )) +
+  geom_line(color = "black", size = 2.75) +
+  geom_line(size = 2.2) +
+  geom_point(color = "black", size = 4) +
+  geom_point(size = 3.5) +
+  labs(x = "Fiscal Year", y = "Technical Violations with\nCAI Program Response (%)", color=NULL, title = NULL, caption = NULL) +
+  scale_y_continuous(label=scales::percent_format(accuracy=1),
+                     limits = c(min(0), 
+                                max(.36))) +
+  theme(legend.position = "none",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 13),
+        panel.grid.major.x = element_blank(),      
+        plot.title = element_text( hjust = 0.5),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16,margin = margin(t = 15)),
+        axis.title.y = element_text(size = 16,margin = margin(r = 15)),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5)) +  
+  scale_color_manual(values = c("#2F7084")) +
+  scale_fill_manual(values = c("#2F7084")) +
+  geom_label_repel(aes(label = scales::percent(as.numeric(percent),
+                                               accuracy = 0.1),
+                    fill = group
+                    ),
+                   hjust = .1,
+                   label.padding = 0.2,
+                   box.padding = 0.2,
+                   color = "white",
+                   size = 5,
+                   segment.color = NA,
+                   fontface = "bold",
+                   na.rm = TRUE,
+                   show.legend = FALSE)
+
+# ### plot
+# ggplot(data = df_technical_violations_per_year_viz, aes(y = percent, x = violation_filed_date_fy_n, fill = forcats::fct_rev(offense_type))) + 
+#   geom_bar(stat = "identity", color = "gray80") +
+#   scale_x_discrete(limits = rev) +
+#   scale_y_continuous(labels = scales::percent) +
+#    geom_label(
+#     aes(
+#       y = percent,
+#       label = scales::percent(percent,
+#                               accuracy = 1),
+#       fontface = "bold"
+#     ),
+#     position = position_stack(vjust = .5),
+#     size = 5,
+#     fill = "white",
+#     colour = "gray40",
+#     show.legend = FALSE
+#   ) +
+#   scale_fill_manual(values = c("gray","#2F7084")) +
+#   guides(fill = guide_legend(reverse = TRUE,
+#                              title.position = "top",
+#                              label.position = "bottom",
+#                              keywidth = 3,
+#                              nrow = 1)) +
+#   labs(x = NULL, y = NULL,
+#        fill = "Technical Violation Response",
+#        caption = NULL,
+#        title = NULL,
+#        subtitle = NULL) +
+#   theme(legend.position = "top",
+#         legend.title = element_text(hjust = 0.5,size = 13),
+#         legend.text = element_text(size = 12),
+#         plot.title = element_text(hjust = 0.5),
+#         plot.subtitle = element_text(hjust = 0.5),
+#         plot.caption = element_text(hjust = 0.5),
+#         # axis.text.x = element_markdown(),
+#         axis.text.y = element_markdown(size=14),
+#         axis.text.x = element_text(face = "bold", hjust = 1, size = 14),
+#         axis.ticks.length = unit(0, "cm"),
+#         panel.grid.major.y = element_blank(),
+#         panel.grid.major.x = element_blank(),
+#         panel.grid.minor = element_blank()) +
+#   coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_34_technical_violation_dispositions_cai_highlight_option_1_line.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+
+
+```
+
+```{r }
+### overall
+df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  filter(violation_filed_date_fy>=2016,
+         !is.na(violation_dispo_clean)==TRUE) %>% 
+  dplyr::summarise(`CAI Program` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/n_distinct(youth_violation_id),
+                   `Probation` = n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/n_distinct(youth_violation_id),
+                   `Probation Extension` = n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/n_distinct(youth_violation_id),
+                   `Probation Modified` = n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/n_distinct(youth_violation_id),
+                   `Placement` = n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/n_distinct(youth_violation_id),
+                   `Commitment` = n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/n_distinct(youth_violation_id),
+                   `Other` = n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/n_distinct(youth_violation_id),
+                   `Dismissed/Withdrawn` = n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/n_distinct(youth_violation_id),
+                   `No Disposition` = n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/n_distinct(youth_violation_id)) |> 
+  mutate(group = "dallas") |> 
+  pivot_longer(!group, names_to = "complaint_type", values_to = "percent") 
+
+### plot
+### bar plot
+ggplot(data = df_technical_violations_overall,
+       aes(x = reorder(complaint_type,-percent),
+           y = percent,
+           fill = complaint_type)) + 
+  geom_bar(stat = "identity",  
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), 
+                                max(.45))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = .1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 6,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","gray","gray","gray","gray","gray","gray","gray","gray","gray")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size = 16),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 16),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_34_technical_violation_response_cai_option_2.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
 
 
 <br>
@@ -607,6 +823,101 @@ kable(df_technical_violations_per_year_table,
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE)
 ```
+
+```{r }
+### unique complaints split out
+df_technical_violations_clean_demo_age_to_join_counts <- df_technical_violations_dispo_clean_demo %>% 
+  filter(offense_referral_risk_level!= "Unknown/Not Administered") |> 
+  dplyr::summarise(`Low Risk` = n_distinct(youth_violation_id[offense_referral_risk_level=="Low Risk"]),
+                   `Moderate Risk` = n_distinct(youth_violation_id[offense_referral_risk_level=="Moderate Risk"]),
+                   `High Risk` = n_distinct(youth_violation_id[offense_referral_risk_level=="High Risk"])) |> 
+  mutate(group = "counts") |> 
+  pivot_longer(!group, names_to = "offense_referral_risk_level", values_to = "count") |> 
+  dplyr::select(-group)
+
+### unique violation grouped
+df_technical_violations_per_year_viz <- df_technical_violations_dispo_clean_demo %>% 
+  filter(offense_referral_risk_level!= "Unknown/Not Administered") |> 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+   dplyr::summarise(`CAI Program` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/n_distinct(youth_violation_id),
+                    `Placement or Commitment` = n_distinct(youth_violation_id[violation_dispo_clean%in%c("Placement","Commitment")])/n_distinct(youth_violation_id),
+                   `All Other Responses` = n_distinct(youth_violation_id[!violation_dispo_clean%in%c("Placement","Commitment","21 Day Residential Program")])/n_distinct(youth_violation_id)) |>  
+  ungroup() %>% 
+  pivot_longer(!offense_referral_risk_level, names_to = "complaint_type", values_to = "percent") |> 
+  arrange(desc(percent)) |> 
+  left_join(df_technical_violations_clean_demo_age_to_join_counts,
+            by = "offense_referral_risk_level") %>% 
+  mutate(
+    offense_referral_risk_level_n = paste0(
+      "<span style = 'font-size:14pt'>", offense_referral_risk_level, "</span><br>",
+      "<span style = 'font-size:10pt'><em>", "N = ", scales::comma(count, 1), "</em></span>")) |> 
+  mutate(offense_type = factor(complaint_type,
+                                levels = c("CAI Program",
+                                           "Placement or Commitment",
+                                           "All Other Responses")),
+         offense_referral_risk_level_num = case_when(
+           offense_referral_risk_level=="Low Risk"~1,
+           offense_referral_risk_level=="Moderate Risk"~2,
+           offense_referral_risk_level=="High Risk"~3)) |> 
+  arrange(offense_referral_risk_level_num,
+          offense_type)
+
+### plot
+ggplot(data = df_technical_violations_per_year_viz, aes(y = percent, x = reorder(offense_referral_risk_level_n,offense_referral_risk_level_num), fill = forcats::fct_rev(offense_type))) + 
+  geom_bar(stat = "identity", color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+   geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 5,
+    fill = "white",
+    colour = "gray40",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("gray","#2F7084","#87C2D4")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  labs(x = NULL, y = NULL,
+       fill = "Technical Violation Response",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size=14),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 14),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_35_technical_violation_responses_placement_commitment_by_risk.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```  
 
 <br>
 

@@ -12,7 +12,7 @@ format: html
 ```{r include=FALSE}
 ### call libraries
 library(easypackages)
-libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog")
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog","ggpattern")
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
@@ -28,8 +28,8 @@ theme_set(theme_minimal())
 ### data path
 sp_data_path <- csg_get_project_path("jj-av-dallas")
 
-### viz output path
-# sp_viz_output_path <- paste(sp_data_path, "/Output/r_output_presentation")
+## viz output path
+sp_viz_output_path <- paste0(sp_data_path,"/output/r_output_presentation")
 
 ```
 
@@ -180,6 +180,10 @@ kable(df_time_to_technical_fy_table,
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### average time to first technical violation
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
+  filter(!is.na(supervision_start_first_tech_violation_first_overall)) |> 
+  arrange(unique_referral_id,supervision_begin_date) |>
+  distinct(unique_referral_id,
+           .keep_all = TRUE) |> 
   dplyr::group_by(gender_clean) %>% 
   dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
@@ -190,6 +194,10 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
 
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  filter(!is.na(supervision_start_first_tech_violation_first_overall)) |> 
+  arrange(unique_referral_id,supervision_begin_date) |>
+  distinct(unique_referral_id,
+           .keep_all = TRUE) |> 
   dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
                    `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
@@ -227,6 +235,10 @@ df_dallas_county_av_supervision_analytic_file %<>%
 ### average time to first technical violation
 df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>% 
   filter(!is.na(age_at_referral_clean)) |> 
+    filter(!is.na(supervision_start_first_tech_violation_first_overall)) |> 
+  arrange(unique_referral_id,supervision_begin_date) |>
+  distinct(unique_referral_id,
+           .keep_all = TRUE) |> 
   dplyr::group_by(age_at_referral_clean) %>% 
   dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
@@ -238,6 +250,10 @@ df_time_to_technical_fy <- df_dallas_county_av_supervision_analytic_file %>%
 ### overall
 df_technical_violations_overall <- df_dallas_county_av_supervision_analytic_file %>% 
     filter(!is.na(age_at_referral_clean)) |> 
+    filter(!is.na(supervision_start_first_tech_violation_first_overall)) |> 
+  arrange(unique_referral_id,supervision_begin_date) |>
+  distinct(unique_referral_id,
+           .keep_all = TRUE) |> 
   dplyr::summarise(`Average Time to First Technical Violation (Mean)` = mean(supervision_start_first_tech_violation_first_overall,
                                                                           na.rm = TRUE),
                    `Average Time to First Technical Violation (Median)` = median(supervision_start_first_tech_violation_first_overall,
