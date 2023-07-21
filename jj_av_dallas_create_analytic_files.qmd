@@ -650,11 +650,6 @@ violations_clean_de_dup <- violations %>%
 Create file that is unique by referral and supervision period
 
 ```{r warning=FALSE}
-
-#################################################
-### Code review w/ Becky left off here
-################################################
-
 ### left join of child file to supervision file in order to see if there is much missingness
 ### i.e. are there supervision records without demo records? 
 supervision_child_join_1 <- 
@@ -780,16 +775,19 @@ prior_offenses_clean_de_dup_to_join <- prior_offenses_clean_de_dup %>%
   ungroup() %>% 
   ### only keep individual level variables on prior referrals
   dplyr::select(unique_id,
+                referral_number,
                 prior_overall_referral_count:prior_cins_referral_count) %>% 
   ### no de-dup by individual
   distinct(unique_id,
+           referral_number,
            .keep_all=TRUE)
 
 ### left join of prior_offenses_clean_de_dup_to_join file to supervision_child_join_offenses_4 file 
 supervision_child_join_offenses_5 <- 
   left_join(supervision_child_join_offenses_4,
             prior_offenses_clean_de_dup_to_join,
-            by = c("unique_id")) 
+            by = c("unique_id",
+                   "referral_number")) 
 ```
 
 
@@ -847,6 +845,11 @@ supervision_child_join_offenses_violatons_6 <-
          has_violation_data_but_not_in_window_flag_supervision_level = max(has_violation_data_but_not_in_window_flag),
          violation_records_are_joined_supervision_level = max(violation_records_are_joined)) |> 
   ungroup() |> 
+  
+#################################################
+### Code review w/ Becky left off here
+################################################
+
   ### now create flag and filter on it -- based on above logic/rationale
   mutate(has_joined_violation_data_drop_record = ifelse(violation_records_are_joined_supervision_level==1 & has_violation_data_but_not_in_window_flag==1,
                                                         1,0)) |> 
