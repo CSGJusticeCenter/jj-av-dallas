@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.2.335">
+<meta name="generator" content="quarto-1.3.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -17,9 +17,10 @@ div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
 ul.task-list{list-style: none;}
 ul.task-list li input[type="checkbox"] {
   width: 0.8em;
-  margin: 0 0.8em 0.2em -1.6em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
@@ -46,43 +47,13 @@ pre.numberSource code > span > a:first-child::before
     -khtml-user-select: none; -moz-user-select: none;
     -ms-user-select: none; user-select: none;
     padding: 0 4px; width: 4em;
-    color: #aaaaaa;
   }
-pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
 div.sourceCode
   {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code span.at { color: #7d9029; } /* Attribute */
-code span.bn { color: #40a070; } /* BaseN */
-code span.bu { color: #008000; } /* BuiltIn */
-code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code span.ch { color: #4070a0; } /* Char */
-code span.cn { color: #880000; } /* Constant */
-code span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code span.dt { color: #902000; } /* DataType */
-code span.dv { color: #40a070; } /* DecVal */
-code span.er { color: #ff0000; font-weight: bold; } /* Error */
-code span.ex { } /* Extension */
-code span.fl { color: #40a070; } /* Float */
-code span.fu { color: #06287e; } /* Function */
-code span.im { color: #008000; font-weight: bold; } /* Import */
-code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
-code span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code span.op { color: #666666; } /* Operator */
-code span.ot { color: #007020; } /* Other */
-code span.pp { color: #bc7a00; } /* Preprocessor */
-code span.sc { color: #4070a0; } /* SpecialChar */
-code span.ss { color: #bb6688; } /* SpecialString */
-code span.st { color: #4070a0; } /* String */
-code span.va { color: #19177c; } /* Variable */
-code span.vs { color: #4070a0; } /* VerbatimString */
-code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 </style>
 
 
@@ -141,87 +112,89 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
     <span class="navbar-title">AV Dallas County Probation Conditions Databook</span>
     </a>
   </div>
+            <div id="quarto-search" class="" title="Search"></div>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
   <span class="navbar-toggler-icon"></span>
 </button>
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html">
+    <a class="nav-link" href="./index.html" rel="" target="">
  <span class="menu-text">Project and Analysis Plan</span></a>
   </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-researchanalysis" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-researchanalysis" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Research/Analysis</span>
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-researchanalysis">    
         <li>
-    <a class="dropdown-item" href="./research_part_1.html">
+    <a class="dropdown-item" href="./research_part_1.html" rel="" target="">
  <span class="dropdown-text">How are modifications used?</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./research_part_2.html">
+    <a class="dropdown-item" href="./research_part_2.html" rel="" target="">
  <span class="dropdown-text">Who receives technical violations?</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./research_part_3.html">
+    <a class="dropdown-item" href="./research_part_3.html" rel="" target="">
  <span class="dropdown-text">When and how often do youth receive technical violations?</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./research_part_4.html">
+    <a class="dropdown-item" href="./research_part_4.html" rel="" target="">
  <span class="dropdown-text">Why do youth receive technical violations?</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./research_part_5.html">
+    <a class="dropdown-item" href="./research_part_5.html" rel="" target="">
  <span class="dropdown-text">What happens to youth as the result of a technical violation?</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item">
-    <a class="nav-link" href="./jj_av_dallas_questions_updates.html">
+    <a class="nav-link" href="./jj_av_dallas_questions_updates.html" rel="" target="">
  <span class="menu-text">Questions and Updates</span></a>
   </li>  
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-analytic-file-prep" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-analytic-file-prep" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Analytic File Prep</span>
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-analytic-file-prep">    
         <li>
-    <a class="dropdown-item" href="./jj_av_dallas_create_analytic_files.html">
+    <a class="dropdown-item" href="./jj_av_dallas_create_analytic_files.html" rel="" target="">
  <span class="dropdown-text">Analytic File Code</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./jj_av_dallas_business_rules.html">
+    <a class="dropdown-item" href="./jj_av_dallas_business_rules.html" rel="" target="">
  <span class="dropdown-text">Business Rules</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
-    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-sample-descriptives" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-sample-descriptives" role="button" data-bs-toggle="dropdown" aria-expanded="false" rel="" target="">
  <span class="menu-text">Sample Descriptives</span>
     </a>
     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-menu-sample-descriptives">    
         <li>
-    <a class="dropdown-item" href="./jj_av_dallas_preliminary_descriptives.html">
+    <a class="dropdown-item" href="./jj_av_dallas_preliminary_descriptives.html" rel="" target="">
  <span class="dropdown-text">Basic Descriptive Statistics</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./jj_av_dallas_data_codebooks.html">
+    <a class="dropdown-item" href="./jj_av_dallas_data_codebooks.html" rel="" target="">
  <span class="dropdown-text">Codebooks</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./jj_av_dallas_data_diagram_viz.html">
+    <a class="dropdown-item" href="./jj_av_dallas_data_diagram_viz.html" rel="" target="">
  <span class="dropdown-text">Data Diagram</span></a>
   </li>  
     </ul>
   </li>
   <li class="nav-item compact">
-    <a class="nav-link" href="https://github.com/CSGJusticeCenter/jj-av-dallas"><i class="bi bi-fab fa-github" role="img">
+    <a class="nav-link" href="https://github.com/CSGJusticeCenter/jj-av-dallas" rel="" target=""><i class="bi bi-fab fa-github" role="img">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
 </ul>
-              <div id="quarto-search" class="" title="Search"></div>
+            <div class="quarto-navbar-tools">
+</div>
           </div> <!-- /navcollapse -->
       </div> <!-- /container-fluid -->
     </nav>
@@ -229,7 +202,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse sidebar-navigation floating overflow-auto">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
     <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
@@ -270,6 +243,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
   </ul>
 </nav>
 </nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
     </div>
@@ -306,76 +280,78 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="table-1.-by-fy-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 1. By FY: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> FY of Completion </th>
-   <th style="text-align:center;"> Unique Youth (N) </th>
-   <th style="text-align:center;"> Unique Referrals (N) </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (column %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (row %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">FY of Completion</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Youth (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Referrals (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, Percent of Sample (column %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification (row %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one supervision extension (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> 2018 </td>
-   <td style="text-align:center;"> 1,866 </td>
-   <td style="text-align:center;"> 1,900 </td>
-   <td style="text-align:center;"> 1,900 </td>
-   <td style="text-align:center;"> 25.3% </td>
-   <td style="text-align:center;"> 28.4% </td>
-   <td style="text-align:center;"> 14.6% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2019 </td>
-   <td style="text-align:center;"> 1,830 </td>
-   <td style="text-align:center;"> 1,863 </td>
-   <td style="text-align:center;"> 1,863 </td>
-   <td style="text-align:center;"> 24.8% </td>
-   <td style="text-align:center;"> 26.4% </td>
-   <td style="text-align:center;"> 13.8% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2020 </td>
-   <td style="text-align:center;"> 1,641 </td>
-   <td style="text-align:center;"> 1,673 </td>
-   <td style="text-align:center;"> 1,673 </td>
-   <td style="text-align:center;"> 22.3% </td>
-   <td style="text-align:center;"> 30.1% </td>
-   <td style="text-align:center;"> 18.6% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2021 </td>
-   <td style="text-align:center;"> 1,025 </td>
-   <td style="text-align:center;"> 1,041 </td>
-   <td style="text-align:center;"> 1,041 </td>
-   <td style="text-align:center;"> 13.9% </td>
-   <td style="text-align:center;"> 29.2% </td>
-   <td style="text-align:center;"> 14.7% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2022 </td>
-   <td style="text-align:center;"> 1,148 </td>
-   <td style="text-align:center;"> 1,166 </td>
-   <td style="text-align:center;"> 1,166 </td>
-   <td style="text-align:center;"> 15.5% </td>
-   <td style="text-align:center;"> 21.4% </td>
-   <td style="text-align:center;"> 9.6% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 6,757 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
-   <td style="text-align:center;font-weight: bold;"> 27.2% </td>
-   <td style="text-align:center;font-weight: bold;"> 14.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">2018</td>
+<td style="text-align: center;">1,866</td>
+<td style="text-align: center;">1,900</td>
+<td style="text-align: center;">1,900</td>
+<td style="text-align: center;">25.3%</td>
+<td style="text-align: center;">28.4%</td>
+<td style="text-align: center;">14.6%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2019</td>
+<td style="text-align: center;">1,830</td>
+<td style="text-align: center;">1,863</td>
+<td style="text-align: center;">1,863</td>
+<td style="text-align: center;">24.8%</td>
+<td style="text-align: center;">26.4%</td>
+<td style="text-align: center;">13.8%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2020</td>
+<td style="text-align: center;">1,641</td>
+<td style="text-align: center;">1,673</td>
+<td style="text-align: center;">1,673</td>
+<td style="text-align: center;">22.3%</td>
+<td style="text-align: center;">30.1%</td>
+<td style="text-align: center;">18.6%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2021</td>
+<td style="text-align: center;">1,025</td>
+<td style="text-align: center;">1,041</td>
+<td style="text-align: center;">1,041</td>
+<td style="text-align: center;">13.9%</td>
+<td style="text-align: center;">29.2%</td>
+<td style="text-align: center;">14.7%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2022</td>
+<td style="text-align: center;">1,148</td>
+<td style="text-align: center;">1,166</td>
+<td style="text-align: center;">1,166</td>
+<td style="text-align: center;">15.5%</td>
+<td style="text-align: center;">21.4%</td>
+<td style="text-align: center;">9.6%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">6,757</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">100.0%</td>
+<td style="text-align: center; font-weight: bold;">27.2%</td>
+<td style="text-align: center; font-weight: bold;">14.7%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -393,76 +369,78 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h2 class="anchored" data-anchor-id="table-2.-by-raceethnicity-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 2. By Race/Ethnicity: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Race/Ethnicity </th>
-   <th style="text-align:center;"> Unique Youth (N) </th>
-   <th style="text-align:center;"> Unique Referrals (N) </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (column %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (row %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Race/Ethnicity</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Youth (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Referrals (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, Percent of Sample (column %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification (row %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one supervision extension (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Asian </td>
-   <td style="text-align:center;"> 62 </td>
-   <td style="text-align:center;"> 68 </td>
-   <td style="text-align:center;"> 68 </td>
-   <td style="text-align:center;"> 0.9% </td>
-   <td style="text-align:center;"> 7.4% </td>
-   <td style="text-align:center;"> 8.8% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Black </td>
-   <td style="text-align:center;"> 2,962 </td>
-   <td style="text-align:center;"> 3,328 </td>
-   <td style="text-align:center;"> 3,328 </td>
-   <td style="text-align:center;"> 44.3% </td>
-   <td style="text-align:center;"> 29.1% </td>
-   <td style="text-align:center;"> 15.6% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Hispanic </td>
-   <td style="text-align:center;"> 3,049 </td>
-   <td style="text-align:center;"> 3,394 </td>
-   <td style="text-align:center;"> 3,394 </td>
-   <td style="text-align:center;"> 45.2% </td>
-   <td style="text-align:center;"> 27.9% </td>
-   <td style="text-align:center;"> 15.0% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Other </td>
-   <td style="text-align:center;"> 8 </td>
-   <td style="text-align:center;"> 8 </td>
-   <td style="text-align:center;"> 8 </td>
-   <td style="text-align:center;"> 0.1% </td>
-   <td style="text-align:center;"> 50.0% </td>
-   <td style="text-align:center;"> 37.5% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> White </td>
-   <td style="text-align:center;"> 676 </td>
-   <td style="text-align:center;"> 715 </td>
-   <td style="text-align:center;"> 715 </td>
-   <td style="text-align:center;"> 9.5% </td>
-   <td style="text-align:center;"> 16.9% </td>
-   <td style="text-align:center;"> 9.9% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 6,757 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
-   <td style="text-align:center;font-weight: bold;"> 27.2% </td>
-   <td style="text-align:center;font-weight: bold;"> 14.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Asian</td>
+<td style="text-align: center;">62</td>
+<td style="text-align: center;">68</td>
+<td style="text-align: center;">68</td>
+<td style="text-align: center;">0.9%</td>
+<td style="text-align: center;">7.4%</td>
+<td style="text-align: center;">8.8%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Black</td>
+<td style="text-align: center;">2,962</td>
+<td style="text-align: center;">3,328</td>
+<td style="text-align: center;">3,328</td>
+<td style="text-align: center;">44.3%</td>
+<td style="text-align: center;">29.1%</td>
+<td style="text-align: center;">15.6%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Hispanic</td>
+<td style="text-align: center;">3,049</td>
+<td style="text-align: center;">3,394</td>
+<td style="text-align: center;">3,394</td>
+<td style="text-align: center;">45.2%</td>
+<td style="text-align: center;">27.9%</td>
+<td style="text-align: center;">15.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Other</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0.1%</td>
+<td style="text-align: center;">50.0%</td>
+<td style="text-align: center;">37.5%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">White</td>
+<td style="text-align: center;">676</td>
+<td style="text-align: center;">715</td>
+<td style="text-align: center;">715</td>
+<td style="text-align: center;">9.5%</td>
+<td style="text-align: center;">16.9%</td>
+<td style="text-align: center;">9.9%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">6,757</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">100.0%</td>
+<td style="text-align: center; font-weight: bold;">27.2%</td>
+<td style="text-align: center; font-weight: bold;">14.7%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -609,49 +587,51 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-3.-by-gender-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 3. By Gender: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Gender </th>
-   <th style="text-align:center;"> Unique Youth (N) </th>
-   <th style="text-align:center;"> Unique Referrals (N) </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (column %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (row %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Gender</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Youth (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Referrals (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, Percent of Sample (column %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification (row %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one supervision extension (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Female </td>
-   <td style="text-align:center;"> 1,770 </td>
-   <td style="text-align:center;"> 1,896 </td>
-   <td style="text-align:center;"> 1,896 </td>
-   <td style="text-align:center;"> 25.2% </td>
-   <td style="text-align:center;"> 19.1% </td>
-   <td style="text-align:center;"> 9.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Male </td>
-   <td style="text-align:center;"> 4,987 </td>
-   <td style="text-align:center;"> 5,617 </td>
-   <td style="text-align:center;"> 5,617 </td>
-   <td style="text-align:center;"> 74.8% </td>
-   <td style="text-align:center;"> 29.9% </td>
-   <td style="text-align:center;"> 16.5% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 6,757 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
-   <td style="text-align:center;font-weight: bold;"> 27.2% </td>
-   <td style="text-align:center;font-weight: bold;"> 14.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Female</td>
+<td style="text-align: center;">1,770</td>
+<td style="text-align: center;">1,896</td>
+<td style="text-align: center;">1,896</td>
+<td style="text-align: center;">25.2%</td>
+<td style="text-align: center;">19.1%</td>
+<td style="text-align: center;">9.3%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Male</td>
+<td style="text-align: center;">4,987</td>
+<td style="text-align: center;">5,617</td>
+<td style="text-align: center;">5,617</td>
+<td style="text-align: center;">74.8%</td>
+<td style="text-align: center;">29.9%</td>
+<td style="text-align: center;">16.5%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">6,757</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">100.0%</td>
+<td style="text-align: center; font-weight: bold;">27.2%</td>
+<td style="text-align: center; font-weight: bold;">14.7%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -666,67 +646,69 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-4.-by-age-percentage-of-supervision-episodesreferrals-with-a-supervision-modification-and-extension">Table 4. By Age: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Age </th>
-   <th style="text-align:center;"> Unique Youth (N) </th>
-   <th style="text-align:center;"> Unique Referrals (N) </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (column %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (row %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Age</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Youth (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Referrals (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, Percent of Sample (column %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification (row %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one supervision extension (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Less than 12 </td>
-   <td style="text-align:center;"> 196 </td>
-   <td style="text-align:center;"> 196 </td>
-   <td style="text-align:center;"> 196 </td>
-   <td style="text-align:center;"> 2.6% </td>
-   <td style="text-align:center;"> 15.3% </td>
-   <td style="text-align:center;"> 14.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 12 to 13 </td>
-   <td style="text-align:center;"> 1,322 </td>
-   <td style="text-align:center;"> 1,372 </td>
-   <td style="text-align:center;"> 1,372 </td>
-   <td style="text-align:center;"> 18.3% </td>
-   <td style="text-align:center;"> 26.9% </td>
-   <td style="text-align:center;"> 16.0% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 14 to 16 </td>
-   <td style="text-align:center;"> 5,289 </td>
-   <td style="text-align:center;"> 5,769 </td>
-   <td style="text-align:center;"> 5,769 </td>
-   <td style="text-align:center;"> 76.8% </td>
-   <td style="text-align:center;"> 28.2% </td>
-   <td style="text-align:center;"> 14.8% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 17+ </td>
-   <td style="text-align:center;"> 175 </td>
-   <td style="text-align:center;"> 175 </td>
-   <td style="text-align:center;"> 175 </td>
-   <td style="text-align:center;"> 2.3% </td>
-   <td style="text-align:center;"> 10.9% </td>
-   <td style="text-align:center;"> 2.9% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 6,756 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,512 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,512 </td>
-   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
-   <td style="text-align:center;font-weight: bold;"> 27.2% </td>
-   <td style="text-align:center;font-weight: bold;"> 14.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Less than 12</td>
+<td style="text-align: center;">196</td>
+<td style="text-align: center;">196</td>
+<td style="text-align: center;">196</td>
+<td style="text-align: center;">2.6%</td>
+<td style="text-align: center;">15.3%</td>
+<td style="text-align: center;">14.3%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">12 to 13</td>
+<td style="text-align: center;">1,322</td>
+<td style="text-align: center;">1,372</td>
+<td style="text-align: center;">1,372</td>
+<td style="text-align: center;">18.3%</td>
+<td style="text-align: center;">26.9%</td>
+<td style="text-align: center;">16.0%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">14 to 16</td>
+<td style="text-align: center;">5,289</td>
+<td style="text-align: center;">5,769</td>
+<td style="text-align: center;">5,769</td>
+<td style="text-align: center;">76.8%</td>
+<td style="text-align: center;">28.2%</td>
+<td style="text-align: center;">14.8%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">17+</td>
+<td style="text-align: center;">175</td>
+<td style="text-align: center;">175</td>
+<td style="text-align: center;">175</td>
+<td style="text-align: center;">2.3%</td>
+<td style="text-align: center;">10.9%</td>
+<td style="text-align: center;">2.9%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">6,756</td>
+<td style="text-align: center; font-weight: bold;">7,512</td>
+<td style="text-align: center; font-weight: bold;">7,512</td>
+<td style="text-align: center; font-weight: bold;">100.0%</td>
+<td style="text-align: center; font-weight: bold;">27.2%</td>
+<td style="text-align: center; font-weight: bold;">14.7%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -742,67 +724,69 @@ of ggplot2 3.3.4.</code></pre>
 <p>Note: This is the “listed risk level at the time of referral disposition”</p>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Risk Level </th>
-   <th style="text-align:center;"> Unique Youth (N) </th>
-   <th style="text-align:center;"> Unique Referrals (N) </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (column %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (row %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Risk Level</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Youth (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Referrals (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, Percent of Sample (column %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification (row %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one supervision extension (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Low Risk </td>
-   <td style="text-align:center;"> 3,648 </td>
-   <td style="text-align:center;"> 3,747 </td>
-   <td style="text-align:center;"> 3,747 </td>
-   <td style="text-align:center;"> 49.9% </td>
-   <td style="text-align:center;"> 9.8% </td>
-   <td style="text-align:center;"> 6.0% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Moderate Risk </td>
-   <td style="text-align:center;"> 2,253 </td>
-   <td style="text-align:center;"> 2,386 </td>
-   <td style="text-align:center;"> 2,386 </td>
-   <td style="text-align:center;"> 31.8% </td>
-   <td style="text-align:center;"> 39.3% </td>
-   <td style="text-align:center;"> 21.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> High Risk </td>
-   <td style="text-align:center;"> 992 </td>
-   <td style="text-align:center;"> 1,091 </td>
-   <td style="text-align:center;"> 1,091 </td>
-   <td style="text-align:center;"> 14.5% </td>
-   <td style="text-align:center;"> 63.3% </td>
-   <td style="text-align:center;"> 33.1% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Unknown/Not Administered </td>
-   <td style="text-align:center;"> 286 </td>
-   <td style="text-align:center;"> 289 </td>
-   <td style="text-align:center;"> 289 </td>
-   <td style="text-align:center;"> 3.8% </td>
-   <td style="text-align:center;"> 15.9% </td>
-   <td style="text-align:center;"> 4.5% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 6,757 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
-   <td style="text-align:center;font-weight: bold;"> 27.2% </td>
-   <td style="text-align:center;font-weight: bold;"> 14.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Low Risk</td>
+<td style="text-align: center;">3,648</td>
+<td style="text-align: center;">3,747</td>
+<td style="text-align: center;">3,747</td>
+<td style="text-align: center;">49.9%</td>
+<td style="text-align: center;">9.8%</td>
+<td style="text-align: center;">6.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Moderate Risk</td>
+<td style="text-align: center;">2,253</td>
+<td style="text-align: center;">2,386</td>
+<td style="text-align: center;">2,386</td>
+<td style="text-align: center;">31.8%</td>
+<td style="text-align: center;">39.3%</td>
+<td style="text-align: center;">21.3%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">High Risk</td>
+<td style="text-align: center;">992</td>
+<td style="text-align: center;">1,091</td>
+<td style="text-align: center;">1,091</td>
+<td style="text-align: center;">14.5%</td>
+<td style="text-align: center;">63.3%</td>
+<td style="text-align: center;">33.1%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Unknown/Not Administered</td>
+<td style="text-align: center;">286</td>
+<td style="text-align: center;">289</td>
+<td style="text-align: center;">289</td>
+<td style="text-align: center;">3.8%</td>
+<td style="text-align: center;">15.9%</td>
+<td style="text-align: center;">4.5%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">6,757</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">100.0%</td>
+<td style="text-align: center; font-weight: bold;">27.2%</td>
+<td style="text-align: center; font-weight: bold;">14.7%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -837,67 +821,69 @@ of ggplot2 3.3.4.</code></pre>
 <p>Note: This is the “listed needs level at the time of referral disposition”</p>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Needs Level </th>
-   <th style="text-align:center;"> Unique Youth (N) </th>
-   <th style="text-align:center;"> Unique Referrals (N) </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, Percent of Sample (column %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification (row %) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one supervision extension (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Needs Level</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Youth (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Referrals (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, Percent of Sample (column %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification (row %)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one supervision extension (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Low Needs </td>
-   <td style="text-align:center;"> 2,578 </td>
-   <td style="text-align:center;"> 2,645 </td>
-   <td style="text-align:center;"> 2,645 </td>
-   <td style="text-align:center;"> 35.2% </td>
-   <td style="text-align:center;"> 7.4% </td>
-   <td style="text-align:center;"> 3.8% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Moderate Needs </td>
-   <td style="text-align:center;"> 2,588 </td>
-   <td style="text-align:center;"> 2,724 </td>
-   <td style="text-align:center;"> 2,724 </td>
-   <td style="text-align:center;"> 36.3% </td>
-   <td style="text-align:center;"> 27.8% </td>
-   <td style="text-align:center;"> 15.2% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> High Needs </td>
-   <td style="text-align:center;"> 1,689 </td>
-   <td style="text-align:center;"> 1,836 </td>
-   <td style="text-align:center;"> 1,836 </td>
-   <td style="text-align:center;"> 24.4% </td>
-   <td style="text-align:center;"> 56.5% </td>
-   <td style="text-align:center;"> 31.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Unknown/Not Administered </td>
-   <td style="text-align:center;"> 305 </td>
-   <td style="text-align:center;"> 308 </td>
-   <td style="text-align:center;"> 308 </td>
-   <td style="text-align:center;"> 4.1% </td>
-   <td style="text-align:center;"> 16.9% </td>
-   <td style="text-align:center;"> 5.2% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 6,757 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 100.0% </td>
-   <td style="text-align:center;font-weight: bold;"> 27.2% </td>
-   <td style="text-align:center;font-weight: bold;"> 14.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Low Needs</td>
+<td style="text-align: center;">2,578</td>
+<td style="text-align: center;">2,645</td>
+<td style="text-align: center;">2,645</td>
+<td style="text-align: center;">35.2%</td>
+<td style="text-align: center;">7.4%</td>
+<td style="text-align: center;">3.8%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Moderate Needs</td>
+<td style="text-align: center;">2,588</td>
+<td style="text-align: center;">2,724</td>
+<td style="text-align: center;">2,724</td>
+<td style="text-align: center;">36.3%</td>
+<td style="text-align: center;">27.8%</td>
+<td style="text-align: center;">15.2%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">High Needs</td>
+<td style="text-align: center;">1,689</td>
+<td style="text-align: center;">1,836</td>
+<td style="text-align: center;">1,836</td>
+<td style="text-align: center;">24.4%</td>
+<td style="text-align: center;">56.5%</td>
+<td style="text-align: center;">31.3%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Unknown/Not Administered</td>
+<td style="text-align: center;">305</td>
+<td style="text-align: center;">308</td>
+<td style="text-align: center;">308</td>
+<td style="text-align: center;">4.1%</td>
+<td style="text-align: center;">16.9%</td>
+<td style="text-align: center;">5.2%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">6,757</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">100.0%</td>
+<td style="text-align: center; font-weight: bold;">27.2%</td>
+<td style="text-align: center; font-weight: bold;">14.7%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -912,97 +898,99 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-7.-by-fy-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 7. By FY: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> FY of Completion </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Min Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Max Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Min Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Max Number of Supervision Extensions </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">FY of Completion</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Extensions</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> 2018 </td>
-   <td style="text-align:center;"> 1,900 </td>
-   <td style="text-align:center;"> 0.6131579 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 9 </td>
-   <td style="text-align:center;"> 0.2236842 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2019 </td>
-   <td style="text-align:center;"> 1,816 </td>
-   <td style="text-align:center;"> 0.5424009 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 11 </td>
-   <td style="text-align:center;"> 0.2042952 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2020 </td>
-   <td style="text-align:center;"> 1,631 </td>
-   <td style="text-align:center;"> 0.6247701 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 10 </td>
-   <td style="text-align:center;"> 0.2526058 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2021 </td>
-   <td style="text-align:center;"> 1,020 </td>
-   <td style="text-align:center;"> 0.5617647 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 7 </td>
-   <td style="text-align:center;"> 0.1941176 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 4 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2022 </td>
-   <td style="text-align:center;"> 1,146 </td>
-   <td style="text-align:center;"> 0.4083770 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 9 </td>
-   <td style="text-align:center;"> 0.1308901 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.5603620 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 11 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.2071077 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 6 </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">2018</td>
+<td style="text-align: center;">1,900</td>
+<td style="text-align: center;">0.6131579</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">0.2236842</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2019</td>
+<td style="text-align: center;">1,816</td>
+<td style="text-align: center;">0.5424009</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">0.2042952</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2020</td>
+<td style="text-align: center;">1,631</td>
+<td style="text-align: center;">0.6247701</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">0.2526058</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2021</td>
+<td style="text-align: center;">1,020</td>
+<td style="text-align: center;">0.5617647</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0.1941176</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2022</td>
+<td style="text-align: center;">1,146</td>
+<td style="text-align: center;">0.4083770</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">0.1308901</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">0.5603620</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">11</td>
+<td style="text-align: center; font-weight: bold;">0.2071077</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">6</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1012,97 +1000,99 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-8.-by-raceethnicity-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 8. By Race/Ethnicity: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Race/Ethnicity </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Min Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Max Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Min Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Max Number of Supervision Extensions </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Race/Ethnicity</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Extensions</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Asian </td>
-   <td style="text-align:center;"> 68 </td>
-   <td style="text-align:center;"> 0.1029412 </td>
-   <td style="text-align:center;"> 0.0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 2 </td>
-   <td style="text-align:center;"> 0.0735294 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 1 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Black </td>
-   <td style="text-align:center;"> 3,328 </td>
-   <td style="text-align:center;"> 0.5901442 </td>
-   <td style="text-align:center;"> 0.0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 11 </td>
-   <td style="text-align:center;"> 0.2262620 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Hispanic </td>
-   <td style="text-align:center;"> 3,394 </td>
-   <td style="text-align:center;"> 0.5816146 </td>
-   <td style="text-align:center;"> 0.0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 8 </td>
-   <td style="text-align:center;"> 0.2030053 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Other </td>
-   <td style="text-align:center;"> 8 </td>
-   <td style="text-align:center;"> 0.8750000 </td>
-   <td style="text-align:center;"> 0.5 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 3 </td>
-   <td style="text-align:center;"> 0.2500000 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 1 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> White </td>
-   <td style="text-align:center;"> 715 </td>
-   <td style="text-align:center;"> 0.3608392 </td>
-   <td style="text-align:center;"> 0.0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 10 </td>
-   <td style="text-align:center;"> 0.1496503 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.5603620 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 11 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.2071077 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 6 </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Asian</td>
+<td style="text-align: center;">68</td>
+<td style="text-align: center;">0.1029412</td>
+<td style="text-align: center;">0.0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0.0735294</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Black</td>
+<td style="text-align: center;">3,328</td>
+<td style="text-align: center;">0.5901442</td>
+<td style="text-align: center;">0.0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">0.2262620</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Hispanic</td>
+<td style="text-align: center;">3,394</td>
+<td style="text-align: center;">0.5816146</td>
+<td style="text-align: center;">0.0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0.2030053</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Other</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0.8750000</td>
+<td style="text-align: center;">0.5</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0.2500000</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">White</td>
+<td style="text-align: center;">715</td>
+<td style="text-align: center;">0.3608392</td>
+<td style="text-align: center;">0.0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">0.1496503</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">0.5603620</td>
+<td style="text-align: center; font-weight: bold;">0.0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">11</td>
+<td style="text-align: center; font-weight: bold;">0.2071077</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">6</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1112,61 +1102,63 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-9.-by-gender-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 9. By Gender: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Gender </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Min Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Max Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Min Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Max Number of Supervision Extensions </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Gender</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Extensions</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Female </td>
-   <td style="text-align:center;"> 1,896 </td>
-   <td style="text-align:center;"> 0.3802743 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 9 </td>
-   <td style="text-align:center;"> 0.1397679 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Male </td>
-   <td style="text-align:center;"> 5,617 </td>
-   <td style="text-align:center;"> 0.6211501 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 11 </td>
-   <td style="text-align:center;"> 0.2298380 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.5603620 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 11 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.2071077 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 6 </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Female</td>
+<td style="text-align: center;">1,896</td>
+<td style="text-align: center;">0.3802743</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">0.1397679</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Male</td>
+<td style="text-align: center;">5,617</td>
+<td style="text-align: center;">0.6211501</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">0.2298380</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">0.5603620</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">11</td>
+<td style="text-align: center; font-weight: bold;">0.2071077</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">6</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1176,85 +1168,87 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-10.-by-age-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 10. By Age: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Age </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Min Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Max Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Min Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Max Number of Supervision Extensions </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Age</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Extensions</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Less than 12 </td>
-   <td style="text-align:center;"> 196 </td>
-   <td style="text-align:center;"> 0.4336735 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 7 </td>
-   <td style="text-align:center;"> 0.2448980 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 4 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 12 to 13 </td>
-   <td style="text-align:center;"> 1,372 </td>
-   <td style="text-align:center;"> 0.6844023 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 11 </td>
-   <td style="text-align:center;"> 0.2791545 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 14 to 16 </td>
-   <td style="text-align:center;"> 5,769 </td>
-   <td style="text-align:center;"> 0.5486219 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 10 </td>
-   <td style="text-align:center;"> 0.1943144 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 5 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 17+ </td>
-   <td style="text-align:center;"> 175 </td>
-   <td style="text-align:center;"> 0.1200000 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 2 </td>
-   <td style="text-align:center;"> 0.0228571 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 1 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 7,512 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.5604366 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 11 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.2071353 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 6 </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Less than 12</td>
+<td style="text-align: center;">196</td>
+<td style="text-align: center;">0.4336735</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0.2448980</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">12 to 13</td>
+<td style="text-align: center;">1,372</td>
+<td style="text-align: center;">0.6844023</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">0.2791545</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">14 to 16</td>
+<td style="text-align: center;">5,769</td>
+<td style="text-align: center;">0.5486219</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">10</td>
+<td style="text-align: center;">0.1943144</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">5</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">17+</td>
+<td style="text-align: center;">175</td>
+<td style="text-align: center;">0.1200000</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
+<td style="text-align: center;">0.0228571</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">1</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">7,512</td>
+<td style="text-align: center; font-weight: bold;">0.5604366</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">11</td>
+<td style="text-align: center; font-weight: bold;">0.2071353</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">6</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1264,85 +1258,87 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-11.-by-risk-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 11. By Risk Level: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Risk Level </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Min Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Max Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Min Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Max Number of Supervision Extensions </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Risk Level</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Extensions</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Low Risk </td>
-   <td style="text-align:center;"> 3,747 </td>
-   <td style="text-align:center;"> 0.1681345 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 7 </td>
-   <td style="text-align:center;"> 0.0720576 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 4 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Moderate Risk </td>
-   <td style="text-align:center;"> 2,386 </td>
-   <td style="text-align:center;"> 0.8206203 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 9 </td>
-   <td style="text-align:center;"> 0.3046940 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> High Risk </td>
-   <td style="text-align:center;"> 1,091 </td>
-   <td style="text-align:center;"> 1.4142988 </td>
-   <td style="text-align:center;"> 1 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 11 </td>
-   <td style="text-align:center;"> 0.4995417 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Unknown/Not Administered </td>
-   <td style="text-align:center;"> 289 </td>
-   <td style="text-align:center;"> 0.2733564 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-   <td style="text-align:center;"> 0.0484429 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 3 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.5603620 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 11 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.2071077 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 6 </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Low Risk</td>
+<td style="text-align: center;">3,747</td>
+<td style="text-align: center;">0.1681345</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0.0720576</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Moderate Risk</td>
+<td style="text-align: center;">2,386</td>
+<td style="text-align: center;">0.8206203</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">9</td>
+<td style="text-align: center;">0.3046940</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">High Risk</td>
+<td style="text-align: center;">1,091</td>
+<td style="text-align: center;">1.4142988</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">0.4995417</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Unknown/Not Administered</td>
+<td style="text-align: center;">289</td>
+<td style="text-align: center;">0.2733564</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">0.0484429</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">0.5603620</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">11</td>
+<td style="text-align: center; font-weight: bold;">0.2071077</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">6</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1352,53 +1348,55 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-11b.-by-risk-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 11b. By Risk Level: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Risk Level </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Mean Overall LOS </th>
-   <th style="text-align:center;"> Median Overall LOS </th>
-   <th style="text-align:center;"> min Overall LOS </th>
-   <th style="text-align:center;"> max Overall LOS </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Risk Level</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Overall LOS</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Overall LOS</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">min Overall LOS</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">max Overall LOS</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Low Risk </td>
-   <td style="text-align:center;"> 3,747 </td>
-   <td style="text-align:center;"> 245.7579 </td>
-   <td style="text-align:center;"> 182 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 2,115 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Moderate Risk </td>
-   <td style="text-align:center;"> 2,386 </td>
-   <td style="text-align:center;"> 357.1032 </td>
-   <td style="text-align:center;"> 275 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 2,152 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> High Risk </td>
-   <td style="text-align:center;"> 1,091 </td>
-   <td style="text-align:center;"> 449.0385 </td>
-   <td style="text-align:center;"> 364 </td>
-   <td style="text-align:center;"> 16 </td>
-   <td style="text-align:center;"> 1,620 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Unknown/Not Administered </td>
-   <td style="text-align:center;"> 289 </td>
-   <td style="text-align:center;"> 223.5938 </td>
-   <td style="text-align:center;"> 180 </td>
-   <td style="text-align:center;"> 6 </td>
-   <td style="text-align:center;"> 1,185 </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Low Risk</td>
+<td style="text-align: center;">3,747</td>
+<td style="text-align: center;">245.7579</td>
+<td style="text-align: center;">182</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2,115</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Moderate Risk</td>
+<td style="text-align: center;">2,386</td>
+<td style="text-align: center;">357.1032</td>
+<td style="text-align: center;">275</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">2,152</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">High Risk</td>
+<td style="text-align: center;">1,091</td>
+<td style="text-align: center;">449.0385</td>
+<td style="text-align: center;">364</td>
+<td style="text-align: center;">16</td>
+<td style="text-align: center;">1,620</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Unknown/Not Administered</td>
+<td style="text-align: center;">289</td>
+<td style="text-align: center;">223.5938</td>
+<td style="text-align: center;">180</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">1,185</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1408,85 +1406,87 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-12.-by-needs-level-average-number-of-supervision-modifications-and-extensions-per-supervision-episode">Table 12. By Needs Level: Average Number of Supervision Modifications and Extensions per Supervision Episode</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Needs Level </th>
-   <th style="text-align:center;"> Unique Supervision Episodes (N) </th>
-   <th style="text-align:center;"> Mean Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Median Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Min Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Max Number of Supervision Level Modifications </th>
-   <th style="text-align:center;"> Mean Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Median Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Min Number of Supervision Extensions </th>
-   <th style="text-align:center;"> Max Number of Supervision Extensions </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Needs Level</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Unique Supervision Episodes (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Level Modifications</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Mean Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Median Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Min Number of Supervision Extensions</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Max Number of Supervision Extensions</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Low Needs </td>
-   <td style="text-align:center;"> 2,645 </td>
-   <td style="text-align:center;"> 0.1137996 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 7 </td>
-   <td style="text-align:center;"> 0.0442344 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 4 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Moderate Needs </td>
-   <td style="text-align:center;"> 2,724 </td>
-   <td style="text-align:center;"> 0.5686490 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 8 </td>
-   <td style="text-align:center;"> 0.2099853 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 4 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> High Needs </td>
-   <td style="text-align:center;"> 1,836 </td>
-   <td style="text-align:center;"> 1.2363834 </td>
-   <td style="text-align:center;"> 1 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 11 </td>
-   <td style="text-align:center;"> 0.4624183 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Unknown/Not Administered </td>
-   <td style="text-align:center;"> 308 </td>
-   <td style="text-align:center;"> 0.2922078 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 6 </td>
-   <td style="text-align:center;"> 0.0584416 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 0 </td>
-   <td style="text-align:center;"> 3 </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 7,513 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.5603620 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 11 </td>
-   <td style="text-align:center;font-weight: bold;"> 0.2071077 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 0 </td>
-   <td style="text-align:center;font-weight: bold;"> 6 </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Low Needs</td>
+<td style="text-align: center;">2,645</td>
+<td style="text-align: center;">0.1137996</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">7</td>
+<td style="text-align: center;">0.0442344</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Moderate Needs</td>
+<td style="text-align: center;">2,724</td>
+<td style="text-align: center;">0.5686490</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
+<td style="text-align: center;">0.2099853</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">High Needs</td>
+<td style="text-align: center;">1,836</td>
+<td style="text-align: center;">1.2363834</td>
+<td style="text-align: center;">1</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">11</td>
+<td style="text-align: center;">0.4624183</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Unknown/Not Administered</td>
+<td style="text-align: center;">308</td>
+<td style="text-align: center;">0.2922078</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">6</td>
+<td style="text-align: center;">0.0584416</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">0</td>
+<td style="text-align: center;">3</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">7,513</td>
+<td style="text-align: center; font-weight: bold;">0.5603620</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">11</td>
+<td style="text-align: center; font-weight: bold;">0.2071077</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">0</td>
+<td style="text-align: center; font-weight: bold;">6</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1501,48 +1501,50 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-13.-by-fy-of-episodes-with-supervision-modifications-prior-to-first-technical-violation">Table 13. By FY: % of Episodes with Supervision Modifications Prior to First Technical Violation</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> FY of Completion </th>
-   <th style="text-align:center;"> Supervision Episodes w/ Technical Violation (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification prior to Technical (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">FY of Completion</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes w/ Technical Violation (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification prior to Technical (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> 2018 </td>
-   <td style="text-align:center;"> 325 </td>
-   <td style="text-align:center;"> 27.4% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2019 </td>
-   <td style="text-align:center;"> 291 </td>
-   <td style="text-align:center;"> 23.4% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2020 </td>
-   <td style="text-align:center;"> 329 </td>
-   <td style="text-align:center;"> 31.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2021 </td>
-   <td style="text-align:center;"> 146 </td>
-   <td style="text-align:center;"> 39.7% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 2022 </td>
-   <td style="text-align:center;"> 133 </td>
-   <td style="text-align:center;"> 43.6% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 1,224 </td>
-   <td style="text-align:center;font-weight: bold;"> 30.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">2018</td>
+<td style="text-align: center;">325</td>
+<td style="text-align: center;">26.2%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2019</td>
+<td style="text-align: center;">291</td>
+<td style="text-align: center;">18.6%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2020</td>
+<td style="text-align: center;">329</td>
+<td style="text-align: center;">20.7%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">2021</td>
+<td style="text-align: center;">146</td>
+<td style="text-align: center;">25.3%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2022</td>
+<td style="text-align: center;">133</td>
+<td style="text-align: center;">30.8%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">1,224</td>
+<td style="text-align: center; font-weight: bold;">23.3%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1560,48 +1562,50 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-14.-by-raceethnicity-of-episodes-with-supervision-modifications-prior-to-first-technical-violation">Table 14. By Race/Ethnicity: % of Episodes with Supervision Modifications Prior to First Technical Violation</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Race/Ethnicity </th>
-   <th style="text-align:center;"> Supervision Episodes w/ Technical Violation (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification prior to Technical (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Race/Ethnicity</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes w/ Technical Violation (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification prior to Technical (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Asian </td>
-   <td style="text-align:center;"> 3 </td>
-   <td style="text-align:center;"> 33.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Black </td>
-   <td style="text-align:center;"> 549 </td>
-   <td style="text-align:center;"> 35.2% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Hispanic </td>
-   <td style="text-align:center;"> 591 </td>
-   <td style="text-align:center;"> 27.7% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Other </td>
-   <td style="text-align:center;"> 3 </td>
-   <td style="text-align:center;"> 0.0% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> White </td>
-   <td style="text-align:center;"> 78 </td>
-   <td style="text-align:center;"> 23.1% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 1,224 </td>
-   <td style="text-align:center;font-weight: bold;"> 30.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Asian</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Black</td>
+<td style="text-align: center;">549</td>
+<td style="text-align: center;">26.2%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">Hispanic</td>
+<td style="text-align: center;">591</td>
+<td style="text-align: center;">21.3%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Other</td>
+<td style="text-align: center;">3</td>
+<td style="text-align: center;">0.0%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">White</td>
+<td style="text-align: center;">78</td>
+<td style="text-align: center;">19.2%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">1,224</td>
+<td style="text-align: center; font-weight: bold;">23.3%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1611,33 +1615,35 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-15.-by-gender-of-episodes-with-supervision-modifications-prior-to-first-technical-violation">Table 15. By Gender: % of Episodes with Supervision Modifications Prior to First Technical Violation</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Gender </th>
-   <th style="text-align:center;"> Supervision Episodes w/ Technical Violation (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification prior to Technical (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Gender</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes w/ Technical Violation (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification prior to Technical (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Female </td>
-   <td style="text-align:center;"> 210 </td>
-   <td style="text-align:center;"> 29.0% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Male </td>
-   <td style="text-align:center;"> 1,014 </td>
-   <td style="text-align:center;"> 31.1% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 1,224 </td>
-   <td style="text-align:center;font-weight: bold;"> 30.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Female</td>
+<td style="text-align: center;">210</td>
+<td style="text-align: center;">23.3%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Male</td>
+<td style="text-align: center;">1,014</td>
+<td style="text-align: center;">23.3%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">1,224</td>
+<td style="text-align: center; font-weight: bold;">23.3%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1647,43 +1653,45 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-16.-by-age-of-episodes-with-supervision-modifications-prior-to-first-technical-violation">Table 16. By Age: % of Episodes with Supervision Modifications Prior to First Technical Violation</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Age </th>
-   <th style="text-align:center;"> Supervision Episodes w/ Technical Violation (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification prior to Technical (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Age</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes w/ Technical Violation (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification prior to Technical (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Less than 12 </td>
-   <td style="text-align:center;"> 19 </td>
-   <td style="text-align:center;"> 15.8% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 12 to 13 </td>
-   <td style="text-align:center;"> 205 </td>
-   <td style="text-align:center;"> 27.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 14 to 16 </td>
-   <td style="text-align:center;"> 982 </td>
-   <td style="text-align:center;"> 31.7% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> 17+ </td>
-   <td style="text-align:center;"> 18 </td>
-   <td style="text-align:center;"> 33.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 1,224 </td>
-   <td style="text-align:center;font-weight: bold;"> 30.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Less than 12</td>
+<td style="text-align: center;">19</td>
+<td style="text-align: center;">15.8%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">12 to 13</td>
+<td style="text-align: center;">205</td>
+<td style="text-align: center;">23.4%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">14 to 16</td>
+<td style="text-align: center;">982</td>
+<td style="text-align: center;">23.6%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">17+</td>
+<td style="text-align: center;">18</td>
+<td style="text-align: center;">11.1%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">1,224</td>
+<td style="text-align: center; font-weight: bold;">23.3%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1693,43 +1701,45 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-17.-by-risk-level-of-episodes-with-supervision-modifications-prior-to-first-technical-violation">Table 17. By Risk Level: % of Episodes with Supervision Modifications Prior to First Technical Violation</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Risk Level </th>
-   <th style="text-align:center;"> Supervision Episodes w/ Technical Violation (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification prior to Technical (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Risk Level</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes w/ Technical Violation (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification prior to Technical (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Low Risk </td>
-   <td style="text-align:center;"> 188 </td>
-   <td style="text-align:center;"> 11.2% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Moderate Risk </td>
-   <td style="text-align:center;"> 589 </td>
-   <td style="text-align:center;"> 27.8% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> High Risk </td>
-   <td style="text-align:center;"> 427 </td>
-   <td style="text-align:center;"> 42.6% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Unknown/Not Administered </td>
-   <td style="text-align:center;"> 20 </td>
-   <td style="text-align:center;"> 45.0% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 1,224 </td>
-   <td style="text-align:center;font-weight: bold;"> 30.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Low Risk</td>
+<td style="text-align: center;">188</td>
+<td style="text-align: center;">9.6%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Moderate Risk</td>
+<td style="text-align: center;">589</td>
+<td style="text-align: center;">20.0%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">High Risk</td>
+<td style="text-align: center;">427</td>
+<td style="text-align: center;">33.3%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Unknown/Not Administered</td>
+<td style="text-align: center;">20</td>
+<td style="text-align: center;">35.0%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">1,224</td>
+<td style="text-align: center; font-weight: bold;">23.3%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1739,43 +1749,45 @@ of ggplot2 3.3.4.</code></pre>
 <h2 class="anchored" data-anchor-id="table-18.-by-needs-level-of-episodes-with-supervision-modifications-prior-to-first-technical-violation">Table 18. By Needs Level: % of Episodes with Supervision Modifications Prior to First Technical Violation</h2>
 <div class="cell">
 <div class="cell-output-display">
-
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
- <thead>
-  <tr>
-   <th style="text-align:center;"> Needs Level </th>
-   <th style="text-align:center;"> Supervision Episodes w/ Technical Violation (N) </th>
-   <th style="text-align:center;"> Supervision Episodes, with at least one level modification prior to Technical (row %) </th>
-  </tr>
- </thead>
+<div class="table-responsive">
+<table class="table table-striped table-hover table-condensed table-sm small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th style="text-align: center;" data-quarto-table-cell-role="th">Needs Level</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes w/ Technical Violation (N)</th>
+<th style="text-align: center;" data-quarto-table-cell-role="th">Supervision Episodes, with at least one level modification prior to Technical (row %)</th>
+</tr>
+</thead>
 <tbody>
-  <tr>
-   <td style="text-align:center;"> Low Needs </td>
-   <td style="text-align:center;"> 89 </td>
-   <td style="text-align:center;"> 21.3% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Moderate Needs </td>
-   <td style="text-align:center;"> 454 </td>
-   <td style="text-align:center;"> 25.1% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> High Needs </td>
-   <td style="text-align:center;"> 658 </td>
-   <td style="text-align:center;"> 35.4% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;"> Unknown/Not Administered </td>
-   <td style="text-align:center;"> 23 </td>
-   <td style="text-align:center;"> 43.5% </td>
-  </tr>
-  <tr>
-   <td style="text-align:center;font-weight: bold;"> Overall </td>
-   <td style="text-align:center;font-weight: bold;"> 1,224 </td>
-   <td style="text-align:center;font-weight: bold;"> 30.7% </td>
-  </tr>
+<tr class="odd">
+<td style="text-align: center;">Low Needs</td>
+<td style="text-align: center;">89</td>
+<td style="text-align: center;">18.0%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Moderate Needs</td>
+<td style="text-align: center;">454</td>
+<td style="text-align: center;">17.6%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">High Needs</td>
+<td style="text-align: center;">658</td>
+<td style="text-align: center;">27.5%</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">Unknown/Not Administered</td>
+<td style="text-align: center;">23</td>
+<td style="text-align: center;">34.8%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center; font-weight: bold;">Overall</td>
+<td style="text-align: center; font-weight: bold;">1,224</td>
+<td style="text-align: center; font-weight: bold;">23.3%</td>
+</tr>
 </tbody>
 </table>
+</div>
+
 
 </div>
 </div>
@@ -1813,9 +1825,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     icon: icon
   };
   anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
   const clipboard = new window.ClipboardJS('.code-copy-button', {
-    target: function(trigger) {
-      return trigger.previousElementSibling;
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
     }
   });
   clipboard.on('success', function(e) {
@@ -1880,6 +1906,92 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       return note.innerHTML;
     });
   }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
   const findCites = (el) => {
     const parentEl = el.parentElement;
     if (parentEl) {
