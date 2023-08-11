@@ -844,12 +844,23 @@ supervision_child_join_offenses_violatons_6 <-
          has_violation_data_but_not_in_window_flag_supervision_level = max(has_violation_data_but_not_in_window_flag),
          violation_records_are_joined_supervision_level = max(violation_records_are_joined)) |> 
   ungroup() |> 
+<<<<<<< HEAD
   ### Question 1 from QA: 
   ### now create flag and filter on it -- based on above logic/rationale
   ### we want to drop joined records whose violation falls outside out of the given supervision episode (i.e., a violation that occurred before a supervision episode in our sample) if other violation data for that youth does fall within the supervision episode
   mutate(has_joined_violation_data_drop_record = ifelse(violation_records_are_joined_supervision_level==1 & has_violation_data_but_not_in_window_flag==1,
                                                         1,0)) |> 
   ### here, we are only keeping records where the flag we created based on these two variables is 0
+=======
+  
+#################################################
+### Code review w/ Becky left off here
+################################################
+
+  ### now create flag and filter on it -- based on above logic/rationale
+  mutate(has_joined_violation_data_drop_record = ifelse(violation_records_are_joined_supervision_level==1 & has_violation_data_but_not_in_window_flag==1,
+                                                        1,0)) |> 
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
   filter(has_joined_violation_data_drop_record==0) |> 
   group_by(unique_supervision_id) %>% 
   ### count of referrals linked to any violation (using no_violation_records_joined), technical violations, and new offense violations
@@ -869,6 +880,7 @@ supervision_child_join_offenses_violatons_6 <-
           violation_filed_date) |> 
   distinct(unique_supervision_id,
            .keep_all=TRUE) %>% 
+<<<<<<< HEAD
   ### Question 2 from QA: look at supervision_start_first_tech_violation_first_overall – how and where do I ensure that this is to first technical and not first overall violation?
   ### i need to create a flag indicating the order of violations and use a combination of this along with 
   ### violation severity == "Technical" to create `supervision_start_first_tech_violation_first_overall`
@@ -879,15 +891,22 @@ supervision_child_join_offenses_violatons_6 <-
   mutate(first_violation_is_technical_violation = ifelse(violation_filed_date==min_technical_violation_date,
                                                1,0)) |> 
   ### now calculate time to first technical violation (with both vars)
+=======
+  ### calculate time to first technical violation (with both vars)
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
   mutate(supervision_start_first_tech_violation_any = as.numeric(difftime(min_technical_violation_date,
                                                             supervision_begin_date,
                                                                     units="days")),
          supervision_start_first_tech_violation_first_overall = as.numeric(difftime(violation_filed_date,
                                                             supervision_begin_date,
+<<<<<<< HEAD
                                                                     units="days")),
          ### recode supervision_start_first_tech_violation_first_overall as NA is first_violation_is_technical_violation != 1
          supervision_start_first_tech_violation_first_overall = ifelse(first_violation_is_technical_violation==1,
                                                                        supervision_start_first_tech_violation_first_overall,NA)) |> 
+=======
+                                                                    units="days"))) |> 
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
   mutate(technical_violation_flag = ifelse(technical_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
                                            1,0),
          overall_violation_referral_flag = ifelse(overall_violation_referral_count>0 & !is.na(overall_violation_referral_count)==TRUE,
@@ -901,6 +920,7 @@ supervision_child_join_offenses_violatons_6 <-
 
 ### What is the average number of modifications for youth who receive a technical violation? How does this vary across race/ethnicity, sex, and risk level?
 
+<<<<<<< HEAD
 ### in this chunk, we'll create a look up table of number of supervision level increases (in intensiveness) that occur prior to a youth's first technical violation
 
 ### we'll then join the file back to our main analytic file
@@ -908,6 +928,15 @@ supervision_child_join_offenses_violatons_6 <-
 ################################################
 ### clean and de-dup supervision_level dataframe
 ################################################
+=======
+### in this chunk, we'll create a look up table of number of supervision level increases (in intensiveness) that occur prior to a youth's first violation
+
+### we'll then join the file back to our main analytic file
+
+#############################################
+### clean and de-dup supervision_level dataframe
+#############################################
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
 
 ### by unique_id, referral_number, phase_begin_date, phase_end_date
 supervision_level_clean_to_join_modifications_violations <- supervision_level %>% 
@@ -955,10 +984,14 @@ supervision_level_clean_to_join_modifications_violations <- supervision_level %>
   arrange(unique_id,
           referral_number,
           supervision_level_phase_begin_date) %>%
+<<<<<<< HEAD
   ### Question 3 from QA: updated to be grouped by unique_id and referral_id
   ### will re-run pertinent analysis
   group_by(unique_id,
            referral_number) %>%
+=======
+  group_by(unique_id) %>%
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
   mutate(prior_supervision_level = dplyr::lag(supervision_level_phase_severity,
                                                    1,
                                                    default=NA)) %>%
@@ -981,6 +1014,7 @@ supervision_level_clean_to_join_modifications_violations <- supervision_level %>
 ### create analytic file to explore modifications that occur prior to technical
 ### violation 
 
+<<<<<<< HEAD
 ### left join of violations_clean_de_dup file to supervision_level_clean_to_join_modifications_violations file 
 ################################################################################
 
@@ -1000,6 +1034,18 @@ supervision_level_clean_to_join_modifications_violations <- supervision_level %>
 ### that are used as a sanction instead of a technical violation)
 ### we will eventually use an `anti_join` to remove records from our analytic file
 ### that appear in this file 
+=======
+### left join of violations_clean file to supervision_child_join_offenses_5 file 
+################################################################################
+### BUSINESS RULE: Join modification and violations file on modification begin date and violation disposition date where dates are -1 day or +3 days within each other) (time from violation_disposition_date to modification_begin_date)
+### according to dallas county -- dates should typically match exactly, but we're adding a buffer just in case
+
+### left join of supervision_extension_for_join_to_violations_clean file and df_dallas_county_av_supervision_analytic_file_demo_only file 
+### here we want to pull out modifications linked to new offense violations
+### in order to remove these specific modifications from our eventual 
+### analytic that we're using to explore modifications occurring prior
+### to technical violations 
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
 supervision_modification_new_offense_violations_only <- 
   left_join(supervision_level_clean_to_join_modifications_violations,
             violations_clean_de_dup,
@@ -1019,6 +1065,7 @@ supervision_modification_new_offense_violations_only <-
                                          supervision_level_phase_begin_date,
                                          supervision_level_phase_end_date))
 
+<<<<<<< HEAD
 ### Question 4 from QA: look into logic of modifications prior to first technical violation 
 ## I've double checked the logic and everything looks good:
 ## We first only keep violations + modification joins where either 
@@ -1034,6 +1081,10 @@ supervision_modification_new_offense_violations_only <-
 ### next join violations_clean_de_dup and supervision_level_clean_to_join_modifications_violations
 ### to create main analytic file for this question of modifications prior to technical violation
 ### we will eventually 
+=======
+### next join violations and supervision_level_clean_to_join_modifications_violations
+### to create main analytic file for this question
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
 modification_prior_to_technical_violation_count <- 
   left_join(violations_clean_de_dup,
             supervision_level_clean_to_join_modifications_violations,
@@ -1054,12 +1105,17 @@ modification_prior_to_technical_violation_count <-
          ### flag records with no joining modification information using supervision_level_phase_begin_date
          no_modification_records_joined = ifelse(is.na(supervision_level_phase_begin_date==TRUE),
                                        1,0)) %>% 
+<<<<<<< HEAD
   ### for this analysis, our denominator will be violations (e.g., % of violations with modifications prior to first, etc.)
   ### so we only want to keep either (1) violation records with no modifications or (2) supervision records with violation records when those violations occurred during the period of supervision  
+=======
+  ### we only want to keep either (1) violation records with no modifications or (2) supervision records with violation records when those violations occurred during the period of supervision  
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
   ### we only want records that fit our criteria of:
   ### violations occurring during the supervision episode
   ### so we are dropping violations here that occurred outside sample window for supervision episodes (FY 2018 through FY 2023)
   filter(no_modification_records_joined==1 | (violation_date>=supervision_begin_date & violation_date<=supervision_end_date_missing_include)) %>% 
+<<<<<<< HEAD
   ### only technical violations (given that we're exploring the % of violations
   ### with modifications prior to first)
   ### and only modifications which mark an increase in intensiveness
@@ -1068,6 +1124,13 @@ modification_prior_to_technical_violation_count <-
   ### for this analysis, keep first violation per supervision episode (b/c we're
   ### only interested in the % of first technical violation where a modification
   ### occurred prior)
+=======
+  ### only technical violations
+  ### and only modifications which mark an increase in intensiveness
+  filter(violation_severity_factor=="Technical Violation",
+          supervision_level_is_increase_flag==1) %>% 
+  ### for this analysis, keep first violation per supervision episode 
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
   ### de-dup, keeping first record to preserve violation and linked modifications for supervision period
   ### also keep earliest supervision_level_phase_begin_date that joined
   arrange(unique_supervision_id,
@@ -1099,9 +1162,12 @@ modification_prior_to_technical_violation_count <-
                                          supervision_level_phase_end_date)) |> 
   ### anti-join modification_prior_to_technical_violation_count and supervision_modification_new_offense_violations_only 
   ### keeping only modification records which appear in modification_prior_to_technical_violation_count BUT not in supervision_modification_new_offense_violations_only
+<<<<<<< HEAD
   ### this removes modification records linked to new offenses from our file
   ### which we don't want (given that we're exploring modifications used as sanctions
   ### but not linked to formal violations)
+=======
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
   anti_join(supervision_modification_new_offense_violations_only,
             by = "unique_modification_id") |> 
   group_by(unique_supervision_id,
@@ -1120,10 +1186,13 @@ modification_prior_to_technical_violation_count <-
  
   dplyr::select(unique_supervision_id,
                 modification_increase_prior_to_technical_count) 
+<<<<<<< HEAD
 
 #################################################
 ### Code review w/ Becky left off here
 ################################################
+=======
+>>>>>>> 82089313a6db1a7a56793bf0c967e04a137e9269
   
 ### join lookup table of modification increases occurring prior to first 
 ### technical violation per supervision episode to main analytic file
