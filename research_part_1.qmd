@@ -1,0 +1,1886 @@
+---
+title: "How are modifications used?"
+format: html
+---
+
+
+**How are modifications used?**
+
+* What is the average number of modifications per supervision episode? How does this vary across race/ethnicity, sex, and risk level? 
+
+* What is the average number of modifications for youth who receive a technical violation? How does this vary across race/ethnicity, sex, and risk level? 
+
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog","ggpattern","ggtext")
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set chunk output specifications
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dev = "ragg_png",
+  cache = FALSE)
+
+### set theme
+theme_set(theme_minimal())
+
+### set project path with csg_get_project_path (just once)
+# csg_set_project_path(project = "jj-av-dallas",
+# sp_folder = "C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas", force = TRUE)
+
+### data path
+sp_data_path <- csg_get_project_path("jj-av-dallas")
+
+## viz output path
+sp_viz_output_path <- paste0(sp_data_path,"/output/r_output_presentation")
+
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+###############################
+### import dallas analytic file
+###############################
+
+### set sharepoint path using sp_data_path and file.path function 
+sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
+
+df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "df_dallas_county_av_supervision_analytic_file.txt"),
+                      delim = "|") %>% 
+  mutate(offense_referral_risk_level = 
+           case_when(
+             offense_referral_risk_level=="Low Risk" ~ 1,
+             offense_referral_risk_level%in%c("Medium-Low Risk",
+                             "Medium-High Risk",
+                             "Moderate Risk") ~ 2,
+             offense_referral_risk_level=="High Risk" ~ 3,             
+             offense_referral_risk_level%in%c("Unknown/Not Administered") ~ 4,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_risk_level = factor(offense_referral_risk_level,
+         levels = c(1,2,3,4),
+         labels =  c("Low Risk", 
+                     "Moderate Risk", 
+                     "High Risk",
+                     "Unknown/Not Administered")),
+         offense_referral_needs_level = 
+           case_when(
+             offense_referral_needs_level=="Low Needs" ~ 1,
+             offense_referral_needs_level=="Moderate Needs" ~ 2,
+             offense_referral_needs_level=="High Needs" ~ 3,             
+             offense_referral_needs_level%in%c("Unknown/Not Administered") ~ 4,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_needs_level = factor(offense_referral_needs_level,
+         levels = c(1,2,3,4),
+         labels = c("Low Needs", 
+                    "Moderate Needs", 
+                    "High Needs",
+                    "Unknown/Not Administered"))) |> 
+  ### remove FY 2023 Completion (year is incomplete based on timing of data pull) 
+  filter(supervision_end_fy!=2023)
+
+```
+
+# Modifications Overview
+
+**NOTE:** All analysis of supervision level modifications (e.g., supervision episodes with at least one supervision level modification) refer to instances where a supervision phase/level is modified to a more intensive level of supervision. 
+
+<br>
+
+
+```{r eval=FALSE,include=FALSE,message=FALSE,warning=FALSE}
+### explore LOS over time to see what switch to grouping by FY of completion looks like
+
+### total supervision los per FY of exit
+df_los_per_year <- df_dallas_county_av_supervision_analytic_file %>% 
+  distinct(unique_supervision_id,
+           .keep_all = TRUE) |> 
+  dplyr::group_by(supervision_end_fy) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Mean LOS` = mean(overall_supervision_los_days.x,
+                              na.rm = TRUE),
+            `Median LOS` = median(overall_supervision_los_days.x,
+                              na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
+
+### overall
+df_los_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+    distinct(unique_supervision_id,
+           .keep_all = TRUE) |> 
+   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_supervision_id),
+            `Mean LOS` = mean(overall_supervision_los_days.x,
+                              na.rm = TRUE),
+            `Median LOS` = median(overall_supervision_los_days.x,
+                              na.rm = TRUE)) %>% 
+  mutate(`FY of Completion` = "Overall")
+
+### combine tables for kable
+df_los_per_year_table <- rbind(df_los_per_year,
+                               df_los_overall)
+
+### print table via kableextra
+kable(df_los_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(7, bold = TRUE) |> 
+### save out
+save_kable("C:\\Users\\abyrum\\Documents\\table_los_per_year_table.png")
+```
+
+ 
+## Table 1. By FY: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique referrals for entire sample
+unique_referrals_sample_denom <- n_distinct(df_dallas_county_av_supervision_analytic_file$unique_id,
+                                            df_dallas_county_av_supervision_analytic_file$referral_number)
+
+### create denominator -- unique supervision episodes
+unique_supervision_episode_denom <- n_distinct(df_dallas_county_av_supervision_analytic_file$unique_referral_id)
+
+### create denominator -- unique youth for entire sample
+unique_youth_sample_denom <- n_distinct(df_dallas_county_av_supervision_analytic_file$unique_id)
+
+### unique youth and referrals per FY of exit
+df_modifications_extensions_per_year <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
+
+### overall
+df_modifications_extensions_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`FY of Completion` = "Overall")
+
+### combine tables for kable
+df_modifications_extensions_per_year_table <- rbind(df_modifications_extensions_per_year,df_modifications_extensions_overall)
+
+### print table via kableextra
+kable(df_modifications_extensions_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+## slide 23a
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY of exit
+df_modifications_extensions_per_year_viz <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
+  dplyr::summarise(percent = n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/n_distinct(unique_referral_id)) %>% 
+  ungroup() |> 
+  mutate(group = "dallas")
+
+###geom_line 
+ggplot(data = df_modifications_extensions_per_year_viz, aes(x = supervision_end_fy, y = percent
+                                                            ,
+                                                            color = group,
+                                                            group = group
+                                                            )) +
+  geom_line(color = "black", size = 2.75) +
+  geom_line(size = 2.2) +
+  geom_point(color = "black", size = 4) +
+  geom_point(size = 3.5) +
+  labs(x = "Fiscal Year", y = "Supervision Episodes with\nProbation Modification (%)", color=NULL, title = NULL, caption = NULL) +
+  scale_y_continuous(label=scales::percent_format(accuracy=1),
+                     limits = c(min(0), 
+                                max(.4))) +
+  theme(legend.position = "none",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 13),
+        panel.grid.major.x = element_blank(),      
+        plot.title = element_text( hjust = 0.5),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16,margin = margin(t = 15)),
+        axis.title.y = element_text(size = 16,margin = margin(r = 15)),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5)) +  
+  scale_color_manual(values = c("#1F4A58")) +
+  scale_fill_manual(values = c("#1F4A58")) +
+  geom_label_repel(aes(label = scales::percent(as.numeric(percent),
+                                               accuracy = 0.1),
+                    fill = group
+                    ),
+                   hjust = .1,
+                   label.padding = 0.2,
+                   box.padding = 0.2,
+                   color = "white",
+                   size = 5,
+                   segment.color = NA,
+                   fontface = "bold",
+                   na.rm = TRUE,
+                   show.legend = FALSE)
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_23_modification_rate_overall.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+## Table 2. By Race/Ethnicity: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_modifications_extensions_race <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean)
+
+### overall
+df_modifications_extensions_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_modifications_extensions_race_table <- rbind(df_modifications_extensions_race,df_modifications_extensions_overall)
+
+### print table via kableextra
+kable(df_modifications_extensions_race_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+```{r }
+### unique youth, referrals, and supervision episodes
+df_modifications_extensions_race_rri <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification` = n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+             `Supervision Episodes, with at least one level modification (RRI to White youth)` = round((n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`)/0.16666667, digits = 1),
+            `Supervision Episodes, with at least one supervision extension` = n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+            `Supervision Episodes, with at least one supervision extension (RRI to White youth)` = round((n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`)/0.09779614, digits = 1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean)
+
+### remove groups analysis with small sample size
+### pull out RRIs for plot
+### use gather to shift data from wide to long
+df_modifications_extensions_race_rri_viz <- df_modifications_extensions_race_rri %>% 
+  filter(`Race/Ethnicity`%in%c("Black",
+                               "Hispanic",
+                               "White")) %>% 
+  dplyr::select(`Race/Ethnicity`,rri=`Supervision Episodes, with at least one level modification (RRI to White youth)`) %>% 
+  dplyr::filter(`Race/Ethnicity`!="White") %>% 
+  mutate(reference = 1)
+
+### plot
+ggplot(data = df_modifications_extensions_race_rri_viz, 
+       aes(y = rri, 
+           x = `Race/Ethnicity`, 
+           fill = forcats::fct_rev(`Race/Ethnicity`))) + 
+  geom_bar(stat = "identity", 
+           position = "dodge"
+           # ,color = "gray80"
+             ) +
+    # geom_bar(aes(y=reference),
+    #          stat = "identity", 
+    #        position = "dodge", 
+    #        fill = "gray80") +
+    geom_col_pattern(aes(y=reference),
+                   pattern_color = NA,
+                   pattern_fill = "gray80",
+                   pattern = "stripe"
+                   # ,color = "gray80"
+                     ) +
+  geom_abline(slope=0, 
+              intercept=1,  
+              col = "#000000", 
+              size = 1.5, 
+              linetype="dashed") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(limits=c(min(0), 
+                                           max(2.05))) +
+  scale_fill_manual(values = c("#1F4A58","#87C2D4")) +
+  scale_color_manual(values = rev(c("#1F4A58","#87C2D4"))) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        # axis.text.y = element_text(face = "bold", hjust = 1, size = 14),
+        # strip.text.x = element_text(face = "bold", vjust = 1.5, size = 14, 
+        #                             hjust = 0.5),
+          axis.text.y = element_text(face = "bold",size = 14),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 14),
+        plot.caption = element_text(hjust = 0.5),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.title.x = element_text(size = 15, margin = margin(t = 15)),
+        axis.title.y = element_text(size =15, margin = margin(r = 15))) +
+    labs(y = "Relative Rate Index (RRI)", 
+         x = NULL,
+      caption = NULL,
+      title = NULL,
+      subtitle = NULL,
+      fill = NULL) +
+    coord_flip() +
+  # facet_grid(~ rri_measure) +
+ # guides(fill = guide_legend(reverse = TRUE,
+ #                             title.position = "top",
+ #                             label.position = "bottom",
+ #                             keywidth = 3,
+ #                             nrow = 1)) +
+   guides(fill = FALSE) +
+  # geom_label_repel(aes(label = format(round(as.numeric(rri), 
+  #                                           digits = 1), 
+  #                                     nsmall=1), 
+  #                      group = forcats::fct_rev(`Race/Ethnicity`),
+  #                      color = `Race/Ethnicity`),
+  #                 position = position_dodge(.9),
+  #                 direction = 'x',
+  #                 hjust = 0.75,
+  #                 label.padding = 0.3,
+  #                 box.padding = 0.15,
+  #                 size = 5,
+  #                 fill = "white",
+  #                 fontface = "bold",
+  #                 na.rm = TRUE,
+  #                 show.legend = FALSE) +
+  annotate("text", 
+           x = 2.53, 
+           y = 1.47, 
+           label = "This line represents White youth (reference group)", 
+           colour = "#000000", 
+           size = 3.75, 
+           fontface = 2)
+
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_24_modification_rate_race_eth_rri.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+
+```
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+# ### remove groups analysis with small sample size
+# ### pull out RRIs for plot
+# ### use gather to shift data from wide to long
+# df_rri_overall_jj_final_to_viz <- df_rri_overall_jj_final %>% 
+#   filter(`Race/Ethnicity`%in%c("Black",
+#                                "Hispanic",
+#                                "White")) %>% 
+#   dplyr::select(`Race/Ethnicity`,rri=`JJ-involved RRI (to white youth)`) %>% 
+#   dplyr::filter(`Race/Ethnicity`!="White") %>% 
+#   mutate(reference = 1)
+# 
+# ### plot
+# ggplot(data = df_rri_overall_jj_final_to_viz, 
+#        aes(y = rri, 
+#            x = `Race/Ethnicity`, 
+#            fill = forcats::fct_rev(`Race/Ethnicity`))) + 
+#   geom_bar(stat = "identity", 
+#            position = "dodge"
+#            # ,color = "gray80"
+#              ) +
+#     # geom_bar(aes(y=reference),
+#     #          stat = "identity", 
+#     #        position = "dodge", 
+#     #        fill = "gray80") +
+#     geom_col_pattern(aes(y=reference),
+#                    pattern_color = NA,
+#                    pattern_fill = "gray80",
+#                    pattern = "stripe"
+#                    # ,color = "gray80"
+#                      ) +
+#   geom_abline(slope=0, 
+#               intercept=1,  
+#               col = "#000000", 
+#               size = 1.5, 
+#               linetype="dashed") +
+#   scale_x_discrete(limits = rev) +
+#   scale_y_continuous(limits=c(min(0), 
+#                                            max(2.5))) +
+#   scale_fill_manual(values = c("#1F4A58","#87C2D4")) +
+#   scale_color_manual(values = rev(c("#1F4A58","#87C2D4"))) +
+#   theme(legend.position = "top",
+#         legend.title.align=0.5,
+#         # axis.text.y = element_text(face = "bold", hjust = 1, size = 14),
+#         # strip.text.x = element_text(face = "bold", vjust = 1.5, size = 14, 
+#         #                             hjust = 0.5),
+#           axis.text.y = element_text(face = "bold",size = 14),
+#         axis.text.x = element_text(face = "bold", hjust = 1, size = 14),
+#         plot.caption = element_text(hjust = 0.5),
+#         axis.ticks.length = unit(0, "cm"),
+#         panel.grid.major.y = element_blank(),
+#         # panel.grid.major.x = element_blank(),
+#         panel.grid.minor = element_blank(),
+#         axis.title.x = element_text(size = 15, margin = margin(t = 15)),
+#         axis.title.y = element_text(size =15, margin = margin(r = 15))) +
+#     labs(y = "Relative Rate Index (RRI)", 
+#          x = NULL,
+#       caption = NULL,
+#       title = NULL,
+#       subtitle = NULL,
+#       fill = NULL) +
+#     coord_flip() +
+#   # facet_grid(~ rri_measure) +
+#  # guides(fill = guide_legend(reverse = TRUE,
+#  #                             title.position = "top",
+#  #                             label.position = "bottom",
+#  #                             keywidth = 3,
+#  #                             nrow = 1)) +
+#    guides(fill = FALSE) +
+#   # geom_label_repel(aes(label = format(round(as.numeric(rri), 
+#   #                                           digits = 1), 
+#   #                                     nsmall=1), 
+#   #                      group = forcats::fct_rev(`Race/Ethnicity`),
+#   #                      color = `Race/Ethnicity`),
+#   #                 position = position_dodge(.9),
+#   #                 direction = 'x',
+#   #                 hjust = 0.75,
+#   #                 label.padding = 0.3,
+#   #                 box.padding = 0.15,
+#   #                 size = 5,
+#   #                 fill = "white",
+#   #                 fontface = "bold",
+#   #                 na.rm = TRUE,
+#   #                 show.legend = FALSE) +
+#   annotate("text", 
+#            x = 2.53, 
+#            y = 1.57, 
+#            label = "This line represents White youth (reference group)", 
+#            colour = "#000000", 
+#            size = 3.75, 
+#            fontface = 2)
+
+### unique youth, referrals, and supervision episodes
+df_technical_violations_risk_viz <- df_dallas_county_av_supervision_analytic_file |> 
+  filter(race_clean%in%c("Black","White","Hispanic")) |> 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(percent = n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/n_distinct(unique_referral_id)) %>% 
+  ungroup() |> 
+  pivot_longer(!race_clean, names_to = "complaint_type", values_to = "percent") 
+
+### plot
+### bar plot
+ggplot(data = df_technical_violations_risk_viz,
+       aes(x = race_clean,
+           y = percent,
+           fill = race_clean)) + 
+  geom_bar(stat = "identity",  
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), 
+                                max(.4))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 6,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size = 16),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 16),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_24_modifications_race_eth.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+## Table 3. By Gender: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_modifications_extensions_gender <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(gender_clean) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean)
+
+### overall
+df_modifications_extensions_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Gender` = "Overall")
+
+### combine tables for kable
+df_modifications_extensions_gender_table <- rbind(df_modifications_extensions_gender,df_modifications_extensions_overall)
+
+### print table via kableextra
+kable(df_modifications_extensions_gender_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(3, bold = TRUE)
+```
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_technical_violations_risk_viz <- df_dallas_county_av_supervision_analytic_file |> 
+  dplyr::group_by(gender_clean) %>% 
+  dplyr::summarise(percent = n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/n_distinct(unique_referral_id)) %>% 
+  ungroup() |> 
+  pivot_longer(!gender_clean, names_to = "complaint_type", values_to = "percent") 
+
+### plot
+### bar plot
+ggplot(data = df_technical_violations_risk_viz,
+       aes(x = gender_clean,
+           y = percent,
+           fill = gender_clean)) + 
+  geom_bar(stat = "identity",  
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), 
+                                max(.4))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 6,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size = 16),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 16),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_24_modifications_gender.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+## Table 4. By Age: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### turn age into a factor
+df_dallas_county_av_supervision_analytic_file %<>%
+ mutate(age_at_referral_clean = factor(age_at_referral_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 16",
+                    "17+")))
+
+### unique youth, referrals, and supervision episodes
+df_modifications_extensions_age <- df_dallas_county_av_supervision_analytic_file %>% 
+  filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::group_by(age_at_referral_clean) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age` = age_at_referral_clean)
+
+### overall
+df_modifications_extensions_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Age` = "Overall")
+
+### combine tables for kable
+df_modifications_extensions_age_table <- rbind(df_modifications_extensions_age,df_modifications_extensions_overall)
+
+### print table via kableextra
+kable(df_modifications_extensions_age_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_technical_violations_risk_viz <- df_dallas_county_av_supervision_analytic_file |> 
+  filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::group_by(age_at_referral_clean) |> 
+  dplyr::summarise(percent = n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/n_distinct(unique_referral_id)) %>% 
+  ungroup() |> 
+  pivot_longer(!age_at_referral_clean, names_to = "complaint_type", values_to = "percent") 
+
+### plot
+### bar plot
+ggplot(data = df_technical_violations_risk_viz,
+       aes(x = age_at_referral_clean,
+           y = percent,
+           fill = age_at_referral_clean)) + 
+  geom_bar(stat = "identity",  
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), 
+                                max(.4))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 6,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size = 16),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 16),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_24_modifications_age.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+## Table 5. By Risk Level: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
+
+Note: This is the "listed risk level at the time of referral disposition"
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_modifications_extensions_risk <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level)
+
+### overall
+df_modifications_extensions_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_modifications_extensions_risk_table <- rbind(df_modifications_extensions_risk,df_modifications_extensions_overall)
+
+### print table via kableextra
+kable(df_modifications_extensions_risk_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+## slide 25
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_technical_violations_risk_viz <- df_dallas_county_av_supervision_analytic_file |> 
+  filter(offense_referral_risk_level!="Unknown/Not Administered") |> 
+  dplyr::group_by(offense_referral_risk_level) |> 
+  dplyr::summarise(percent = n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/n_distinct(unique_referral_id)) %>% 
+  ungroup() |> 
+  pivot_longer(!offense_referral_risk_level, names_to = "complaint_type", values_to = "percent") 
+
+### plot
+### bar plot
+ggplot(data = df_technical_violations_risk_viz,
+       aes(x = offense_referral_risk_level,
+           y = percent,
+           fill = offense_referral_risk_level)) + 
+  geom_bar(stat = "identity",  
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), 
+                                max(.4))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 6,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size = 16),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 16),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_25_extension_by_risk.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+## slide 23a
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY of exit
+df_modifications_extensions_per_year_viz <- df_dallas_county_av_supervision_analytic_file |> 
+  dplyr::group_by(supervision_end_fy) |> 
+  dplyr::summarise(percent = n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/n_distinct(unique_referral_id)) %>% 
+  ungroup() |> 
+  mutate(group = "dallas")
+
+###geom_line 
+ggplot(data = df_modifications_extensions_per_year_viz, aes(x = supervision_end_fy, y = percent
+                                                            ,
+                                                            color = group,
+                                                            group = group
+                                                            )) +
+  geom_line(color = "black", size = 2.75) +
+  geom_line(size = 2.2) +
+  geom_point(color = "black", size = 4) +
+  geom_point(size = 3.5) +
+  labs(x = "Fiscal Year", y = "Supervision Episodes with\nProbation Extension (%)", color=NULL, title = NULL, caption = NULL) +
+  scale_y_continuous(label=scales::percent_format(accuracy=1),
+                     limits = c(min(0), 
+                                max(.2))) +
+  theme(legend.position = "none",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 13),
+        panel.grid.major.x = element_blank(),      
+        plot.title = element_text( hjust = 0.5),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16,margin = margin(t = 15)),
+        axis.title.y = element_text(size = 16,margin = margin(r = 15)),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5)) +  
+  scale_color_manual(values = c("#1F4A58")) +
+  scale_fill_manual(values = c("#1F4A58")) +
+  geom_label_repel(aes(label = scales::percent(as.numeric(percent),
+                                               accuracy = 0.1),
+                    fill = group
+                    ),
+                   hjust = .1,
+                   label.padding = 0.2,
+                   box.padding = 0.2,
+                   color = "white",
+                   size = 5,
+                   segment.color = NA,
+                   fontface = "bold",
+                   na.rm = TRUE,
+                   show.legend = FALSE)
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_25_extension_by_year.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+## slide 23b
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY of exit
+df_modifications_extensions_per_year_risk_viz <- df_dallas_county_av_supervision_analytic_file %>% 
+  filter(offense_referral_risk_level!="Unknown/Not Administered") |> 
+  dplyr::group_by(supervision_end_fy,offense_referral_risk_level) %>% 
+  dplyr::summarise(percent = n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/n_distinct(unique_referral_id)) %>% 
+  ungroup() |> 
+  pivot_longer(!c(supervision_end_fy,offense_referral_risk_level), names_to = "referral_source", values_to = "percent")
+
+###geom_line 
+ggplot(data = df_modifications_extensions_per_year_risk_viz, aes(x = supervision_end_fy, y = percent
+                                                            ,
+                                                            color = offense_referral_risk_level,
+                                                            group = offense_referral_risk_level
+                                                            )) +
+  geom_line(color = "black", size = 2.75) +
+  geom_line(size = 2.2) +
+  geom_point(color = "black", size = 4) +
+  geom_point(size = 3.5) +
+  labs(x = "Fiscal Year", y = "Supervision Episodes with\nProbation Modification (%)", color=NULL, title = NULL, caption = NULL) +
+  scale_y_continuous(label=scales::percent_format(accuracy=1),
+                     limits = c(min(0), 
+                                max(.75))) +
+  theme(legend.position = "top",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 13),
+        panel.grid.major.x = element_blank(),      
+        plot.title = element_text( hjust = 0.5),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16,margin = margin(t = 15)),
+        axis.title.y = element_text(size = 16,margin = margin(r = 15)),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5)) +  
+  scale_color_manual(values = c("#87C2D4","#2F7084","#1F4A58")) +
+  scale_fill_manual(values = c("#87C2D4","#2F7084","#1F4A58")) +
+  geom_label_repel(aes(label = scales::percent(as.numeric(percent),
+                                               accuracy = 0.1),
+                    fill = offense_referral_risk_level
+                    ),
+                   hjust = .1,
+                   label.padding = 0.2,
+                   box.padding = 0.2,
+                   color = "white",
+                   size = 5,
+                   segment.color = NA,
+                   fontface = "bold",
+                   na.rm = TRUE,
+                   show.legend = FALSE)
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_23_modification_rate_by_risk.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+## Table 6. By Needs Level: Percentage of Supervision Episodes/Referrals with a Supervision Modification and Extension
+
+Note: This is the "listed needs level at the time of referral disposition"
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth, referrals, and supervision episodes
+df_modifications_extensions_needs <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level)
+
+### overall
+df_modifications_extensions_overall <- df_dallas_county_av_supervision_analytic_file %>% 
+  dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
+            `Unique Referrals (N)` = n_distinct(unique_referral_id),
+            `Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+            `Supervision Episodes, Percent of Sample (column %)` = scales::percent(`Unique Supervision Episodes (N)`/unique_supervision_episode_denom,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one level modification (row %)` = scales::percent(n_distinct(unique_referral_id[supervision_level_increases_per_supervision_episode_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1),
+            `Supervision Episodes, with at least one supervision extension (row %)` = scales::percent(n_distinct(unique_referral_id[unique_supervision_extensions_per_supervision_count>0])/`Unique Supervision Episodes (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_modifications_extensions_needs_table <- rbind(df_modifications_extensions_needs,df_modifications_extensions_overall)
+
+### print table via kableextra
+kable(df_modifications_extensions_needs_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+# Average Number of Modifications
+
+**Note:** This current analysis does not account for the timing of modifications or extensions relative to technical violations
+
+<br>
+
+## Table 7. By FY: Average Number of Supervision Modifications and Extensions per Supervision Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### de-dup analytic file by supervision episode since we are calculating mean and medians
+### recode extension count vars for mean/median; extension == NA needs to be 0 
+df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup <- df_dallas_county_av_supervision_analytic_file %>% 
+  distinct(unique_referral_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_supervision_extensions_per_supervision_count_average = ifelse(is.na(unique_supervision_extensions_per_supervision_count)==TRUE,
+                                                                              0,unique_supervision_extensions_per_supervision_count)) |> 
+  filter(supervision_end_fy!=2023)
+  
+### mean and median modifications and extensions
+df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+   dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  mutate(`FY of Completion` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_year_table <- rbind(df_modifications_mean_median_year,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br><br>
+
+## Table 8. By Race/Ethnicity: Average Number of Supervision Modifications and Extensions per Supervision Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_race <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_race_table <- rbind(df_modifications_mean_median_race,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_race_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br><br>
+
+## Table 9. By Gender: Average Number of Supervision Modifications and Extensions per Supervision Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_gender <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::group_by(gender_clean) %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  mutate(`Gender` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_gender_table <- rbind(df_modifications_mean_median_gender,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_gender_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(3, bold = TRUE)
+```
+
+<br><br>
+
+## Table 10. By Age: Average Number of Supervision Modifications and Extensions per Supervision Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %<>%
+ mutate(age_at_referral_clean = factor(age_at_referral_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 16",
+                    "17+")))
+
+### mean and median modifications and extensions
+df_modifications_mean_median_age <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::group_by(age_at_referral_clean) %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age` = age_at_referral_clean) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  mutate(`Age` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_age_table <- rbind(df_modifications_mean_median_age,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_age_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+## Table 11. By Risk Level: Average Number of Supervision Modifications and Extensions per Supervision Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_risk <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>%  
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_risk_table <- rbind(df_modifications_mean_median_risk,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_risk_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+## Table 11b. By Risk Level: Average Number of Supervision Modifications and Extensions per Supervision Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_risk <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Overall LOS` = mean(overall_supervision_los_days_min_max,
+                                                                 na.rm = TRUE),
+                   `Median Overall LOS` = median(overall_supervision_los_days_min_max,
+                                                                 na.rm = TRUE),
+                   `min Overall LOS` = min(overall_supervision_los_days_min_max,
+                                                                 na.rm = TRUE),
+                   `max Overall LOS` = max(overall_supervision_los_days_min_max,
+                                                                 na.rm = TRUE)) %>%  
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level) 
+
+
+### print table via kableextra
+kable(df_modifications_mean_median_risk, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+## Table 12. By Needs Level: Average Number of Supervision Modifications and Extensions per Supervision Episode
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_needs <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_de_dup %>% 
+  dplyr::summarise(`Unique Supervision Episodes (N)` = n_distinct(unique_referral_id),
+                   `Mean Number of Supervision Level Modifications` = mean(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Level Modifications` = median(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Min Number of Supervision Level Modifications` = min(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Level Modifications` = max(supervision_level_increases_per_supervision_episode_count,
+                                                                 na.rm = TRUE),
+                   `Mean Number of Supervision Extensions` = mean(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Median Number of Supervision Extensions` = median(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                    `Min Number of Supervision Extensions` = min(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE),
+                   `Max Number of Supervision Extensions` = max(unique_supervision_extensions_per_supervision_count_average,
+                                                                 na.rm = TRUE)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_needs_table <- rbind(df_modifications_mean_median_needs,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_needs_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+# % of Episodes with Supervision Modifications Prior to First Technical Violation
+
+**NOTE:** The following tables are limited to youth with a technical violation. The current analysis includes any upward modification of supervision level intensiveness (moving to a more intensive supervision level) that occurs prior to the first date of violation *AND* that is not linked to a new offense violation (definition of linked is that the modification occurs between 1 day prior to violation disposition or up to 3 days following violation disposition). Further, I only considered modifications that occurred two or more days prior to the filing date of the first technical violation for a given supervision episode as having occurred before a violation (and as likely unrelated to the violation).
+
+<br>
+
+## Table 13. By FY: % of Episodes with Supervision Modifications Prior to First Technical Violation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### using modification_increase_prior_to_technical_count in this section
+
+### de-dup analytic file by supervision episode since we are calculating mean and medians
+### filter on those with at least one technical violation as this will be the base sample
+### of the youth with a technical violation, how many experienced increases in supervision level 
+### intensiveness prior to the violation?
+
+### recode modification var for mean/median; NA needs to be 0 
+df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup <- df_dallas_county_av_supervision_analytic_file %>% 
+  distinct(unique_referral_id,
+           .keep_all = TRUE) %>% 
+  filter(technical_violation_count>0) %>% 
+  mutate(unique_supervision_extensions_per_supervision_count_average = ifelse(is.na(unique_supervision_extensions_per_supervision_count)==TRUE,
+                                                                              0,unique_supervision_extensions_per_supervision_count),
+         modification_increase_prior_to_technical_count_average = ifelse(is.na(modification_increase_prior_to_technical_count)==TRUE,
+                                                                              0,modification_increase_prior_to_technical_count)) |> 
+  filter(supervision_end_fy!=2023)
+
+### mean and median modifications and extensions
+df_modifications_mean_median_year <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Completion` = supervision_end_fy) %>% 
+  mutate(`FY of Completion` = as.character(`FY of Completion`))
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>%  
+  mutate(`FY of Completion` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_year_table <- rbind(df_modifications_mean_median_year,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+## slide 23a
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY of exit
+df_modifications_extensions_per_year_viz <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::group_by(supervision_end_fy) %>% 
+  dplyr::summarise(percent = n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/n_distinct(unique_referral_id)) %>% 
+  ungroup() |> 
+  mutate(group = "dallas")
+
+###geom_line 
+ggplot(data = df_modifications_extensions_per_year_viz, aes(x = supervision_end_fy, y = percent
+                                                            ,
+                                                            color = group,
+                                                            group = group
+                                                            )) +
+  geom_line(color = "black", size = 2.75) +
+  geom_line(size = 2.2) +
+  geom_point(color = "black", size = 4) +
+  geom_point(size = 3.5) +
+  labs(x = "Fiscal Year", y = "Supervision Episodes with Modification\n Prior to First Technical Violation (%)", color=NULL, title = NULL, caption = NULL) +
+  scale_y_continuous(label=scales::percent_format(accuracy=1),
+                     limits = c(min(0), 
+                                max(.52))) +
+  theme(legend.position = "none",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 13),
+        panel.grid.major.x = element_blank(),      
+        plot.title = element_text( hjust = 0.5),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16,margin = margin(t = 15)),
+        axis.title.y = element_text(size = 16,margin = margin(r = 15)),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5)) +  
+  scale_color_manual(values = c("#1F4A58")) +
+  scale_fill_manual(values = c("#1F4A58")) +
+  geom_label_repel(aes(label = scales::percent(as.numeric(percent),
+                                               accuracy = 0.1),
+                    fill = group
+                    ),
+                   hjust = .1,
+                   label.padding = 0.2,
+                   box.padding = 0.2,
+                   color = "white",
+                   size = 5,
+                   segment.color = NA,
+                   fontface = "bold",
+                   na.rm = TRUE,
+                   show.legend = FALSE)
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_26_modification_prior_to_first_technical.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+
+<br><br>
+
+## Table 14. By Race/Ethnicity: % of Episodes with Supervision Modifications Prior to First Technical Violation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_race <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>%  
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_race_table <- rbind(df_modifications_mean_median_race,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_race_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br><br>
+
+## Table 15. By Gender: % of Episodes with Supervision Modifications Prior to First Technical Violation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_gender <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::group_by(gender_clean) %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Gender` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_gender_table <- rbind(df_modifications_mean_median_gender,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_gender_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(3, bold = TRUE)
+```
+
+<br><br>
+
+## Table 16. By Age: % of Episodes with Supervision Modifications Prior to First Technical Violation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %<>%
+ mutate(age_at_referral_clean = factor(age_at_referral_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 16",
+                    "17+")))
+
+### mean and median modifications and extensions
+df_modifications_mean_median_age <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::group_by(age_at_referral_clean) %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age` = age_at_referral_clean) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  filter(!is.na(age_at_referral_clean)) |> 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>%  
+  mutate(`Age` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_age_table <- rbind(df_modifications_mean_median_age,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_age_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+## Table 17. By Risk Level: % of Episodes with Supervision Modifications Prior to First Technical Violation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_risk <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_risk_table <- rbind(df_modifications_mean_median_risk,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_risk_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+## Table 18. By Needs Level: % of Episodes with Supervision Modifications Prior to First Technical Violation
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean and median modifications and extensions
+df_modifications_mean_median_needs <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level) 
+
+### overall
+df_modifications_mean_median_overall <- df_dallas_county_av_supervision_analytic_file_supervision_episode_technical_de_dup %>% 
+  dplyr::summarise(`Supervision Episodes w/ Technical Violation (N)` = n_distinct(unique_referral_id),
+                   `Supervision Episodes, with at least one level modification prior to Technical (row %)` = scales::percent(n_distinct(unique_referral_id[modification_increase_prior_to_technical_count_average>0])/`Supervision Episodes w/ Technical Violation (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_modifications_mean_median_needs_table <- rbind(df_modifications_mean_median_needs,df_modifications_mean_median_overall)
+
+### print table via kableextra
+kable(df_modifications_mean_median_needs_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>

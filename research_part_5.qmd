@@ -1,0 +1,1828 @@
+---
+title: "What happens to youth as the result of a technical violation?"
+format: html
+---
+
+**What happens to youth as the result of a technical violation?** 
+
+**1.** 
+
+* Of youth who receive a technical violation as a primary offense, what proportion are placed in a residential facility; detention; committed to state custody? How does this vary across race/ethnicity, sex, and risk level? 
+
+* Of youth who receive a technical violation as a primary offense, what proportion receive an extended supervision episode? 
+
+
+**2.**
+
+* What is the average length of time a supervision episode is extended as the result of a technical violation? How does this vary across race/ethnicity, sex, and risk level? 
+
+
+
+**3.** 
+
+* In Dallas, probation can file a violation to get a kid into a 21 Day residential program. The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? 
+
+
+
+**Double check following coding/grouping of violation dispositions with team:**
+
+* "No Disposition" = "ADJUDICATED - NO DISPOSITION"
+
+* "Probation" = "ADJUDICATED PLACED ON PROBATION", "CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PROBATION)") 
+
+* "21 Day Residential Program" = "DISMISSED OR WITHDRAWN BY DEPARTMENT" **AND** placement type = "Emergency Shelter" **AND** placement offense = "VOP" **AND** placement end date = violation disposition date
+
+* "Dismissed/Withdrawn" = "COMPLAINT DISMISSED BY COURT", "DISMISSED WITHOUT PROSECUTION","DISMISSED WITHOUT PROSECUTION - PA", "NO CASE FILED BY DA NO JD ACTION", "NO INTAKE, NO PROBABLE CAUSE - DECLINED BY PROSECUTOR", "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT", "NO INTAKE, PROBABLE CAUSE - PROSECUTOR", "NONSUIT", "NONSUIT (PA)","NO INTAKE, DISPOSED BY INTAKE", "DISMISSED OR WITHDRAWN BY DEPARTMENT" (non-21 day program instances only)
+                            
+* "Other" = "CONSOLIDATED IN ANOTHER CASE/REFERRAL", "CONSOLIDATED BY DEPARTMENT", "FILED AS A MOTION TO MODIFY","FILED AS MOTION TO MODIFY", "MOD/VOP Disposed by Intake (PA)","TAKEN INTO CONSIDERATION","SUPERVISORY CAUTION BY DEPARTMENT", "TAKEN INTO CONSIDERATION (PA Complaint)", "TRANSFER OF DISPOSITION BY COURT"
+                            
+* "Placement" = "CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PLACEMENT)", "MODIFICATION PLACEMENT","MODIFIED TO PLACEMENT-DETERMINATE SENTENCE PROB", "PROBATION/PLACEMENT"
+                            
+* "Commitment" = "PROB REVOKED-DETERMINATE COMMITMENT","PROB REVOKED-INDETERMINATE COMMITMENT","TJJD DETERMINATE COMMITMENT","TJJD INDETERMINATE COMMITMENT"  
+                            
+* "Probation Extension" = "PROBATION EXTENDED" 
+
+* "Probation Modified" = "PROBATION MODIFIED"  
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","csgjcr","DataExplorer","tidylog","ggtext","ggpattern")
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set chunk output specifications
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dev = "ragg_png",
+  cache = FALSE)
+
+### set theme
+theme_set(theme_minimal())
+
+### data path
+sp_data_path <- csg_get_project_path("jj-av-dallas")
+
+## viz output path
+sp_viz_output_path <- paste0(sp_data_path,"/output/r_output_presentation")
+
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+###############################
+### import dallas analytic file
+###############################
+
+### set sharepoint path using sp_data_path and file.path function 
+sharepoint_jj_av_dallas_analytic_data <- file.path(sp_data_path,"Data/analysis")
+
+df_dallas_county_av_supervision_analytic_file <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "df_dallas_county_av_supervision_analytic_file.txt"),
+                      delim = "|") %>% 
+  mutate(offense_referral_risk_level = 
+           case_when(
+             offense_referral_risk_level=="Low Risk" ~ 1,
+             offense_referral_risk_level%in%c("Medium-Low Risk",
+                             "Medium-High Risk",
+                             "Moderate Risk") ~ 2,
+             offense_referral_risk_level=="High Risk" ~ 3,             
+             offense_referral_risk_level%in%c("Unknown/Not Administered") ~ 4,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_risk_level = factor(offense_referral_risk_level,
+         levels = c(1,2,3,4),
+         labels =  c("Low Risk", 
+                     "Moderate Risk", 
+                     "High Risk",
+                     "Unknown/Not Administered")),
+         offense_referral_needs_level = 
+           case_when(
+             offense_referral_needs_level=="Low Needs" ~ 1,
+             offense_referral_needs_level=="Moderate Needs" ~ 2,
+             offense_referral_needs_level=="High Needs" ~ 3,             
+             offense_referral_needs_level%in%c("Unknown/Not Administered") ~ 4,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_needs_level = factor(offense_referral_needs_level,
+         levels = c(1,2,3,4),
+         labels = c("Low Needs", 
+                    "Moderate Needs", 
+                    "High Needs",
+                    "Unknown/Not Administered"))) |> 
+  ### de-dup by unique_supervision_id for mean calculations
+  distinct(unique_supervision_id,
+           .keep_all = TRUE)
+
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### import violations file so that denominator is all violations (grouped)
+### and not just all referrals with a violation
+
+### read in violations file
+df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "df_violations_clean_demo.txt"),
+                      delim = "|") |> 
+  filter(violation_severity_factor == "Technical Violation") |> 
+  mutate(youth_violation_id = paste0(unique_id,
+                                    violation_referral_number),
+         violation_filed_date_fy = csgjcr::csg_fiscal_year(violation_filed_date,
+                                                          fy_start="October")) |> 
+  mutate(violation_type_cleaned = 
+           case_when(
+             violation=="100a  Violation Probation - General" ~ "General Violation",
+             violation%in%c("5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)","5100b  Absenting Self From Court Order Placement (2,6)") ~ "Violation Related to Placement",
+             violation=="5100d  Viol Prob - Runaway From Home/Placement" ~ "Runaway",
+             violation=="5100e  Viol Prob - Failure to Report to Probation Officer (2)" ~ "Failure to Report to PO",
+             violation=="5100i - Viol Prob - Violating School Rules" ~ "Violation of School Rules",
+             violation=="5100f  Viol Prob - Curfew Violation (3)" ~ "Curfew Violation",
+             violation=="5100l Viol Prob - Failure to Participate in Order Program (11)" ~ "Failure to Participate in Program",
+             violation%in%c("5100h  Viol Prob - Truancy - Not attending each Class each Day (4)",
+                            "5103c  Truancy 3 Days") ~ "Truancy",
+             violation%in%c("5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
+                            "5100k  Viol Prob - Failure to Pay Probation Fees (9)",
+                            "xxx - Converted Data") ~ "Other",
+             violation=="No Violation/Modification Needed" ~ "No Violation",             
+             TRUE ~ as.character(NA))) |> 
+    filter(violation_type_cleaned!="No Violation") |> 
+  ### re-code disposition of "DISMISSED OR WITHDRAWN BY DEPARTMENT" as "CAI" when cai flag is 1
+  ### otherwise, we will group it with the other dismissed/withdrawn category
+    mutate(violation_disposition = case_when(
+      violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT" & cai_program_flag==1 ~ "CAI",
+      violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT" & is.na(cai_program_flag)==TRUE ~ "DISMISSED OR WITHDRAWN BY DEPARTMENT",
+      TRUE ~ as.character(violation_disposition))) |> 
+    mutate(violation_dispo_clean = 
+           case_when(
+             violation_disposition=="ADJUDICATED - NO DISPOSITION" ~ "No Disposition",
+             violation_disposition%in%c("ADJUDICATED PLACED ON PROBATION",
+                            "CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PROBATION)") ~ "Probation",
+             violation_disposition=="CAI" ~ "21 Day Residential Program",
+             violation_disposition%in%c("COMPLAINT DISMISSED BY COURT",
+                            "DISMISSED WITHOUT PROSECUTION",
+                            "DISMISSED WITHOUT PROSECUTION - PA",
+                            "NO CASE FILED BY DA NO JD ACTION",
+                            "NO INTAKE, NO PROBABLE CAUSE - DECLINED BY PROSECUTOR",
+                            "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT",
+                            "NO INTAKE, PROBABLE CAUSE - PROSECUTOR",
+                            "NONSUIT",
+                            "NONSUIT (PA)",
+                            "NO INTAKE, DISPOSED BY INTAKE",
+                            "DISMISSED OR WITHDRAWN BY DEPARTMENT") ~ "Dismissed/Withdrawn",
+             violation_disposition%in%c("CONSOLIDATED IN ANOTHER CASE/REFERRAL",
+                            "CONSOLIDATED BY DEPARTMENT",
+                            "FILED AS A MOTION TO MODIFY",
+                            "FILED AS MOTION TO MODIFY",
+                            "MOD/VOP Disposed by Intake (PA)",
+                            "TAKEN INTO CONSIDERATION",
+                            "SUPERVISORY CAUTION BY DEPARTMENT",
+                            "TAKEN INTO CONSIDERATION (PA Complaint)",
+                            "TRANSFER OF DISPOSITION BY COURT") ~ "Other",
+             violation_disposition%in%c("CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PLACEMENT)",
+                            "MODIFICATION PLACEMENT",
+                            "MODIFIED TO PLACEMENT-DETERMINATE SENTENCE PROB",
+                            "PROBATION/PLACEMENT") ~ "Placement",
+             violation_disposition%in%c("PROB REVOKED-DETERMINATE COMMITMENT",
+                            "PROB REVOKED-INDETERMINATE COMMITMENT",
+                            "TJJD DETERMINATE COMMITMENT",
+                            "TJJD INDETERMINATE COMMITMENT") ~ "Commitment",  
+             violation_disposition%in%c("PROBATION EXTENDED") ~ "Probation Extension",  
+             violation_disposition%in%c("PROBATION MODIFIED") ~ "Probation Modified",   
+             TRUE ~ as.character(NA))) %>% 
+  mutate(offense_referral_risk_level = 
+           case_when(
+             offense_referral_risk_level=="Low Risk" ~ 1,
+             offense_referral_risk_level%in%c("Medium-Low Risk",
+                             "Medium-High Risk",
+                             "Moderate Risk") ~ 2,
+             offense_referral_risk_level=="High Risk" ~ 3,             
+             offense_referral_risk_level%in%c("Unknown/Not Administered") ~ 4,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_risk_level = factor(offense_referral_risk_level,
+         levels = c(1,2,3,4),
+         labels =  c("Low Risk", 
+                     "Moderate Risk", 
+                     "High Risk",
+                     "Unknown/Not Administered")),
+         offense_referral_needs_level = 
+           case_when(
+             offense_referral_needs_level=="Low Needs" ~ 1,
+             offense_referral_needs_level=="Moderate Needs" ~ 2,
+             offense_referral_needs_level=="High Needs" ~ 3,             
+             offense_referral_needs_level%in%c("Unknown/Not Administered") ~ 4,
+             TRUE ~ as.numeric(NA)),
+         ### use factor function to assign labels to values
+         offense_referral_needs_level = factor(offense_referral_needs_level,
+         levels = c(1,2,3,4),
+         labels = c("Low Needs", 
+                    "Moderate Needs", 
+                    "High Needs",
+                    "Unknown/Not Administered"))) |> 
+  ### remove FY 2023 (year is incomplete based on timing of data pull) 
+  filter(violation_filed_date_fy!=2023,
+         violation_filed_date_fy>=2016)
+
+```
+
+<br>
+
+# 1. Technical Violation Disposition Outcomes
+
+<br>
+
+## Table 1. By FY: Technical Violation Disposition Outcomes
+
+**NOTE:** The base sample and denominator for this analysis is all filed violations where the most serious violation was a technical violation.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique violation grouped
+df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
+  filter(violation_filed_date_fy>=2016) %>% 
+  dplyr::group_by(violation_filed_date_fy) %>% 
+  dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Violation` = violation_filed_date_fy) %>% 
+  mutate(`FY of Violation` = as.character(`FY of Violation`))
+
+### overall
+df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  filter(violation_filed_date_fy>=2016) %>% 
+  dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`FY of Violation` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(8, bold = TRUE)
+```
+
+
+```{r }
+### unique complaints split out
+df_complaints_youth_intake_decision_offense_viz_overall_count <- df_technical_violations_dispo_clean_demo %>% 
+  # dplyr::filter(dai!="Court Order Violation") |> 
+  dplyr::summarise(`2016` = n_distinct(youth_violation_id[violation_filed_date_fy==2016]),
+                   `2017` = n_distinct(youth_violation_id[violation_filed_date_fy==2017]),
+                   `2018` = n_distinct(youth_violation_id[violation_filed_date_fy==2018]),
+                   `2019` = n_distinct(youth_violation_id[violation_filed_date_fy==2019]),
+                   `2020` = n_distinct(youth_violation_id[violation_filed_date_fy==2020]),
+                   `2021` = n_distinct(youth_violation_id[violation_filed_date_fy==2021]),
+                   `2022` = n_distinct(youth_violation_id[violation_filed_date_fy==2022])) |> 
+  mutate(group = "counts") |> 
+  pivot_longer(!group, names_to = "violation_filed_date_fy", values_to = "count") |> 
+  dplyr::select(-group) |> 
+  mutate(violation_filed_date_fy = as.numeric(violation_filed_date_fy))
+
+### unique violation grouped
+df_technical_violations_per_year_viz <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::group_by(violation_filed_date_fy) %>% 
+   dplyr::summarise(`21 Day CAI Program` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/n_distinct(youth_violation_id)
+                   #  ,
+                   # `All Other Outcomes` = n_distinct(youth_violation_id[violation_dispo_clean!="21 Day Residential Program"])/n_distinct(youth_violation_id)
+                   ) |>  
+  ungroup() %>% 
+  pivot_longer(!violation_filed_date_fy, names_to = "complaint_type", values_to = "percent") |> 
+  mutate(group = "dallas")
+  # arrange(desc(percent)) |> 
+  # left_join(df_complaints_youth_intake_decision_offense_viz_overall_count,
+  #           by = "violation_filed_date_fy") %>% 
+  # mutate(
+  #   violation_filed_date_fy_n = paste0(
+  #     "<span style = 'font-size:14pt'>", violation_filed_date_fy, "</span><br>",
+  #     "<span style = 'font-size:10pt'><em>", "N = ", scales::comma(count, 1), "</em></span>")) |> 
+  # mutate(offense_type = factor(complaint_type,
+  #                               levels = c("21 Day CAI Program",
+  #                                          "All Other Outcomes"))) |> 
+  # arrange(offense_type)
+
+###geom_line 
+ggplot(data = df_technical_violations_per_year_viz, aes(x = violation_filed_date_fy, y = percent
+                                                            ,
+                                                            color = group,
+                                                            group = group
+                                                            )) +
+  geom_line(color = "black", size = 2.75) +
+  geom_line(size = 2.2) +
+  geom_point(color = "black", size = 4) +
+  geom_point(size = 3.5) +
+  labs(x = "Fiscal Year", y = "Technical Violations with\nCAI Program Response (%)", color=NULL, title = NULL, caption = NULL) +
+  scale_y_continuous(label=scales::percent_format(accuracy=1),
+                     limits = c(min(0), 
+                                max(.36))) +
+  theme(legend.position = "none",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 13),
+        panel.grid.major.x = element_blank(),      
+        plot.title = element_text( hjust = 0.5),
+        axis.text.x = element_text(size = 16),
+        axis.text.y = element_text(size = 16),
+        axis.title.x = element_text(size = 16,margin = margin(t = 15)),
+        axis.title.y = element_text(size = 16,margin = margin(r = 15)),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5)) +  
+  scale_color_manual(values = c("#2F7084")) +
+  scale_fill_manual(values = c("#2F7084")) +
+  geom_label_repel(aes(label = scales::percent(as.numeric(percent),
+                                               accuracy = 0.1),
+                    fill = group
+                    ),
+                   hjust = .1,
+                   label.padding = 0.2,
+                   box.padding = 0.2,
+                   color = "white",
+                   size = 5,
+                   segment.color = NA,
+                   fontface = "bold",
+                   na.rm = TRUE,
+                   show.legend = FALSE)
+
+# ### plot
+# ggplot(data = df_technical_violations_per_year_viz, aes(y = percent, x = violation_filed_date_fy_n, fill = forcats::fct_rev(offense_type))) + 
+#   geom_bar(stat = "identity", color = "gray80") +
+#   scale_x_discrete(limits = rev) +
+#   scale_y_continuous(labels = scales::percent) +
+#    geom_label(
+#     aes(
+#       y = percent,
+#       label = scales::percent(percent,
+#                               accuracy = 1),
+#       fontface = "bold"
+#     ),
+#     position = position_stack(vjust = .5),
+#     size = 5,
+#     fill = "white",
+#     colour = "gray40",
+#     show.legend = FALSE
+#   ) +
+#   scale_fill_manual(values = c("gray","#2F7084")) +
+#   guides(fill = guide_legend(reverse = TRUE,
+#                              title.position = "top",
+#                              label.position = "bottom",
+#                              keywidth = 3,
+#                              nrow = 1)) +
+#   labs(x = NULL, y = NULL,
+#        fill = "Technical Violation Response",
+#        caption = NULL,
+#        title = NULL,
+#        subtitle = NULL) +
+#   theme(legend.position = "top",
+#         legend.title = element_text(hjust = 0.5,size = 13),
+#         legend.text = element_text(size = 12),
+#         plot.title = element_text(hjust = 0.5),
+#         plot.subtitle = element_text(hjust = 0.5),
+#         plot.caption = element_text(hjust = 0.5),
+#         # axis.text.x = element_markdown(),
+#         axis.text.y = element_markdown(size=14),
+#         axis.text.x = element_text(face = "bold", hjust = 1, size = 14),
+#         axis.ticks.length = unit(0, "cm"),
+#         panel.grid.major.y = element_blank(),
+#         panel.grid.major.x = element_blank(),
+#         panel.grid.minor = element_blank()) +
+#   coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_34_technical_violation_dispositions_cai_highlight_option_1_line.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+
+
+```
+
+```{r }
+### overall
+df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  filter(violation_filed_date_fy>=2016,
+         !is.na(violation_dispo_clean)==TRUE) %>% 
+  dplyr::summarise(`CAI Program` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/n_distinct(youth_violation_id),
+                   `Probation` = n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/n_distinct(youth_violation_id),
+                   `Probation Extension` = n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/n_distinct(youth_violation_id),
+                   `Probation Modified` = n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/n_distinct(youth_violation_id),
+                   `Placement` = n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/n_distinct(youth_violation_id),
+                   `Commitment` = n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/n_distinct(youth_violation_id),
+                   `Other` = n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/n_distinct(youth_violation_id),
+                   `Dismissed/Withdrawn` = n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/n_distinct(youth_violation_id),
+                   `No Disposition` = n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/n_distinct(youth_violation_id)) |> 
+  mutate(group = "dallas") |> 
+  pivot_longer(!group, names_to = "complaint_type", values_to = "percent") 
+
+### plot
+### bar plot
+ggplot(data = df_technical_violations_overall,
+       aes(x = reorder(complaint_type,-percent),
+           y = percent,
+           fill = complaint_type)) + 
+  geom_bar(stat = "identity",  
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), 
+                                max(.45))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = .1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 6,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","gray","gray","gray","gray","gray","gray","gray","gray","gray")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size = 16),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 16),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_34_technical_violation_response_cai_option_2.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+
+
+<br>
+
+## Table 2. By Race/Ethnicity: Technical Violation Disposition Outcomes
+
+**NOTE:** The base sample and denominator for this analysis is all filed violations where the most serious violation was a technical violation.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique violation grouped
+df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean)
+
+### overall
+df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br>
+
+## Table 3. By Gender: Technical Violation Disposition Outcomes
+
+**NOTE:** The base sample and denominator for this analysis is all filed violations where the most serious violation was a technical violation.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique violation grouped
+df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::group_by(gender_clean) %>% 
+   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>%  
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean)
+
+### overall
+df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Gender` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(3, bold = TRUE)
+```
+
+<br>
+
+## Table 4. By Age: Technical Violation Disposition Outcomes
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### turn age into a factor
+df_technical_violations_dispo_clean_demo %<>%
+ mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 16",
+                    "17+")))
+
+### unique violation grouped
+df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::group_by(age_at_start_of_supervision_clean) %>% 
+   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age` = age_at_start_of_supervision_clean)
+
+### overall
+df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Age` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+## Table 5. By Risk Level: Technical Violation Disposition Outcomes
+
+**Note:** This is the "listed risk level at the time of referral disposition"
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique violation grouped
+df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level)
+
+### overall
+df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+```{r }
+### unique complaints split out
+df_technical_violations_clean_demo_age_to_join_counts <- df_technical_violations_dispo_clean_demo %>% 
+  filter(offense_referral_risk_level!= "Unknown/Not Administered") |> 
+  dplyr::summarise(`Low Risk` = n_distinct(youth_violation_id[offense_referral_risk_level=="Low Risk"]),
+                   `Moderate Risk` = n_distinct(youth_violation_id[offense_referral_risk_level=="Moderate Risk"]),
+                   `High Risk` = n_distinct(youth_violation_id[offense_referral_risk_level=="High Risk"])) |> 
+  mutate(group = "counts") |> 
+  pivot_longer(!group, names_to = "offense_referral_risk_level", values_to = "count") |> 
+  dplyr::select(-group)
+
+### unique violation grouped
+df_technical_violations_per_year_viz <- df_technical_violations_dispo_clean_demo %>% 
+  filter(offense_referral_risk_level!= "Unknown/Not Administered") |> 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+   dplyr::summarise(`CAI Program` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/n_distinct(youth_violation_id),
+                    `Placement or Commitment` = n_distinct(youth_violation_id[violation_dispo_clean%in%c("Placement","Commitment")])/n_distinct(youth_violation_id),
+                   `All Other Responses` = n_distinct(youth_violation_id[!violation_dispo_clean%in%c("Placement","Commitment","21 Day Residential Program")])/n_distinct(youth_violation_id)) |>  
+  ungroup() %>% 
+  pivot_longer(!offense_referral_risk_level, names_to = "complaint_type", values_to = "percent") |> 
+  arrange(desc(percent)) |> 
+  left_join(df_technical_violations_clean_demo_age_to_join_counts,
+            by = "offense_referral_risk_level") %>% 
+  mutate(
+    offense_referral_risk_level_n = paste0(
+      "<span style = 'font-size:14pt'>", offense_referral_risk_level, "</span><br>",
+      "<span style = 'font-size:10pt'><em>", "N = ", scales::comma(count, 1), "</em></span>")) |> 
+  mutate(offense_type = factor(complaint_type,
+                                levels = c("CAI Program",
+                                           "Placement or Commitment",
+                                           "All Other Responses")),
+         offense_referral_risk_level_num = case_when(
+           offense_referral_risk_level=="Low Risk"~1,
+           offense_referral_risk_level=="Moderate Risk"~2,
+           offense_referral_risk_level=="High Risk"~3)) |> 
+  arrange(offense_referral_risk_level_num,
+          offense_type)
+
+### plot
+ggplot(data = df_technical_violations_per_year_viz, aes(y = percent, x = reorder(offense_referral_risk_level_n,offense_referral_risk_level_num), fill = forcats::fct_rev(offense_type))) + 
+  geom_bar(stat = "identity", color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+   geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 5,
+    fill = "white",
+    colour = "gray40",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("gray","#2F7084","#87C2D4")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  labs(x = NULL, y = NULL,
+       fill = "Technical Violation Response",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title = element_text(hjust = 0.5,size = 13),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        # axis.text.x = element_markdown(),
+        axis.text.y = element_markdown(size=14),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 14),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "slide_35_technical_violation_responses_placement_commitment_by_risk.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```  
+
+<br>
+
+## Table 6. By Needs Level: Technical Violation Disposition Outcomes
+
+**Note:** This is the "listed needs level at the time of referral disposition"
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique violation grouped
+df_technical_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+   dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level)
+
+### overall
+df_technical_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`All Technical Violations (N)` = n_distinct(youth_violation_id),
+                    `21 Day Residential Program (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Extension (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Extension"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Probation Modified (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Probation Modified"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Placement (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Placement"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Commitment (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Commitment"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Other (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Other"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Dismissed/Withdrawn (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="Dismissed/Withdrawn"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `No Disposition (row %)` = scales::percent(n_distinct(youth_violation_id[violation_dispo_clean=="No Disposition"])/`All Technical Violations (N)`,
+                                                                       accuracy = .1),
+                   `Missing Disposition Data (row %)` = scales::percent(n_distinct(youth_violation_id[is.na(violation_dispo_clean)==TRUE])/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+# 2. Average Length of Supervision Extension
+
+What is the average length of time a supervision episode is extended as the result of a technical violation? How does this vary across race/ethnicity, sex, and risk level? 
+
+
+**Business Rule:** I was able to join the supervision extension file to the violations using the business rules we discussed with Christian from Dallas County (supervision extension within 3 days of violation disposition) and the overall merge statistics seem like they make sense. We lose about 15% of the supervision extension sample when joining to both technical and new offense violations. I'm guessing (and hoping) these are likely the 'Agreed Order' extensions. In the final sample, we are only looking at technical violations filed in fiscal years 2016-2020 where a supervision extension occurs within 3 days of violation disposition (to align with our sample window on the front end and ensure there is sufficient time at the end of sample for extension to actually occur).
+
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### read in supervision extensions file that we want to merge to violations file for this section
+### i created this file specifically for this purpose in the analytic file prep file
+supervision_extension_demo_analysis_clean <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+                      "supervision_extension_demo_analysis_clean.txt"),
+                      delim = "|") |> 
+  distinct() |> 
+  mutate(supervision_extension_begin_fy = csgjcr::csg_fiscal_year(supervision_extension_begin_date,
+                                                          fy_start="October")) |> 
+  filter(supervision_extension_begin_fy>=2016,
+         supervision_extension_begin_fy<=2020) 
+
+# ### join two files to explore supervision extensions that occur within 
+# ### we can only join on youth ID
+# ### referral IDs in these two files refer to different referrals (one a violation referral and one the original referral)
+# df_technical_violations_supervision_extension <- left_join(df_technical_violations_dispo_clean_demo,
+#                                                        supervision_extension_for_join_to_violations_clean,
+#                                                        by = c("unique_id")) |> 
+#   mutate(youth_violation_id = paste0(unique_id,
+#                                      violation_referral_number)) |> 
+#   ### now calculate time from violation disposition date to supervision extension start date
+#   ### with preliminary business rules: if extension occurs within 15 days of violation disposition date
+#   ### we are considering the two to be linked and thus, I am keeping those records in this file
+#   ### all other records will be dropped -- we only want to calculate length of extension for those
+#   ### records that fit this criteria
+#   mutate(violation_disposition_date = ymd(as_date(violation_disposition_date)),
+#          supervision_extension_begin_date = ymd(as_date(supervision_extension_begin_date))) |> 
+#   mutate(time_from_dispo_to_extension_start = as.numeric(difftime(supervision_extension_begin_date,
+#                                                             violation_disposition_date,
+#                                                                     units="days"))) |> 
+#   filter(time_from_dispo_to_extension_start>-5,
+#          time_from_dispo_to_extension_start<=15) |>
+#   ### remove pure duplicates
+#   distinct() 
+
+```
+
+
+## Table 7. By FY: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all supervision extensions (one supervision episode could have more than one extension) regardless of associated violation type. FY represents fiscal year of supervision extension.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- supervision_extension_demo_analysis_clean %>% 
+  dplyr::group_by(supervision_extension_begin_fy) %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Extension` = supervision_extension_begin_fy) %>% 
+  mutate(`FY of Extension` = as.character(`FY of Extension`))
+
+### overall
+df_technical_violations_overall <- supervision_extension_demo_analysis_clean %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`FY of Extension` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br>
+
+## Table 8. By Race/Ethnicity: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all supervision extensions (one supervision episode could have more than one extension) regardless of associated violation type. FY represents fiscal year of supervision extension.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- supervision_extension_demo_analysis_clean %>% 
+  dplyr::group_by(race_clean) %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean) 
+
+### overall
+df_technical_violations_overall <- supervision_extension_demo_analysis_clean %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+
+```
+
+<br>
+
+## Table 9. By Gender: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all supervision extensions (one supervision episode could have more than one extension) regardless of associated violation type. FY represents fiscal year of supervision extension.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- supervision_extension_demo_analysis_clean %>% 
+  dplyr::group_by(gender_clean) %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean) 
+
+### overall
+df_technical_violations_overall <- supervision_extension_demo_analysis_clean %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Gender` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(3, bold = TRUE)
+
+```
+
+<br>
+
+## Table 10. By Age: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all supervision extensions (one supervision episode could have more than one extension) regardless of associated violation type. FY represents fiscal year of supervision extension.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### turn age into a factor
+supervision_extension_demo_analysis_clean %<>%
+ mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 16",
+                    "17+")))
+
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- supervision_extension_demo_analysis_clean %>% 
+  dplyr::group_by(age_at_start_of_supervision_clean) %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age` = age_at_start_of_supervision_clean) 
+
+### overall
+df_technical_violations_overall <- supervision_extension_demo_analysis_clean %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Age` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+## Table 11. By Risk Level: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all supervision extensions (one supervision episode could have more than one extension) regardless of associated violation type. FY represents fiscal year of supervision extension.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- supervision_extension_demo_analysis_clean %>% 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level) 
+
+### overall
+df_technical_violations_overall <- supervision_extension_demo_analysis_clean %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+## Table 12. By Needs Level: Average Length of Supervision Extension
+
+**NOTE:** The base sample and denominator for this analysis is all supervision extensions (one supervision episode could have more than one extension) regardless of associated violation type. FY represents fiscal year of supervision extension.
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### mean, median, min, and max of supervision_extension_in_days
+df_technical_violations_per_year <- supervision_extension_demo_analysis_clean %>% 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level) 
+
+### overall
+df_technical_violations_overall <- supervision_extension_demo_analysis_clean %>% 
+   dplyr::summarise(`All Supervision Episodes w/ at Least One Supervision Extension (N)` = n_distinct(unique_supervision_id),
+                   `Median` = median(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Mean` = mean(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Min` = min(supervision_extension_in_days,
+                                     na.rm = TRUE),
+                   `Max` = max(supervision_extension_in_days,
+                                     na.rm = TRUE)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_technical_violations_per_year_table <- rbind(df_technical_violations_per_year,df_technical_violations_overall)
+
+### print table via kableextra
+kable(df_technical_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+# 3. Use of 21-day CAI Residential Program 
+
+In Dallas, probation can file a violation to get a kid into a 21 day residential program called CAI ("Community Alternative Initiative"?). The violation does not go to the prosecutor. If the kid is successful in the placement, then the department dismisses the violation. How often does this happen? For now, I am excluding the following CAI tables until the following questions are addressed by Dallas County.
+
+**Outstanding Questions for Dallas County:**  
+
+In the violations file, about 600 technical violation referrals have a disposition of ““DISMISSED OR WITHDRAWN BY DEPARTMENT”. In the placements file, about 140 referrals have placement types of “Emergency Shelter” and offense descriptions of “VIOL OF COURT ORDER  - TECHNICAL”. After joining the placements file (with the aforementioned filters) to the violations file by referral ID and date (placement end date = violation disposition date), about 70 technical violation referrals remain.
+
+*	1. How should we interpret the violation dispositions of ““DISMISSED OR WITHDRAWN BY DEPARTMENT” without any “emergency shelter” placement records? Are these potentially supervisor rejections?
+
+*	2. How should we interpret the placement records with “Emergency Shelter” and “VIOL OF COURT ORDER  - TECHNICAL”, but that don’t join to the violations file? What are other examples of “Emergency Shelter” placements that are linked to a technical violation? 
+
+
+<br>
+
+## Table 13. By FY: Percentage of Technical Violations Disposed to Residential Program
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### import violations file so that denominator is all violations (grouped)
+### and not just all referrals with a violation
+
+# ### read in violations file
+# df_technical_violations_dispo_clean_demo <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+#                       "df_violations_clean_demo.txt"),
+#                       delim = "|") |> 
+#   filter(violation_severity_factor == "Technical Violation") |> 
+#   mutate(youth_violation_id = paste0(unique_id,
+#                                     violation_referral_number),
+#          violation_filed_date_fy = csgjcr::csg_fiscal_year(violation_filed_date,
+#                                                           fy_start="October"),
+#          violation_dismissed_withdrawn_flag = ifelse(violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT",
+#                                                      1,0)) |> 
+#   mutate(violation_type_cleaned = 
+#            case_when(
+#              violation=="100a  Violation Probation - General" ~ "General Violation",
+#              violation%in%c("5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)","5100b  Absenting Self From Court Order Placement (2,6)") ~ "Violation Related to Placement",
+#              violation=="5100d  Viol Prob - Runaway From Home/Placement" ~ "Runaway",
+#              violation=="5100e  Viol Prob - Failure to Report to Probation Officer (2)" ~ "Failure to Report to PO",
+#              violation=="5100i - Viol Prob - Violating School Rules" ~ "Violation of School Rules",
+#              violation=="5100f  Viol Prob - Curfew Violation (3)" ~ "Curfew Violation",
+#              violation=="5100l Viol Prob - Failure to Participate in Order Program (11)" ~ "Failure to Participate in Program",
+#              violation%in%c("5100h  Viol Prob - Truancy - Not attending each Class each Day (4)",
+#                             "5103c  Truancy 3 Days") ~ "Truancy",
+#              violation%in%c("5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
+#                             "5100k  Viol Prob - Failure to Pay Probation Fees (9)",
+#                             "xxx - Converted Data") ~ "Other",
+#              violation=="No Violation/Modification Needed" ~ "No Violation",             
+#              TRUE ~ as.character(NA))) |> 
+#     filter(violation_type_cleaned!="No Violation") |> 
+#   ### re-code disposition of "DISMISSED OR WITHDRAWN BY DEPARTMENT" as "CAI" when cai flag is 1
+#   ### otherwise, we will group it with the other dismissed/withdrawn category
+#     mutate(violation_disposition = case_when(
+#       violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT" & cai_program_flag==1 ~ "CAI",
+#       violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT" & is.na(cai_program_flag)==TRUE ~ "DISMISSED OR WITHDRAWN BY DEPARTMENT",
+#       TRUE ~ as.character(violation_disposition))) |> 
+#     mutate(violation_dispo_clean = 
+#            case_when(
+#              violation_disposition=="ADJUDICATED - NO DISPOSITION" ~ "No Disposition",
+#              violation_disposition%in%c("ADJUDICATED PLACED ON PROBATION",
+#                             "CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PROBATION)") ~ "Probation",
+#              violation_disposition=="CAI" ~ "21 Day Residential Program",
+#              violation_disposition%in%c("COMPLAINT DISMISSED BY COURT",
+#                             "DISMISSED WITHOUT PROSECUTION",
+#                             "DISMISSED WITHOUT PROSECUTION - PA",
+#                             "NO CASE FILED BY DA NO JD ACTION",
+#                             "NO INTAKE, NO PROBABLE CAUSE - DECLINED BY PROSECUTOR",
+#                             "NO INTAKE, NO PROBABLE CAUSE - PROBATION DEPARTMENT",
+#                             "NO INTAKE, PROBABLE CAUSE - PROSECUTOR",
+#                             "NONSUIT",
+#                             "NONSUIT (PA)",
+#                             "NO INTAKE, DISPOSED BY INTAKE",
+#                             "DISMISSED OR WITHDRAWN BY DEPARTMENT") ~ "Dismissed/Withdrawn",
+#              violation_disposition%in%c("CONSOLIDATED IN ANOTHER CASE/REFERRAL",
+#                             "CONSOLIDATED BY DEPARTMENT",
+#                             "FILED AS A MOTION TO MODIFY",
+#                             "FILED AS MOTION TO MODIFY",
+#                             "MOD/VOP Disposed by Intake (PA)",
+#                             "TAKEN INTO CONSIDERATION",
+#                             "SUPERVISORY CAUTION BY DEPARTMENT",
+#                             "TAKEN INTO CONSIDERATION (PA Complaint)",
+#                             "TRANSFER OF DISPOSITION BY COURT") ~ "Other",
+#              violation_disposition%in%c("CONSOLIDATED MULTIPLE CHARGES - ONE DISPOSITION (PLACEMENT)",
+#                             "MODIFICATION PLACEMENT",
+#                             "MODIFIED TO PLACEMENT-DETERMINATE SENTENCE PROB",
+#                             "PROBATION/PLACEMENT") ~ "Placement",
+#              violation_disposition%in%c("PROB REVOKED-DETERMINATE COMMITMENT",
+#                             "PROB REVOKED-INDETERMINATE COMMITMENT",
+#                             "TJJD DETERMINATE COMMITMENT",
+#                             "TJJD INDETERMINATE COMMITMENT") ~ "Commitment",  
+#              violation_disposition%in%c("PROBATION EXTENDED") ~ "Probation Extension",  
+#              violation_disposition%in%c("PROBATION MODIFIED") ~ "Probation Modified",   
+#              TRUE ~ as.character(NA))) %>% 
+#   mutate(offense_referral_risk_level = 
+#            case_when(
+#              offense_referral_risk_level=="Low Risk" ~ 1,
+#              offense_referral_risk_level%in%c("Medium-Low Risk",
+#                              "Medium-High Risk",
+#                              "Moderate Risk") ~ 2,
+#              offense_referral_risk_level=="High Risk" ~ 3,             
+#              offense_referral_risk_level%in%c("Unknown/Not Administered") ~ 4,
+#              TRUE ~ as.numeric(NA)),
+#          ### use factor function to assign labels to values
+#          offense_referral_risk_level = factor(offense_referral_risk_level,
+#          levels = c(1,2,3,4),
+#          labels =  c("Low Risk", 
+#                      "Moderate Risk", 
+#                      "High Risk",
+#                      "Unknown/Not Administered")),
+#          offense_referral_needs_level = 
+#            case_when(
+#              offense_referral_needs_level=="Low Needs" ~ 1,
+#              offense_referral_needs_level=="Moderate Needs" ~ 2,
+#              offense_referral_needs_level=="High Needs" ~ 3,             
+#              offense_referral_needs_level%in%c("Unknown/Not Administered") ~ 4,
+#              TRUE ~ as.numeric(NA)),
+#          ### use factor function to assign labels to values
+#          offense_referral_needs_level = factor(offense_referral_needs_level,
+#          levels = c(1,2,3,4),
+#          labels = c("Low Needs", 
+#                     "Moderate Needs", 
+#                     "High Needs",
+#                     "Unknown/Not Administered"))) |> 
+#   ### remove FY 2023 (year is incomplete based on timing of data pull) 
+#   filter(violation_filed_date_fy!=2023)
+
+# ### read in violations file
+# df_violations_clean_demo <- read_delim(file.path(sharepoint_jj_av_dallas_analytic_data,
+#                       "df_violations_clean_demo.txt"),
+#                       delim = "|") |> 
+#   mutate(youth_violation_id = paste0(unique_id,
+#                                     violation_referral_number),
+#          violation_filed_date_fy = csgjcr::csg_fiscal_year(violation_filed_date,
+#                                                           fy_start="October"),
+#          violation_dismissed_withdrawn_flag = ifelse(violation_disposition=="DISMISSED OR WITHDRAWN BY DEPARTMENT",
+#                                                      1,0))   |> 
+#   filter(violation_severity_factor == "Technical Violation",
+#          violation_filed_date_fy>=2016) |> 
+#   mutate(violation_type_cleaned = 
+#            case_when(
+#              violation=="100a  Violation Probation - General" ~ "General Violation",
+#              violation%in%c("5100c  Viol Prob - Discharge Unsatisfactorily From Placement (2)","5100j  Viol Prob - Violating Placement Rules (3)","5100b  Absenting Self From Court Order Placement (2,6)") ~ "Violation Related to Placement",
+#              violation=="5100d  Viol Prob - Runaway From Home/Placement" ~ "Runaway",
+#              violation=="5100e  Viol Prob - Failure to Report to Probation Officer (2)" ~ "Failure to Report to PO",
+#              violation=="5100i - Viol Prob - Violating School Rules" ~ "Violation of School Rules",
+#              violation=="5100f  Viol Prob - Curfew Violation (3)" ~ "Curfew Violation",
+#              violation=="5100l Viol Prob - Failure to Participate in Order Program (11)" ~ "Failure to Participate in Program",
+#              violation%in%c("5100h  Viol Prob - Truancy - Not attending each Class each Day (4)",
+#                             "5103c  Truancy 3 Days") ~ "Truancy",
+#              violation%in%c("5100g  Viol Prob - Failure to Notify PO Of change Of Home/School/Employment Address (5)",
+#                              "5100k  Viol Prob - Failure to Pay Probation Fees (9)",
+#                             "xxx - Converted Data") ~ "Other",
+#              violation=="No Violation/Modification Needed" ~ "No Violation",             
+#              TRUE ~ as.character(NA))) |> 
+#   ### remove FY 2023 (year is incomplete based on timing of data pull) 
+#   filter(violation_filed_date_fy!=2023) %>% 
+#   mutate(offense_referral_risk_level = 
+#            case_when(
+#              offense_referral_risk_level=="Low Risk" ~ 1,
+#              offense_referral_risk_level%in%c("Medium-Low Risk",
+#                              "Medium-High Risk",
+#                              "Moderate Risk") ~ 2,
+#              offense_referral_risk_level=="High Risk" ~ 3,             
+#              offense_referral_risk_level%in%c("Unknown/Not Administered") ~ 4,
+#              TRUE ~ as.numeric(NA)),
+#          ### use factor function to assign labels to values
+#          offense_referral_risk_level = factor(offense_referral_risk_level,
+#          levels = c(1,2,3,4),
+#          labels =  c("Low Risk", 
+#                      "Moderate Risk", 
+#                      "High Risk",
+#                      "Unknown/Not Administered")),
+#          offense_referral_needs_level = 
+#            case_when(
+#              offense_referral_needs_level=="Low Needs" ~ 1,
+#              offense_referral_needs_level=="Moderate Needs" ~ 2,
+#              offense_referral_needs_level=="High Needs" ~ 3,             
+#              offense_referral_needs_level%in%c("Unknown/Not Administered") ~ 4,
+#              TRUE ~ as.numeric(NA)),
+#          ### use factor function to assign labels to values
+#          offense_referral_needs_level = factor(offense_referral_needs_level,
+#          levels = c(1,2,3,4),
+#          labels = c("Low Needs", 
+#                     "Moderate Needs", 
+#                     "High Needs",
+#                     "Unknown/Not Administered")))
+
+### create denominator -- unique referrals for entire sample
+unique_violations_sample_denom <- n_distinct(df_technical_violations_dispo_clean_demo$youth_violation_id)
+
+### unique youth and referrals per FY
+df_dismissed_violations_per_year <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::group_by(violation_filed_date_fy) %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`FY of Filing` = violation_filed_date_fy) %>% 
+  mutate(`FY of Filing` = as.character(`FY of Filing`)) 
+
+### overall
+df_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`FY of Filing` = "Overall")
+
+### combine tables for kable
+df_dismissed_violations_per_year_table <- rbind(df_dismissed_violations_per_year,df_violations_overall)
+
+### print table via kableextra
+kable(df_dismissed_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(8, bold = TRUE)
+```
+
+<br>
+
+## Table 14. By Race/Ethnicity: Percentage of Technical Violations Disposed to Residential Program
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY
+df_dismissed_violations_per_year <- df_technical_violations_dispo_clean_demo |> 
+  dplyr::group_by(race_clean) %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race_clean) 
+
+### overall
+df_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+df_dismissed_violations_per_year_table <- rbind(df_dismissed_violations_per_year,df_violations_overall)
+
+### print table via kableextra
+kable(df_dismissed_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+<br>
+
+## Table 15. By Gender: Percentage of Technical Violations Disposed to Residential Program
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY
+df_dismissed_violations_per_year <- df_technical_violations_dispo_clean_demo |> 
+  dplyr::group_by(gender_clean) %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean) 
+
+### overall
+df_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Gender` = "Overall")
+
+### combine tables for kable
+df_dismissed_violations_per_year_table <- rbind(df_dismissed_violations_per_year,df_violations_overall)
+
+### print table via kableextra
+kable(df_dismissed_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(3, bold = TRUE)
+```
+
+<br>
+
+## Table 16. By Age: Percentage of Technical Violations Disposed to Residential Program
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### turn age into a factor
+df_technical_violations_dispo_clean_demo %<>%
+ mutate(age_at_start_of_supervision_clean = factor(age_at_start_of_supervision_clean,
+         levels = c("Less than 12", 
+                    "12 to 13",
+                    "14 to 16",
+                    "17+")))
+
+### unique youth and referrals per FY
+df_dismissed_violations_per_year <- df_technical_violations_dispo_clean_demo |> 
+  dplyr::group_by(age_at_start_of_supervision_clean) %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age` = age_at_start_of_supervision_clean) 
+
+### overall
+df_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Age` = "Overall")
+
+### combine tables for kable
+df_dismissed_violations_per_year_table <- rbind(df_dismissed_violations_per_year,df_violations_overall)
+
+### print table via kableextra
+kable(df_dismissed_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+## Table 17. By Risk Level: Percentage of Technical Violations Disposed to Residential Program
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY
+df_dismissed_violations_per_year <- df_technical_violations_dispo_clean_demo |> 
+  dplyr::group_by(offense_referral_risk_level) %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Risk Level` = offense_referral_risk_level) 
+
+### overall
+df_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Risk Level` = "Overall")
+
+### combine tables for kable
+df_dismissed_violations_per_year_table <- rbind(df_dismissed_violations_per_year,df_violations_overall)
+
+### print table via kableextra
+kable(df_dismissed_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+## Table 18. By Risk Level: Percentage of Technical Violations Disposed to Residential Program
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY
+df_dismissed_violations_per_year <- df_technical_violations_dispo_clean_demo |> 
+  dplyr::group_by(offense_referral_needs_level) %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Needs Level` = offense_referral_needs_level) 
+
+### overall
+df_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Needs Level` = "Overall")
+
+### combine tables for kable
+df_dismissed_violations_per_year_table <- rbind(df_dismissed_violations_per_year,df_violations_overall)
+
+### print table via kableextra
+kable(df_dismissed_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+## Table 19. By Violation Type: Percentage of Technical Violations Disposed to Residential Program
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique youth and referrals per FY
+df_dismissed_violations_per_year <- df_technical_violations_dispo_clean_demo |> 
+  dplyr::group_by(violation_type_cleaned) %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Violation Type` = violation_type_cleaned) 
+
+### overall
+df_violations_overall <- df_technical_violations_dispo_clean_demo %>% 
+  dplyr::summarise(`Unique Youth w/ at least One Violation Disposed to 21 Day Program (N)` = n_distinct(unique_id[violation_dispo_clean=="21 Day Residential Program"]),
+                   `Technical Violations Disposed to 21 Day Program (N)` = n_distinct(youth_violation_id[violation_dispo_clean=="21 Day Residential Program"]),
+            `All Technical Violations (N)` = n_distinct(youth_violation_id),
+            `Technical Violations Disposed to 21 Day Program (row %)` = scales::percent(`Technical Violations Disposed to 21 Day Program (N)`/`All Technical Violations (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Violation Type` = "Overall")
+
+### combine tables for kable
+df_dismissed_violations_per_year_table <- rbind(df_dismissed_violations_per_year,df_violations_overall)
+
+### print table via kableextra
+kable(df_dismissed_violations_per_year_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE)
+```
+
+<br><br>

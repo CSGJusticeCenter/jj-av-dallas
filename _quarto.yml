@@ -9,16 +9,34 @@ website:
    right:
       - text: "Project and Analysis Plan"
         href: index.html
-      - text: "Analytic Files"
-        href: jj_av_dallas_create_analytic_files.html
+      - text: "Research/Analysis"
+        menu:
+          - text: "How are modifications used?"
+            href: research_part_1.html
+          - text: "Who receives technical violations?"
+            href: research_part_2.html
+          - text: "When and how often do youth receive technical violations?"
+            href: research_part_3.html
+          - text: "Why do youth receive technical violations?"
+            href: research_part_4.html
+          - text: "What happens to youth as the result of a technical violation?"
+            href: research_part_5.html
       - text: "Questions and Updates"
         href: jj_av_dallas_questions_updates.html
+      - text: "Analytic File Prep"
+        menu:
+          - text: "Analytic File Code"
+            href: jj_av_dallas_create_analytic_files.html
+          - text: "Business Rules"
+            href: jj_av_dallas_business_rules.html
       - text: "Sample Descriptives"
-        href: jj_av_dallas_preliminary_descriptives.html
-      - text: "Codebooks"
-        href: jj_av_dallas_data_codebooks.html
-      - text: "Data Diagram"
-        href: jj_av_dallas_data_diagram_viz.html
+        menu:
+          - text: "Basic Descriptive Statistics"
+            href: jj_av_dallas_preliminary_descriptives.html
+          - text: "Codebooks"
+            href: jj_av_dallas_data_codebooks.html
+          - text: "Data Diagram"
+            href: jj_av_dallas_data_diagram_viz.html
       - icon: fab fa-github
         href: https://github.com/CSGJusticeCenter/jj-av-dallas
 

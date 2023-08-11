@@ -15,42 +15,13 @@ knitr::include_graphics("img/csg-logo.png")
 This is the JJ AV Dallas County project databook. FOR INTERNAL CSG JC USE ONLY. 
 
 
-**Project Background**
-
-The CSG Justice Center is partnering with sites to assess and improve their approach to juvenile probation condition setting and enforcement, following the principles laid out in the Breaking the Rules Toolkit. CSG Justice Center staff will assess the use of graduated responses, technical violations, and revocations, including type, frequency, who is receiving them, why, and the outcomes. Case-level data analysis will describe the population of youth on probation, including use of technical violations and reasons for violations. 
-
-
-**Research Questions and Methodological Approach**
-
-*Community Supervision Outcomes*
-
-1.	To what extent do technical violations while on community supervision result in residential placement or commitment to state custody?
-
-2.	To what extent do technical violations contribute to increased time on community supervision?
-
-
-*Technical Violations*
-
-3.	What are the reasons for technical violations?
-
-4.	How do prosecutor decisions related to technical violations vary by reason for violation, race/ethnicity, and risk?
-
-5.	How often do technical violations occur in specific populations?
-
-6.	What are the outcomes of technical violations?
-
-7.	How many youth are detained as the result of a technical violation?
-
-8.	Compared to white youth, is there a disparity in the rates at which non-white youth are sent to detention due to a technical violation?
-
-9.	Compared to white youth, is there a disparity in the rates at which Black, American Indian, and Hispanic youth are sent to residential placement or commitment due to technical violations?
-
-
-The study of community supervision outcomes will be descriptive, quantifying the degree to which technical violations result in residential placement or commitment to state custody for youth exiting supervision. We will also examine supervision length of stay to determine whether technical violations lead to extended time on supervision. Each measure will be disaggregated by race/ethnicity, sex, risk level, mental health need, and substance use need. 
-
-For technical violations, we will conduct a descriptive analysis of the reasons for the action, the rate at which each occurs among specific populations on community supervision, and the outcome of the action. Rates will be calculated by taking the sum of technical violation events in a period for each group and dividing that number by the sum of days on supervision during the period. To determine the cumulative disparity in technical violation outcomes, a relative rate index will be calculated for each.
- 
-If we want to better understand causation of any of the disparities identified, we will perform a multiple logistic regression to further explore the relationships while adjusting for other factors that may explain differences in technical violation outcomes. Factors to be included in the statistical model are risk level, offense level, offense type, age of the youth at start of supervision, number of probation conditions, and number of technical violations during the supervision period. 
-
 <br>
 
+**Research Plan and Timeline:**
+
+<iframe src="https://csgorg.sharepoint.com/sites/Team-JC-Research-JJ_AV/_layouts/15/Doc.aspx?sourcedoc={254c9fcd-8505-4ab8-be95-1e79538a1e4d}&amp;action=embedview" width="1024px" height="800px" frameborder="0"></iframe>
+
+
+[View on SharePoint](https://csgorg.sharepoint.com/:w:/s/Team-JC-Research-JJ_AV/Ec2fTCUFhbhKvpUeeVOKHk0BbWuiIf7UjDwkNNpv0j5zRA?e=LxdS1K)
+
+<br>

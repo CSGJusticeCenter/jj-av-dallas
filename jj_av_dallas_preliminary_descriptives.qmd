@@ -19,27 +19,22 @@ knitr::opts_chunk$set(
   echo = TRUE,
   dev = "ragg_png",
   cache = FALSE)
-
 ### set theme
 theme_set(theme_minimal())
 ```
 
 ```{r include=FALSE}
 ### pull in dallas data from raw data folder
-
 ### set sharepoint path using file.path function (path has different structure than usual so not using csg_sp_path from csgjcr package)
 sharepoint_jj_av_dallas_raw_data <- file.path("C:/Users/abyrum/The Council of State Governments/JC Research - JJ_AV - JJ_AV/Dallas/Data/raw")
-
 ### using purrr::map, import list of tabs from excel worksheet
 dallas_raw_tab_list <- purrr::map(purrr::set_names(excel_sheets(file.path(sharepoint_jj_av_dallas_raw_data,
                                                               "Dallas County (10.1.2017 - 9.30.2022).xlsx"))),
                       read_excel, 
                       path = file.path(sharepoint_jj_av_dallas_raw_data,"Dallas County (10.1.2017 - 9.30.2022).xlsx")) %>% 
   purrr::map(janitor::clean_names)
-
 ### clean names of all imported tabs before converting to dataframes
 names(dallas_raw_tab_list) <- janitor::make_clean_names(names(dallas_raw_tab_list))
-
 ### then convert list of tabs to distinct dataframes with names from tabs
 purrr::map(names(dallas_raw_tab_list),
            ~assign(.x, 
@@ -73,7 +68,6 @@ child_clean <- child %>%
     gender_clean = factor(gender_clean,
          levels = c(1,2),
          labels = c("Female", "Male"))) ### use factor function to assign labels to values
-
 ########################################
 ### clean and de-dup offenses dataframe
 ########################################
@@ -101,7 +95,6 @@ offenses_clean <- offenses %>%
   mutate(unique_offenses_per_referral_count = n_distinct(unique_offense_id,
                                                          na.rm = TRUE)) %>% 
   ungroup()
-
 ########################################
 ### clean and de-dup supervision dataframe
 ########################################
@@ -118,11 +111,9 @@ supervision_clean <- supervision %>%
   ### create unique referral ID possible filtering, joining, or counting
   mutate(unique_referral_id = paste0(unique_id,
                                      referral_number)) 
-
 #############################################
 ### clean and de-dup supervision_level dataframe
 #############################################
-
 ### by unique_id, referral_number, phase_begin_date, phase_end_date
 supervision_level_clean <- supervision_level %>% 
   distinct(unique_id,
@@ -147,10 +138,8 @@ supervision_level_clean <- supervision_level %>%
 ### create denominator -- unique referrals for entire sample
 unique_referrals_sample_denom <- n_distinct(offenses_clean$unique_id,
                                             offenses_clean$referral_number)
-
 ### create denominator -- unique youth for entire sample
 unique_youth_sample_denom <- n_distinct(offenses_clean$unique_id)
-
 ### unique youth and referrals per year
 df_referrals_youth_per_year <- offenses_clean %>% 
   dplyr::group_by(referral_year) %>% 
@@ -161,7 +150,6 @@ df_referrals_youth_per_year <- offenses_clean %>%
   ungroup() %>% 
   dplyr::rename(`Year of Referral` = referral_year) %>% 
   mutate(`Year of Referral` = as.character(`Year of Referral`))
-
 ### overall
 df_referrals_youth_overall <- offenses_clean %>% 
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
@@ -169,10 +157,8 @@ df_referrals_youth_overall <- offenses_clean %>%
             `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
                                                                        accuracy = .1)) %>% 
   mutate(`Year of Referral` = "Overall")
-
 ### combine tables for kable
 df_referrals_youth_per_year_table <- rbind(df_referrals_youth_per_year,df_referrals_youth_overall)
-
 ### print table via kableextra
 kable(df_referrals_youth_per_year_table, 
       format.args = list(big.mark = ","), 
@@ -188,7 +174,6 @@ kable(df_referrals_youth_per_year_table,
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ## Join 1. Join of `Child` and `Offenses`
-
 ### left join of child file to offenses file in order to see if there is much missingness
 ### i.e. are there offenses without demo records? 
 offenses_child_demo_join <- 
@@ -214,7 +199,6 @@ df_referrals_youth_race <- offenses_child_demo_join %>%
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_clean) %>% 
   mutate(`Race/Ethnicity` = as.character(`Race/Ethnicity`))
-
 ### overall
 df_referrals_youth_overall_race <- offenses_child_demo_join %>% 
   dplyr::summarise(`Unique Youth (N)` = n_distinct(unique_id),
@@ -224,10 +208,8 @@ df_referrals_youth_overall_race <- offenses_child_demo_join %>%
             `Referrals, Percent of Sample (%)` = scales::percent(`Unique Referrals (N)`/unique_referrals_sample_denom,
                                                                        accuracy = .1)) %>% 
   mutate(`Race/Ethnicity` = "Overall")
-
 ### combine tables for kable
 df_referrals_youth_race_table <- rbind(df_referrals_youth_race,df_referrals_youth_overall_race)
-
 ### print table via kableextra
 kable(df_referrals_youth_race_table, 
       format.args = list(big.mark = ","), 
@@ -262,7 +244,6 @@ df_offenses_per_referral_by_year <- offenses_clean %>%
   ungroup() %>% 
   dplyr::rename(`Year of Referral` = referral_year) %>% 
   mutate(`Year of Referral` = as.character(`Year of Referral`))
-
 ### overall
 df_offenses_per_referral_overall <- offenses_clean %>% 
   distinct(unique_referral_id,
@@ -275,10 +256,8 @@ df_offenses_per_referral_overall <- offenses_clean %>%
                                                  nsmall = 2),
             `Median Offenses per Referral` = median(unique_offenses_per_referral_count)) %>% 
   mutate(`Year of Referral` = "Overall")
-
 ### combine tables for kable
 df_offenses_per_referral_by_year_table <- rbind(df_offenses_per_referral_by_year,df_offenses_per_referral_overall)
-
 ### print table via kableextra
 kable(df_offenses_per_referral_by_year_table, 
       format.args = list(big.mark = ","), 
@@ -303,7 +282,6 @@ df_offenses_referral_type <- offenses_clean %>%
             `Unique Referrals (N)` = n_distinct(unique_referral_id)) %>% 
   ungroup() %>% 
   dplyr::rename(`Referral Type` = referral_type) 
-
 ### print table via kableextra
 kable(df_offenses_referral_type, 
       format.args = list(big.mark = ","), 
@@ -327,7 +305,6 @@ df_offenses_dispositions <- offenses_clean %>%
             `Unique Referrals (N)` = n_distinct(unique_referral_id)) %>% 
   ungroup() %>% 
   dplyr::rename(`Disposition` = disposition) 
-
 ### print table via kableextra
 kable(df_offenses_dispositions, 
       format.args = list(big.mark = ","), 
@@ -351,7 +328,6 @@ df_supervision_type_table <- supervision_clean %>%
             `Unique Referrals (N)` = n_distinct(unique_referral_id)) %>% 
   ungroup() %>% 
   dplyr::rename(`Supervision Type` = supervision_type) 
-
 ### print table via kableextra
 kable(df_supervision_type_table, 
       format.args = list(big.mark = ","), 
@@ -377,7 +353,6 @@ df_supervision_level_table <- supervision_level_clean %>%
                                                 referral_number)) %>% 
   ungroup() %>% 
   dplyr::rename(`Supervision Level` = phase) 
-
 ### print table via kableextra
 kable(df_supervision_level_table, 
       format.args = list(big.mark = ","), 
@@ -403,7 +378,6 @@ df_supervision_outcome_table <- supervision_clean %>%
             `Unique Referrals (N)` = n_distinct(unique_referral_id)) %>% 
   ungroup() %>% 
   dplyr::rename(`Supervision Outcome` = outcome) 
-
 ### print table via kableextra
 kable(df_supervision_outcome_table, 
       format.args = list(big.mark = ","), 
@@ -427,7 +401,6 @@ df_overall_violation_type_table <- violations %>%
             `Unique Referrals (N)` = n_distinct(unique_id,violation_referral_number)) %>% 
   ungroup() %>% 
   dplyr::rename(`Violation Type` = offense_description) 
-
 ### print table via kableextra
 kable(df_overall_violation_type_table, 
       format.args = list(big.mark = ","), 
@@ -453,7 +426,6 @@ df_technical_violation_type_table <- violations %>%
             `Unique Referrals (N)` = n_distinct(unique_id,violation_referral_number)) %>% 
   ungroup() %>% 
   dplyr::rename(`Technical Violation Type` = violation) 
-
 ### print table via kableextra
 kable(df_technical_violation_type_table, 
       format.args = list(big.mark = ","), 
@@ -516,7 +488,6 @@ violations_clean_de_dup <- violations %>%
             violation_severity) %>% 
     distinct(unique_violation_disposition_id,
              .keep_all = TRUE)
-
 ### violation disposition information
 df_violation_dispo_table <- violations_clean_de_dup %>% 
   mutate(violation_disposition = ifelse(is.na(violation_disposition)==TRUE,
@@ -527,7 +498,6 @@ df_violation_dispo_table <- violations_clean_de_dup %>%
             `Unique Referrals (N)` = n_distinct(unique_id,violation_referral_number)) %>% 
   ungroup() %>% 
   dplyr::rename(`Violation Dispositions` = violation_disposition) 
-
 ### print table via kableextra
 kable(df_violation_dispo_table, 
       format.args = list(big.mark = ","), 
@@ -551,7 +521,6 @@ df_placement_type_table <- placements %>%
             `Unique Referrals (N)` = n_distinct(unique_id,placement_referral_number)) %>% 
   ungroup() %>% 
   dplyr::rename(`Placement Type` = placement_type) 
-
 ### print table via kableextra
 kable(df_placement_type_table, 
       format.args = list(big.mark = ","), 
